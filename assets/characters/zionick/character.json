@@ -2,13 +2,13 @@
   "name": "Zio Nick",
   "stats": {
     "maxHp": 30,
-    "attack": 6,
+    "attack": 5,
     "defense": 2
   },
   "moves": [
     {
       "name": "Spinta",
-      "dmg": 7
+      "dmg": 6
     },
     {
       "name": "Insulto",
