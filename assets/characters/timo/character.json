@@ -1,0 +1,69 @@
+{
+  "name": "Timo",
+  "stats": {
+    "maxHp": 30,
+    "attack": 6,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-3": {
+      "map": "first-floor-kitchen",
+      "facing": "down"
+    },
+    "chapter-9": {
+      "map": "first-floor-kitchen",
+      "facing": "down"
+    },
+    "chapter-10": {
+      "map": "first-floor-kitchen",
+      "facing": "down"
+    }
+  },
+  "default": "... ... ...",
+  "chapters": {
+    "chapter-3": {
+      "dialogue": [
+        "Ah, sei arrivato!",
+        "Tieni, avrai bisogno di questo..."
+      ],
+      "dialogueAfter": "Te l'ho già dato. Non sprecarlo!",
+      "item": {
+        "name": "Trenbolone",
+        "description": "Una sostanza misteriosa.",
+        "buff": {
+          "attack": 5
+        }
+      }
+    },
+    "chapter-9": {
+      "dialogue": [
+        "Ti serve il verbale per chiudere il caso.",
+        "Eccolo, è tutto in regola."
+      ],
+      "dialogueAfter": "Il verbale ce l'hai già.",
+      "item": {
+        "name": "Verbale",
+        "description": "Documenti ufficiali del caso.",
+        "buff": {
+          "defense": 3
+        }
+      }
+    },
+    "chapter-10": {
+      "dialogue": [
+        "È arrivato il momento, Zio Nick.",
+        "Prendi il Distintivo d'Oro. Te lo sei guadagnato."
+      ],
+      "dialogueAfter": "Il distintivo è tuo. Vai a chiudere i conti!",
+      "item": {
+        "name": "Distintivo d'Oro",
+        "description": "Il simbolo del vero sbirro di casa.",
+        "buff": {
+          "attack": 5,
+          "maxHp": 15,
+          "defense": 3
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "name": "Caue",
+  "stats": {
+    "maxHp": 48,
+    "attack": 9,
+    "defense": 4
+  },
+  "locations": {
+    "chapter-3": {
+      "map": "room-13",
+      "facing": "down"
+    },
+    "chapter-5": {
+      "map": "first-floor-main",
+      "facing": "down"
+    },
+    "chapter-10": {
+      "map": "base-floor-main",
+      "facing": "down"
+    }
+  },
+  "default": "Sopportandovi a vicenda e perdonandovi vicendevolmente, se qualcuno abbia di che lamentarsi nei riguardi degli altri. (Colossesi 3:13)",
+  "chapters": {
+    "chapter-5": {
+      "dialogue": [
+        "Fermo lì. Prima di passare, una domanda.",
+        "Se rispondi bene, la via è tua."
+      ],
+      "dialogueAfter": "La saggezza ti accompagna. Passa pure.",
+      "quiz": {
+        "prompt": "Chi ha lasciato i piatti sporchi nel lavandino?",
+        "options": [
+          "Gabbo",
+          "Nessuno, era già pulito",
+          "Io non c'entro"
+        ],
+        "answer": 0,
+        "correct": "Esatto! Sapevo che eri sveglio.",
+        "wrong": "Mmm... no. Rifletti e riprova."
+      }
+    },
+    "chapter-10": {
+      "dialogue": [
+        "Pensavi davvero che fosse Gabbo la mente?",
+        "Ero io a tirare i fili, dall'inizio.",
+        "Ma sta scritto: ora ti perdono... dopo averti sconfitto."
+      ],
+      "dialogueAfter": "Hai vinto. La pace sia con te, sbirro.",
+      "battle": {
+        "prompt": "Il boss finale ti sfida. Che fai?",
+        "options": [
+          "Lo affronto con tutto",
+          "Cito anch'io i Colossesi"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "Sara",
+  "stats": {
+    "maxHp": 30,
+    "attack": 5,
+    "defense": 3
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "base-kitchen",
+      "facing": "down"
+    },
+    "chapter-3": {
+      "map": "first-floor-kitchen",
+      "facing": "down"
+    },
+    "chapter-7": {
+      "map": "base-kitchen",
+      "facing": "down"
+    }
+  },
+  "default": "Accendi la cappa o ti accoppo",
+  "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "Ciao! Stavo preparando il caffè.",
+        "Ne vuoi un po'?"
+      ]
+    },
+    "chapter-3": {
+      "dialogue": [
+        "Ehi! Ho qualcosa per te.",
+        "Una bella sessione di lamentele da ascoltare visto che non ho niente da fare "
+      ],
+      "dialogueAfter": "Ti ho già parlato troppo, basta!",
+      "item": {
+        "name": "Palle a terra",
+        "description": "Pesanti e pericolose.",
+        "buff": {
+          "maxHp": 10
+        }
+      }
+    },
+    "chapter-7": {
+      "dialogue": [
+        "Provviste? Ho appena fatto il caffè.",
+        "Tieni, portane un po' in giro."
+      ],
+      "dialogueAfter": "Il caffè te l'ho già dato!",
+      "item": {
+        "name": "Caffè",
+        "description": "Carburante della casa.",
+        "buff": {
+          "attack": 2
+        }
+      }
+    }
+  }
+}

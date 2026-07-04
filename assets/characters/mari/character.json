@@ -1,0 +1,57 @@
+{
+  "name": "Mari",
+  "stats": {
+    "maxHp": 30,
+    "attack": 6,
+    "defense": 3
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "base-floor-vertical-2",
+      "facing": "down"
+    },
+    "chapter-2": {
+      "map": "base-floor-vertical-2",
+      "facing": "down"
+    },
+    "chapter-7": {
+      "map": "first-floor-vertical-1",
+      "facing": "down"
+    },
+    "chapter-9": {
+      "map": "first-floor-main",
+      "facing": "down"
+    }
+  },
+  "default": "Sto aspettando Fede Papi ",
+  "chapters": {
+    "chapter-7": {
+      "dialogue": [
+        "Mentre aspetto Fede... vuoi una birra?",
+        "Tieni, è fresca."
+      ],
+      "dialogueAfter": "La birra te l'ho già data!",
+      "item": {
+        "name": "Birra",
+        "description": "Fresca, in attesa di Fede.",
+        "buff": {
+          "defense": 2
+        }
+      }
+    },
+    "chapter-9": {
+      "dialogue": [
+        "Basta! Fede non arriva mai per colpa tua!",
+        "Adesso me la paghi, sbirro."
+      ],
+      "dialogueAfter": "Va bene... hai vinto. Aspetterò Fede in pace.",
+      "battle": {
+        "prompt": "Mari è furiosa. Che fai?",
+        "options": [
+          "La affronto",
+          "Le dico che Fede sta arrivando"
+        ]
+      }
+    }
+  }
+}

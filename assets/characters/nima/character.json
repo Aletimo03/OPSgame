@@ -1,0 +1,37 @@
+{
+  "name": "Nima",
+  "stats": {
+    "maxHp": 28,
+    "attack": 4,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "base-kitchen",
+      "facing": "down"
+    },
+    "chapter-3": {
+      "map": "first-floor-vertical-2",
+      "facing": "down"
+    },
+    "chapter-8": {
+      "map": "base-floor-vertical-1",
+      "facing": "down"
+    }
+  },
+  "default": "من بحق الجحيم قام بتنظيف المطبخ؟",
+  "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "Oh, finalmente ci conosciamo!",
+        "Se ti serve qualcosa, chiedi pure."
+      ]
+    },
+    "chapter-8": {
+      "dialogue": [
+        "Almeno ora la cucina è pulita.",
+        "Grazie per aver messo ordine!"
+      ]
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "Elena",
+  "stats": {
+    "maxHp": 40,
+    "attack": 8,
+    "defense": 3
+  },
+  "locations": {
+    "chapter-11": {
+      "map": "first-floor-main",
+      "facing": "down"
+    },
+    "chapter-12": {
+      "map": "base-floor-main",
+      "facing": "down"
+    }
+  },
+  "default": "Tranquillo sbirro, la rete la indosso solo io.",
+  "chapters": {
+    "chapter-11": {
+      "dialogue": [
+        "Ciao, sono Elena. Mi sono appena trasferita qui.",
+        "Ho sentito che sei tu lo sbirro di casa...",
+        "Vediamo se sei davvero in gamba."
+      ],
+      "dialogueAfter": "Ci si vede in giro, sbirro."
+    },
+    "chapter-12": {
+      "dialogue": [
+        "Allora? Pronto per la sfida che ti avevo promesso?",
+        "Niente domande stavolta. Solo io contro di te.",
+        "Non trattenerti, tanto non servirà."
+      ],
+      "dialogueAfter": "Hai vinto, lo ammetto. Sei un osso duro.",
+      "battle": {
+        "prompt": "Elena ti sfida a duello. Che fai?",
+        "options": [
+          "Accetto la sfida",
+          "Le faccio i complimenti per il look"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "Gaia",
+  "stats": {
+    "maxHp": 28,
+    "attack": 5,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-3": {
+      "map": "first-floor-main",
+      "facing": "down"
+    },
+    "chapter-8": {
+      "map": "base-floor-vertical-1",
+      "facing": "down"
+    },
+    "chapter-9": {
+      "map": "first-floor-vertical-1",
+      "facing": "down"
+    }
+  },
+  "default": "Alessio ti amo troppo puzo boca",
+  "chapters": {
+    "chapter-8": {
+      "dialogue": [
+        "Ciao! Hai visto Alessio in giro?",
+        "Comunque... pace fatta, dai!"
+      ]
+    },
+    "chapter-9": {
+      "dialogue": [
+        "Non ti lascio passare finché non rispondi.",
+        "Domanda facile facile..."
+      ],
+      "dialogueAfter": "Bravo, sapevo che eri dalla mia parte!",
+      "quiz": {
+        "prompt": "Chi ama Gaia più di tutti?",
+        "options": [
+          "Gabbo",
+          "Alessio",
+          "Nessuno"
+        ],
+        "answer": 1,
+        "correct": "ESATTO! Alessio ti amo troppo!",
+        "wrong": "Ma come ti permetti?! Riprova."
+      }
+    }
+  }
+}

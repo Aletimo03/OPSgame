@@ -1,0 +1,47 @@
+{
+  "name": "Gabbo",
+  "stats": {
+    "maxHp": 34,
+    "attack": 8,
+    "defense": 3
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "room-7",
+      "facing": "right"
+    },
+    "chapter-2": {
+      "map": "base-floor-main",
+      "facing": "down"
+    }
+  },
+  "default": "Non ho niente da dirti, sbirro.",
+  "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "O fra, è il capitolo 1 chiama Marius",
+        "Tutti al Plein!"
+      ],
+      "battle": {
+        "prompt": "Che cosa fai?",
+        "options": [
+          "Lo affronto",
+          "Gli do dello jeager"
+        ]
+      }
+    },
+    "chapter-2": {
+      "dialogue": [
+        "O fra, andiamo all'Alcatraz diahane",
+        "Non mi prendi mai, sbirro!"
+      ],
+      "battle": {
+        "prompt": "Che cosa fai?",
+        "options": [
+          "Lo affronto",
+          "Provo a calmarlo"
+        ]
+      }
+    }
+  }
+}

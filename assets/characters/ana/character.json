@@ -1,0 +1,31 @@
+{
+  "name": "Ana",
+  "stats": {
+    "maxHp": 26,
+    "attack": 4,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "base-floor-vertical-2",
+      "facing": "down"
+    },
+    "chapter-2": {
+      "map": "base-floor-vertical-2",
+      "facing": "down"
+    },
+    "chapter-8": {
+      "map": "base-floor-vertical-2",
+      "facing": "down"
+    }
+  },
+  "default": "Hi I'm gumba bro ",
+  "chapters": {
+    "chapter-8": {
+      "dialogue": [
+        "Yo bro, gumba reunion!",
+        "Tutto tranquillo adesso, bro."
+      ]
+    }
+  }
+}

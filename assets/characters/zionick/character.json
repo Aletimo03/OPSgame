@@ -1,0 +1,26 @@
+{
+  "name": "Zio Nick",
+  "stats": {
+    "maxHp": 30,
+    "attack": 6,
+    "defense": 2
+  },
+  "moves": [
+    {
+      "name": "Spinta",
+      "dmg": 7
+    },
+    {
+      "name": "Insulto",
+      "dmg": 9
+    },
+    {
+      "name": "Manette",
+      "dmg": 5
+    },
+    {
+      "name": "SEI IN ARRESTO",
+      "arrest": true
+    }
+  ]
+}

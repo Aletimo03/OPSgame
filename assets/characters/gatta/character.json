@@ -1,0 +1,35 @@
+{
+  "name": "Gatta",
+  "stats": {
+    "maxHp": 20,
+    "attack": 3,
+    "defense": 1
+  },
+  "locations": {
+    "chapter-3": {
+      "map": "first-floor-vertical-1",
+      "facing": "down"
+    },
+    "chapter-4": {
+      "map": "base-floor-main",
+      "facing": "down"
+    }
+  },
+  "default": "Pota figa bro, vado a Brescia ",
+  "chapters": {
+    "chapter-4": {
+      "dialogue": [
+        "Pota, vuoi fare a botte bro?",
+        "Vai a Brescia a piangere!"
+      ],
+      "dialogueAfter": "Ok ok, hai vinto pota. Vado davvero a Brescia.",
+      "battle": {
+        "prompt": "Gatta ti sbarra la strada. Che fai?",
+        "options": [
+          "La affronto",
+          "Le offro un'aperitivo"
+        ]
+      }
+    }
+  }
+}

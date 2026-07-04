@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OPSgame — Co-Housing RPG (Prototype)</title>
+
+  <!-- Phaser 3 via public CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;             /* no scrollbars; game fills the window */
+      background: #1d1d24;
+      color: #e6e6e6;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* The game canvas fills the entire browser window. */
+    #game-container {
+      position: fixed;
+      inset: 0;                     /* top/right/bottom/left: 0 */
+      line-height: 0;               /* remove inline-canvas gap */
+    }
+
+    /* Floating hint overlaid on top of the game. */
+    .hint {
+      position: fixed;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.55;
+      letter-spacing: 0.3px;
+      pointer-events: none;         /* never blocks input */
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <!--
+    Our code is loaded as an ES module. game.js is the entry point and it
+    imports MainScene from js/mainScene.js, so we only need one module tag here.
+    (Modules require a local server — WebStorm's built-in server works great.)
+  -->
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>

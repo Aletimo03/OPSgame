@@ -1,0 +1,33 @@
+{
+  "name": "Ema",
+  "stats": {
+    "maxHp": 28,
+    "attack": 4,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "base-kitchen",
+      "facing": "down"
+    },
+    "chapter-8": {
+      "map": "base-floor-main",
+      "facing": "down"
+    }
+  },
+  "default": "Ci vediamo in giro!",
+  "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "Ehi, sei nuovo qui?",
+        "Benvenuto in casa! Io sono Ema."
+      ]
+    },
+    "chapter-8": {
+      "dialogue": [
+        "Ehi, dopo tutto quel casino...",
+        "Sono contenta che sia tornata la pace!"
+      ]
+    }
+  }
+}
