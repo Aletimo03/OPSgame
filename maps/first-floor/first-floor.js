@@ -70,7 +70,7 @@ setDoor(grid, 61, 34, 2); // room-15
 setDoor(grid, 54, 34, 2); // room-16
 setDoor(grid, 46, 34, 2); // room-17
 setDoor(grid, 38, 34, 2); // room-18
-setDoor(grid, 31, 34, 2); // shared bathroom (between rooms 18 & 19)
+setDoor(grid, 31, 34, 2); // shared bathroom & laundry (between rooms 18 & 19)
 setDoor(grid, 25, 34, 2); // room-19
 setDoor(grid, 19, 34, 2); // room-20 (shifted right)
 setDoor(grid, 10, 34, 2); // room-21 (caps the bottom of the L-corner, into the hall)
@@ -143,6 +143,15 @@ export default {
     { tx: 10, ty: 8, w: 2, h: 1, to: 'room-25', toSpawn: 'default' },
     { tx: 21, ty: 18, w: 1, h: 2, to: 'room-26', toSpawn: 'default' },
     { tx: 22, ty: 17, w: 2, h: 1, to: 'room-27', toSpawn: 'default' },
+  ],
+  // Drying racks in the square hall (the open `living`, interior x 22–31,
+  // y 18–26), along its top wall and right side, away from the room-26/27 doors
+  // in its top-left corner. Colliders = the rack feet only: you can walk behind
+  // the rails (between them and the wall) and get hidden by them.
+  props: [
+    { furniture: 'hanger', dir: 's', tx: 25.6, ty: 18 },
+    { furniture: 'hanger_zionick', dir: 's', tx: 28.8, ty: 18 },
+    { furniture: 'hanger', dir: 's', tx: 28.8, ty: 21.4 },
   ],
   // NPCs are placed by each character's JSON `locations` (per chapter), not here.
   // For chapter-3: gaia + gatta + nima roam this floor (see their character.json).

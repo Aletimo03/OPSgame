@@ -13,6 +13,20 @@ const DEFAULT_MOVES = [
     { name: 'Sei in arresto meddoso!!!!', arrest: true },
 ];
 
+// An `arrest: true` move is a FINISHER: it only works once the enemy is at or
+// below this fraction of max HP (override per move with `arrestBelow`).
+// Above it the arrest fails and the turn is wasted.
+const ARREST_BELOW = 0.4;
+
+// Status effects. Any move (hero's or enemy's) may carry
+// `"status": "imbarazzato" | "assonnato"` and `"chance": 0..1` (default 1).
+//   imbarazzato — the target loses its next action;
+//   assonnato   — the target's next `turns` actions deal half damage.
+const STATUS = {
+    imbarazzato: { turns: 1, tag: 'IMBARAZZO' },
+    assonnato: { turns: 2, tag: 'SONNO' },
+};
+
 const DEPTH = { bg: 0, sprite: 2, ui: 10, text: 11 };
 
 export default class BattleScene extends Phaser.Scene {
@@ -28,6 +42,8 @@ export default class BattleScene extends Phaser.Scene {
         this.heroKey = data.heroKey || PLAYER.SPRITE_KEY;
         this.heroChar = data.heroChar || PLAYER.SPRITE_KEY; // character.json folder
         this.returnScene = data.returnScene || 'WorldScene';
+        // Chapter this fight belongs to — a win is credited to it.
+        this.chapter = data.chapter || questState.activeChapter;
     }
 
     preload() {
@@ -102,9 +118,15 @@ export default class BattleScene extends Phaser.Scene {
         this.heroStats = questState.heroStats(baseStats(heroData));
         this.enemyStats = baseStats(enemyData);
         this.moves = (heroData.moves && heroData.moves.length) ? heroData.moves : DEFAULT_MOVES;
+        // Enemy moves (optional, in the enemy's JSON); none → a generic counter.
+        this.enemyMoves = Array.isArray(enemyData.moves) ? enemyData.moves : [];
+        this.heroStatus = {};  // { imbarazzato: turnsLeft, assonnato: turnsLeft }
+        this.enemyStatus = {};
 
         this.enemyHp = this.enemyMax = this.enemyStats.maxHp;
-        this.heroHp = this.heroMax = this.heroStats.maxHp;
+        // Hero HP persists between battles (questState.heroHp); enemies start full.
+        this.heroMax = this.heroStats.maxHp;
+        this.heroHp = questState.currentHp(this.heroMax);
 
         // HP plates.
         this.enemyPlate = this.makePlate(
@@ -135,25 +157,20 @@ export default class BattleScene extends Phaser.Scene {
             })
             .setDepth(DEPTH.text);
 
-        this.moveTexts = this.moves.map((m, i) => {
-            const col = i % 2;
-            const row = Math.floor(i / 2);
+        // Main menu: the hero's moves + the bag (consumables). No Fuga, by design.
+        this.entries = [...this.moves, { name: 'Zaino', bag: true }];
+        this.menuTexts = this.entries.map((m, i) =>
+            this.add
+                .text(W * 0.12 + (i % 2) * W * 0.42, H - 96 + Math.floor(i / 2) * 30, '', {
+                    fontFamily: 'monospace',
+                    fontSize: '19px',
+                    color: '#ffffff',
+                })
+                .setDepth(DEPTH.text)
+        );
+        this.bagTexts = [];
 
-            return this.add
-                .text(
-                    W * 0.12 + col * W * 0.42,
-                    H - 96 + row * 34,
-                    '',
-                    {
-                        fontFamily: 'monospace',
-                        fontSize: '19px',
-                        color: '#ffffff',
-                    }
-                )
-                .setDepth(DEPTH.text);
-        });
-
-        this.state = 'select';
+        this.state = 'select'; // 'select' | 'bag' | 'message'
         this.sel = 0;
         this.queue = [];
         this.pendingEnd = null;
@@ -177,11 +194,11 @@ export default class BattleScene extends Phaser.Scene {
             })
             .setDepth(DEPTH.text);
 
-        return { x, y, w, g, label };
+        return { x, y, w, g, label, name };
     }
 
     updateBars() {
-        const draw = (plate, hp, max) => {
+        const draw = (plate, hp, max, status) => {
             const { x, y, w, g } = plate;
 
             g.clear();
@@ -208,32 +225,58 @@ export default class BattleScene extends Phaser.Scene {
 
             g.fillStyle(col, 1);
             g.fillRect(x + 12, y + 30, bw * frac, 8);
+
+            // Name + active statuses, e.g. "Gabbo  [SONNO]".
+            const tags = Object.keys(STATUS).filter((k) => status[k] > 0).map((k) => `[${STATUS[k].tag}]`);
+            plate.label.setText([plate.name, ...tags].join('  '));
         };
 
-        draw(this.enemyPlate, this.enemyHp, this.enemyMax);
-        draw(this.heroPlate, this.heroHp, this.heroMax);
+        draw(this.enemyPlate, this.enemyHp, this.enemyMax, this.enemyStatus);
+        draw(this.heroPlate, this.heroHp, this.heroMax, this.heroStatus);
     }
 
     renderMenu() {
-        const show = this.state === 'select';
+        const select = this.state === 'select';
+        const bag = this.state === 'bag';
 
-        this.moveTexts.forEach((t, i) => {
-            t.setVisible(show);
-
-            if (!show) return;
-
+        this.menuTexts.forEach((t, i) => {
+            t.setVisible(select);
+            if (!select) return;
             const selected = i === this.sel;
-
-            t.setText(`${selected ? '▶ ' : '  '}${this.moves[i].name}`);
-            t.setColor(selected ? '#ffd54a' : '#ffffff');
+            const m = this.entries[i];
+            // An arrest that would fail right now is shown dimmed.
+            const dim = m.arrest && !this.canArrest(m);
+            t.setText(`${selected ? '▶ ' : '  '}${m.name}`);
+            t.setColor(selected ? '#ffd54a' : dim ? '#6b7280' : '#ffffff');
         });
 
-        if (show) {
-            this.msg.setText(`Cosa fa ${this.heroName}?`);
+        this.bagTexts.forEach((t) => t.destroy());
+        this.bagTexts = [];
+        if (bag) {
+            const W = this.scale.width;
+            const H = this.scale.height;
+            this.bagList.forEach((it, i) => {
+                const selected = i === this.sel;
+                const label = it.back ? 'Indietro' : `${it.name}  x${it.qty}   (+${it.heal} HP)`;
+                this.bagTexts.push(
+                    this.add
+                        .text(W * 0.12 + Math.floor(i / 3) * W * 0.42, H - 100 + (i % 3) * 30,
+                            `${selected ? '▶ ' : '  '}${label}`, {
+                                fontFamily: 'monospace',
+                                fontSize: '18px',
+                                color: selected ? '#ffd54a' : '#ffffff',
+                            })
+                        .setDepth(DEPTH.text)
+                );
+            });
         }
+
+        if (select) this.msg.setText(`Cosa fa ${this.heroName}?`);
+        if (bag) this.msg.setText('Zaino — cosa usi? (usare un oggetto consuma il turno)');
     }
 
-    update() {
+    update(time, delta) {
+        questState.stats.playMs += delta;
         const c = this.cursors;
         const J = (k) => Phaser.Input.Keyboard.JustDown(k);
 
@@ -253,60 +296,148 @@ export default class BattleScene extends Phaser.Scene {
             else if (J(c.up)) this.moveSel(-2);
             else if (J(c.down)) this.moveSel(2);
             else if (J(c.space)) this.confirm();
+        } else if (this.state === 'bag') {
+            if (J(c.up)) this.moveSel(-1);
+            else if (J(c.down)) this.moveSel(1);
+            else if (J(c.left)) this.moveSel(-3);
+            else if (J(c.right)) this.moveSel(3);
+            else if (J(c.space)) this.confirmBag();
         }
     }
 
     moveSel(d) {
-        this.sel = Phaser.Math.Clamp(
-            this.sel + d,
-            0,
-            this.moves.length - 1
-        );
-
+        const n = this.state === 'bag' ? this.bagList.length : this.entries.length;
+        this.sel = Phaser.Math.Clamp(this.sel + d, 0, n - 1);
         this.renderMenu();
     }
 
     confirm() {
-        const m = this.moves[this.sel];
+        const m = this.entries[this.sel];
+        if (m.bag) return this.openBag();
+        this.playTurn(() => this.heroMove(m));
+    }
 
-        this.queue = [`${this.heroName} usa ${m.name}!`];
+    openBag() {
+        this.bagList = [...questState.suppliesLeft(), { back: true }];
+        this.state = 'bag';
+        this.sel = 0;
+        this.renderMenu();
+    }
 
-        // Damage = move base + attacker.attack - defender.defense (min 1).
-        const dmg = m.arrest
-            ? this.enemyHp
-            : Math.max(1, (m.dmg || 0) + this.heroStats.attack - this.enemyStats.defense);
-        this.enemyHp = Math.max(0, this.enemyHp - dmg);
+    confirmBag() {
+        const it = this.bagList[this.sel];
+        this.sel = this.entries.findIndex((e) => e.bag); // back on "Zaino" in the main menu
+        if (it.back) {
+            this.state = 'select';
+            this.renderMenu();
+            return;
+        }
+        this.playTurn(() => this.heroItem(it));
+    }
 
-        if (m.arrest) {
-            this.queue.push(`${this.enemyName} è in arresto!`);
+    // One full round: the hero's action (unless in imbarazzo), then — if the
+    // enemy is still standing — the enemy's. Messages queue up and are shown
+    // one per Space press.
+    playTurn(heroAction) {
+        this.queue = [];
+        if (this.heroStatus.imbarazzato) {
+            this.heroStatus.imbarazzato = 0;
+            this.queue.push(`${this.heroName} è in imbarazzo e non riesce ad agire!`);
+        } else {
+            heroAction();
+            this.tickSleep(this.heroStatus, this.heroName);
         }
 
         if (this.enemyHp <= 0) {
             this.queue.push(`${this.enemyName} è KO!`);
             this.pendingEnd = 'win';
         } else {
-            // Enemy counterattack: a small base swing scaled by its attack vs
-            // the hero's defense.
-            const ed = Math.max(1, Phaser.Math.Between(3, 6) + this.enemyStats.attack - this.heroStats.defense);
-
-            this.heroHp = Math.max(
-                0,
-                this.heroHp - ed
-            );
-
-            this.queue.push(`${this.enemyName} contrattacca!`);
-
-            if (this.heroHp <= 0) {
-                this.queue.push(`${this.heroName} è esausto...`);
-                this.pendingEnd = 'lose';
-            }
+            this.enemyAct();
         }
 
         this.updateBars();
-
         this.state = 'message';
         this.renderMenu();
         this.showMessage(this.queue.shift());
+    }
+
+    heroMove(m) {
+        this.queue.push(`${this.heroName} usa ${m.name}!`);
+
+        // An arrest KOs only a weakened enemy (see ARREST_BELOW), else it fails.
+        if (m.arrest) {
+            if (this.canArrest(m)) {
+                this.enemyHp = 0;
+                this.queue.push(`${this.enemyName} è in arresto!`);
+            } else {
+                this.queue.push(`${this.enemyName} resiste all'arresto! Prima indeboliscilo.`);
+            }
+            return;
+        }
+
+        // Damage = move base + attacker.attack - defender.defense (min 1).
+        const dmg = this.sleepy(this.heroStatus, this.heroName,
+            Math.max(1, (m.dmg || 0) + this.heroStats.attack - this.enemyStats.defense));
+        this.enemyHp = Math.max(0, this.enemyHp - dmg);
+        if (this.enemyHp > 0) this.tryStatus(m, this.enemyStatus, this.enemyName);
+    }
+
+    heroItem(it) {
+        const heal = questState.useSupply(it.name);
+        const gained = Math.min(heal, this.heroMax - this.heroHp);
+        this.heroHp += gained;
+        this.queue.push(`${this.heroName} usa ${it.name}! +${gained} HP`);
+    }
+
+    enemyAct() {
+        if (this.enemyStatus.imbarazzato) {
+            this.enemyStatus.imbarazzato = 0;
+            this.queue.push(`${this.enemyName} è in imbarazzo e salta il turno!`);
+            return;
+        }
+
+        // A random move from the enemy's JSON, or a generic counter (base 3–6).
+        const em = this.enemyMoves.length ? Phaser.Utils.Array.GetRandom(this.enemyMoves) : null;
+        const base = em ? (em.dmg || 0) : Phaser.Math.Between(3, 6);
+        this.queue.push(em ? `${this.enemyName} usa ${em.name}!` : `${this.enemyName} contrattacca!`);
+        const dmg = this.sleepy(this.enemyStatus, this.enemyName,
+            Math.max(1, base + this.enemyStats.attack - this.heroStats.defense));
+        this.heroHp = Math.max(0, this.heroHp - dmg);
+        this.tickSleep(this.enemyStatus, this.enemyName);
+
+        if (this.heroHp <= 0) {
+            this.queue.push(`${this.heroName} è esausto...`);
+            this.pendingEnd = 'lose';
+        } else if (em) {
+            this.tryStatus(em, this.heroStatus, this.heroName);
+        }
+    }
+
+    // Halve outgoing damage while `assonnato` (rounded up, min 1).
+    sleepy(status, name, dmg) {
+        if (!status.assonnato) return dmg;
+        this.queue.push(`${name} ha sonno: colpo dimezzato.`);
+        return Math.max(1, Math.ceil(dmg / 2));
+    }
+
+    // After the side's action: one fewer sleepy turn; announce waking up.
+    tickSleep(status, name) {
+        if (!status.assonnato) return;
+        status.assonnato--;
+        if (!status.assonnato) this.queue.push(`${name} si sveglia.`);
+    }
+
+    // Roll a move's status effect onto `target`.
+    tryStatus(move, target, name) {
+        const def = STATUS[move.status];
+        if (!def || Math.random() >= (move.chance ?? 1)) return;
+        target[move.status] = def.turns;
+        this.queue.push(move.status === 'imbarazzato' ? `${name} va in imbarazzo!` : `A ${name} viene sonno!`);
+    }
+
+    // Whether an arrest move would succeed against the enemy's current HP.
+    canArrest(m) {
+        return this.enemyHp <= this.enemyMax * (m.arrestBelow ?? ARREST_BELOW);
     }
 
     showMessage(text) {
@@ -335,12 +466,16 @@ export default class BattleScene extends Phaser.Scene {
             world.spaceGuard = true;
         }
 
-        // Fight quests: record the win, then roll the story forward and refresh
-        // the world's quest tracker so a `{ defeat: '<id>' }` objective ticks off.
+        if (this.pendingEnd === 'win') questState.stats.wins++;
+        else questState.stats.losses++;
+
+        // Fight quests: record the win against the fight's own chapter, then let
+        // the world roll the story forward, refresh its HUD and save.
         if (this.pendingEnd === 'win') {
-            questState.defeat(this.enemyChar);
-            advanceChapterIfDone();
-            world?.questTracker?.refresh();
+            questState.setHp(this.heroHp, this.heroMax); // keep the damage taken
+            questState.defeat(this.enemyChar, this.chapter);
+            if (world?.onProgress) world.onProgress();
+            else advanceChapterIfDone();
         }
 
         // Stop the battle theme and resume the world soundtrack.
@@ -351,5 +486,8 @@ export default class BattleScene extends Phaser.Scene {
 
         this.scene.resume(this.returnScene);
         this.scene.stop();
+
+        // Lost: the world wakes the hero up in the living room at full HP.
+        if (this.pendingEnd === 'lose') world?.onDefeat?.();
     }
 }

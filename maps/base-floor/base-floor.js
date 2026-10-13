@@ -88,6 +88,7 @@ export default {
     default: { tx: 42, ty: 29 },
     fromStairs: { tx: 42, ty: 29 }, // back down from the first floor (left foot of the stairs)
     fromEntrance: { tx: 31, ty: 24 },
+    living: { tx: 26, ty: 21 }, // middle of the living room — respawn after a lost battle
     fromKitchen: { tx: 56, ty: 10 }, // back from the base kitchen
     // where you reappear after leaving each room
     fromRoom1: { tx: 58, ty: 13 }, fromRoom2: { tx: 58, ty: 22 },

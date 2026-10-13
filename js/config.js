@@ -16,6 +16,22 @@ export const BATTLE_BG_KEY= 'battle-bg';
 export const BATTLE_BG_PATH= 'assets/tilesets/battle_room12.png'; // Change to your actual file path
 
 
+// World camera zoom. <1 shows more of the map (0.85 = 15% zoomed out). The HUD
+// (quest tracker, dialogue, bag, menus) is on a separate unzoomed camera, so it
+// keeps its size and screen position whatever this is.
+export const CAMERA_ZOOM = 0.80;
+
+// Empty margin (tiles) the camera may show around every map, so the outer walls
+// are never flush with the screen edge. Maps smaller than the view are also
+// centred on screen instead of hugging the top-left corner.
+export const CAMERA_MARGIN = 3;
+
+// Hero HP regenerated per second while sitting on a seat (chairs, stools).
+export const SEAT_HEAL_PER_SEC = 3;
+
+// Where you wake up (full HP) after losing a battle.
+export const DEFEAT_RESPAWN = { mapKey: 'base-floor', spawnName: 'living' };
+
 // Doorway width in tiles (the opening AND the warp trigger). 2 = a clear
 // 2-tile doorway you don't have to line up exactly to walk through.
 export const DOOR_WIDTH = 2;

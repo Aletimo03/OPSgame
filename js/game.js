@@ -2,8 +2,10 @@
 // Main Phaser 3 bootstrap / configuration.
 // Phaser itself is loaded globally from the CDN (see index.html).
 
+import TitleScene from './scenes/TitleScene.js';
 import WorldScene from './scenes/WorldScene.js';
 import BattleScene from './scenes/BattleScene.js';
+import EndingScene from './scenes/EndingScene.js';
 
 const config = {
   type: Phaser.AUTO,          // WebGL when available, falls back to Canvas
@@ -26,7 +28,10 @@ const config = {
     },
   },
 
-  scene: [WorldScene, BattleScene], // WorldScene renders any map; BattleScene overlays for fights
+  // TitleScene boots first (Continua / Nuova partita) and starts WorldScene,
+  // which renders any map; BattleScene overlays it for fights; EndingScene
+  // shows the credits once the last chapter is done.
+  scene: [TitleScene, WorldScene, BattleScene, EndingScene],
 };
 
 // Kick off the game.

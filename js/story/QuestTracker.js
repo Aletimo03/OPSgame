@@ -22,55 +22,45 @@ export class QuestTracker {
     const q = activeQuest();
     if (!q) return;
 
+    // Width clamps to the screen; every line word-wraps and the box is sized
+    // to the measured text, so long titles/objectives never run off the right
+    // edge. Rebuilt on resize (WorldScene.layoutHud).
     const cam = this.scene.cameras.main;
-    const x = cam.width - W - 12;
+    const w = Math.min(W, cam.width - 24);
+    const x = cam.width - w - 12;
     const y = 12;
-    const lineH = 22;
-    const headH = 60;
-    const h = headH + q.objectives.length * lineH + PAD;
+    const wrap = { width: w - PAD * 2 };
 
     const add = (o) => {
       o.setScrollFactor(0).setDepth(DEPTH);
       this.objs.push(o);
       return o;
     };
-
-    add(
-      this.scene.add
-        .rectangle(x, y, W, h, 0x0d0f17, 0.82)
-        .setOrigin(0, 0)
-        .setStrokeStyle(2, 0xffffff, 0.55)
-    );
+    const text = (ty, str, style) =>
+      add(this.scene.add.text(x + PAD, ty, str, { fontFamily: 'monospace', wordWrap: wrap, ...style }));
 
     // Chapter + quest heading (turns green once complete).
-    add(
-      this.scene.add.text(x + PAD, y + 8, q.chapterTitle.toUpperCase(), {
-        fontFamily: 'monospace',
-        fontSize: '11px',
-        color: '#7a8190',
-      })
-    );
-    add(
-      this.scene.add.text(x + PAD, y +22, q.title, {
-        fontFamily: 'monospace',
-        fontSize: '14px',
-        color: q.complete ? '#7CFC8A' : '#ffd54a',
-        fontStyle: 'bold',
-        wordWrap: { width: W - PAD * 2 },
-      })
-    );
+    let ty = y + 8;
+    ty += text(ty, q.chapterTitle.toUpperCase(), { fontSize: '11px', color: '#7a8190' }).height + 4;
+    ty += text(ty, q.title, {
+      fontSize: '14px',
+      color: q.complete ? '#7CFC8A' : '#ffd54a',
+      fontStyle: 'bold',
+    }).height + 10;
 
-    let oy = y + headH;
     for (const o of q.objectives) {
-      add(
-        this.scene.add.text(x + PAD, oy, `${o.done ? '☑' : '☐'} ${o.label}`, {
-          fontFamily: 'monospace',
-          fontSize: '13px',
-          color: o.done ? '#8f97a3' : '#ffffff',
-        })
-      );
-      oy += lineH;
+      ty += text(ty, `${o.done ? '☑' : '☐'} ${o.label}`, {
+        fontSize: '13px',
+        color: o.done ? '#8f97a3' : '#ffffff',
+      }).height + 6;
     }
+    // Background last (now that the height is known), one depth step below.
+    add(
+      this.scene.add
+        .rectangle(x, y, w, ty - y + PAD - 6, 0x0d0f17, 0.82)
+        .setOrigin(0, 0)
+        .setStrokeStyle(2, 0xffffff, 0.55)
+    ).setDepth(DEPTH - 1);
   }
 
   refresh() {

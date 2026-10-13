@@ -2,14 +2,41 @@
 // Spawn interactable NPCs from a map's `npcs` array, plus a simple dialogue box.
 
 import { TILE, TILES, PLAYER } from '../config.js';
-import { sliceSheet, idleFrame, createWalkAnims } from './playerSprite.js';
+import { sliceSheet, idleFrame, createWalkAnims, feetY } from './playerSprite.js';
 import { placementsForMap } from './characters.js';
+import { propColliders } from './props.js';
 
 // Random-walk tuning.
 const NPC_SPEED = 200; // px/sec while strolling (well under the player)
 const WANDER_RADIUS = 5; // tiles from home an NPC will roam (override per-npc)
 const ARRIVE = 3; // px tolerance for "reached the target tile"
 const OPP = { up: 'down', down: 'up', left: 'right', right: 'left' };
+
+// NPCs move tile-to-tile and don't collide with the physics walls, so solid
+// furniture has to be excluded by hand. FEET is the NPC's collision body (set in
+// createNpcs: lower 14–46% of the frame, half its width) in TILES, relative to
+// the centre of the tile the NPC stands on, at PLAYER.SCALE with ~190x344 frames.
+const FEET = { halfW: 0.43, top: 0.43, bottom: 1.42 };
+
+// Tiles ("tx,ty") where a standing NPC's feet would overlap a solid prop
+// (its `colliders`/`collider`, else its display box). Used for spawning AND strolling.
+export function propBlockedTiles(map) {
+  const boxes = (map.props || [])
+    .filter((p) => p.solid)
+    .flatMap((p) => propColliders(p));
+  const blocked = new Set();
+  if (!boxes.length) return blocked;
+  for (let ty = 0; ty < map.grid.length; ty++) {
+    for (let tx = 0; tx < map.grid[0].length; tx++) {
+      const x0 = tx + 0.5 - FEET.halfW, x1 = tx + 0.5 + FEET.halfW;
+      const y0 = ty + 0.5 + FEET.top, y1 = ty + 0.5 + FEET.bottom;
+      if (boxes.some((b) => x0 < b.tx + b.w && x1 > b.tx && y0 < b.ty + b.h && y1 > b.ty)) {
+        blocked.add(tx + ',' + ty);
+      }
+    }
+  }
+  return blocked;
+}
 
 // Centroid of a grid's walkable area (average of all FLOOR tiles). For a
 // rectangular room this is the geometric centre; for an irregular / U-shaped
@@ -26,7 +53,7 @@ function floorCentroid(grid) {
   return { cx: Math.round(sx / n), cy: Math.round(sy / n) };
 }
 
-// Build the NPC sprites for a map. Returns { group, list }.
+// Build the NPC sprites for a map. Returns { group, list, blocked }.
 // Placement is NOT stored on the map — it comes from each character's JSON
 // `locations` block for the active chapter (placementsForMap). A location may
 // give an exact `tx`/`ty`, OR omit them to auto-place at the map's floor centre
@@ -41,7 +68,9 @@ export function createNpcs(scene, map) {
   const grid = map.grid;
   const cols = grid[0].length;
   const rows = grid.length;
-  const isFloor = (tx, ty) => grid[ty] && grid[ty][tx] === TILES.FLOOR;
+  const blocked = propBlockedTiles(map); // tiles under solid furniture
+  const isFloor = (tx, ty) =>
+    grid[ty] && grid[ty][tx] === TILES.FLOOR && !blocked.has(tx + ',' + ty);
   const used = new Set(); // "tx,ty" tiles already claimed
   let centroid = null;
   // BFS out from an anchor tile to the nearest free floor tile (claims it).
@@ -99,8 +128,9 @@ export function createNpcs(scene, map) {
     spr.setImmovable(true);
     spr.body.pushable = false; // can't be shoved by the player
 
-    // Depth-sort by feet so the character lower on screen draws in front.
-    spr.setDepth(spr.y);
+    // Depth-sort by feet so the character lower on screen draws in front
+    // (and props are sorted on the same line — see WorldScene props).
+    spr.setDepth(feetY(spr));
 
     group.add(spr);
     list.push({
@@ -123,7 +153,7 @@ export function createNpcs(scene, map) {
     });
   });
 
-  return { group, list };
+  return { group, list, blocked };
 }
 
 // Tile a sprite's feet currently sit on.
@@ -142,7 +172,8 @@ export function stopNpcs(npcs) {
 // NPCs only step onto empty floor and never onto each other or the player.
 export function updateNpcs(scene, npcs, time) {
   const grid = scene.map.grid;
-  const walkable = (tx, ty) => grid[ty] && grid[ty][tx] === TILES.FLOOR;
+  const walkable = (tx, ty) =>
+    grid[ty] && grid[ty][tx] === TILES.FLOOR && !npcs.blocked.has(tx + ',' + ty);
 
   const occupied = (tx, ty, self) => {
     for (const o of npcs.list) {
@@ -200,7 +231,9 @@ export function updateNpcs(scene, npcs, time) {
         }
       }
     }
-    spr.setDepth(spr.y); // depth-sort by feet vs the player
+    // Depth-sort by feet vs the player and props (WorldScene.characterDepth also
+    // keeps characters in front of props they merely walk beside).
+    spr.setDepth(scene.characterDepth ? scene.characterDepth(spr) : feetY(spr));
   }
 }
 

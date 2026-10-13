@@ -11,6 +11,8 @@ import firstFloorBathroom from './first-floor-bathroom/first-floor-bathroom.js';
 import laundryRoom from './laundry-room/laundry-room.js';
 import trashbinRoom from './trashbin-room/trashbin-room.js';
 
+import { expandMapProps } from '../js/core/furniture.js';
+
 // Base-floor rooms (empty for now), one module each.
 import bRoom1 from './base-floor-rooms/room-1/room-1.js';
 import bRoom2 from './base-floor-rooms/room-2/room-2.js';
@@ -59,6 +61,10 @@ export const MAPS = {
   'room-21': room21, 'room-22': room22, 'room-23': room23, 'room-24': room24,
   'room-25': room25, 'room-26': room26, 'room-27': room27,
 };
+
+// Orientable furniture ({ furniture, dir, tx, ty } entries) → normal props with
+// absolute colliders/seats, once, before anyone reads the maps (js/core/furniture.js).
+for (const [key, map] of Object.entries(MAPS)) expandMapProps(map, key);
 
 // Where the game begins. (Temporarily the first floor for testing.)
 export const START_MAP = 'base-floor';

@@ -87,6 +87,15 @@ export function idleFrame(facing) {
   }
 }
 
+// Screen y of a character's FEET: the bottom of its collision body, which sits
+// at 96% of the frame height (origin is the frame centre → +46%). Characters and
+// props are depth-sorted on this line (see WorldScene props / ysort).
+export const feetY = (sprite) => sprite.y + sprite.displayHeight * 0.46;
+
+// Centre of the feet (collision body spans 68–96% of the frame → +32% from the
+// centre). Used to test whether the player is standing on a seat.
+export const feetCenterY = (sprite) => sprite.y + sprite.displayHeight * 0.32;
+
 // 4-way, diagonal-locked movement. Mutates the player's body + animation.
 export function movePlayer(player, cursors) {
   const body = player.body;
