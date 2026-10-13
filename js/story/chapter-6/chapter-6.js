@@ -6,6 +6,8 @@
 export default {
   id: 'chapter-6',
   title: 'Chapter 6 — Ispezione',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'nima', text: 'Qualcuno controlli la lavanderia e la cucina del primo piano, per favore!' }],
   quest: {
     id: 'inspect-rooms',
     title: 'Ispeziona i locali di servizio',

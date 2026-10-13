@@ -4,6 +4,8 @@
 export default {
   id: 'chapter-3',
   title: 'Chapter 3 — Supplies',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'timo', text: "Sono nella cucina del primo piano, ho qualcosa per te. C'è anche Sara." }],
   quest: {
     id: 'collect-items',
     title: 'Go to the 1F kitchen and collect items',

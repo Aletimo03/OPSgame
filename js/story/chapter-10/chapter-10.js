@@ -10,6 +10,8 @@
 export default {
   id: 'chapter-10',
   title: 'Chapter 10 — Il Plein Finale',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'timo', text: "Vieni a prendere il Distintivo d'Oro in cucina al primo piano. Poi Caue, giù nel corridoio principale." }],
   quest: {
     id: 'grand-finale',
     title: 'Prendi il distintivo e smaschera il boss finale',

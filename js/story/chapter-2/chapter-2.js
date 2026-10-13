@@ -5,6 +5,8 @@
 export default {
   id: 'chapter-2',
   title: 'Chapter 2 — Alcatraz',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'ana', text: "Bro, Gabbo è nel corridoio principale del piano terra e dice che va all'Alcatraz..." }],
   quest: {
     id: 'find-gabbo',
     title: 'Find Gabbo in the living',

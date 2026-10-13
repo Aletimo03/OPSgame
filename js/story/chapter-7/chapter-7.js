@@ -7,6 +7,8 @@
 export default {
   id: 'chapter-7',
   title: 'Chapter 7 — La Spesa',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'sara', text: 'Servono provviste: io ho il caffè nella cucina di sotto, Mari ha la birra al primo piano.' }],
   quest: {
     id: 'gather-supplies',
     title: 'Raccogli le provviste per la casa',

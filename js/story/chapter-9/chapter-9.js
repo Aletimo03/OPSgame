@@ -9,6 +9,8 @@
 export default {
   id: 'chapter-9',
   title: 'Chapter 9 — Caccia Grossa',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'timo', text: 'Ultimo giro al primo piano: Mari, il quiz di Gaia e il Verbale che ti tengo in cucina.' }],
   quest: {
     id: 'big-hunt',
     title: 'Chiudi il caso al primo piano',

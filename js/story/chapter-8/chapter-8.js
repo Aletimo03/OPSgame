@@ -10,6 +10,8 @@
 export default {
   id: 'chapter-8',
   title: 'Chapter 8 — Pace Fatta',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'ema', text: 'È tornata la pace! Passa a fare un saluto ad Ana e Gaia nei corridoi del piano terra.' }],
   quest: {
     id: 'make-peace',
     title: 'Fai il giro e saluta tutti',

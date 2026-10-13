@@ -6,6 +6,8 @@
 export default {
   id: 'chapter-5',
   title: 'Chapter 5 — L’Esame di Caue',
+  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  phone: [{ from: 'gaia', text: 'Caue ti aspetta nel corridoio principale del primo piano con una domanda...' }],
   quest: {
     id: 'caue-quiz',
     title: 'Rispondi correttamente alla domanda di Caue',
