@@ -25,7 +25,15 @@
       "dialogue": [
         "Ciao! Stavo preparando il caffè.",
         "Ne vuoi un po'?"
-      ]
+      ],
+      "dialogueAfter": "La moka è finita! Ne faccio un'altra più tardi.",
+      "item": {
+        "name": "Caffè della moka",
+        "description": "Appena fatto. Rimette in piedi.",
+        "consumable": true,
+        "heal": 12,
+        "qty": 2
+      }
     },
     "chapter-3": {
       "dialogue": [

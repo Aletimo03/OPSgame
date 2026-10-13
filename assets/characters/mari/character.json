@@ -5,6 +5,22 @@
     "attack": 6,
     "defense": 3
   },
+  "moves": [
+    {
+      "name": "Sfuriata",
+      "dmg": 5
+    },
+    {
+      "name": "Birra in testa",
+      "dmg": 6
+    },
+    {
+      "name": "Attesa infinita di Fede",
+      "dmg": 3,
+      "status": "assonnato",
+      "chance": 0.4
+    }
+  ],
   "locations": {
     "chapter-1": {
       "map": "base-floor-vertical-2",

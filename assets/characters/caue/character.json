@@ -5,6 +5,24 @@
     "attack": 9,
     "defense": 4
   },
+  "moves": [
+    {
+      "name": "Giudizio",
+      "dmg": 6
+    },
+    {
+      "name": "Colossesi 3:13",
+      "dmg": 4,
+      "status": "imbarazzato",
+      "chance": 0.35
+    },
+    {
+      "name": "Predica",
+      "dmg": 3,
+      "status": "assonnato",
+      "chance": 0.4
+    }
+  ],
   "locations": {
     "chapter-3": {
       "map": "room-13",

@@ -35,7 +35,7 @@ export const DEFAULT_STATS = { maxHp: 30, attack: 5, defense: 2 };
 // protagonist (zionick) is the player and is NOT spawned as an NPC, so they're
 // excluded here. Add a folder name here when you add a new character.
 export const CHARACTERS = [
-  'ana', 'caue', 'elena', 'ema', 'gabbo', 'gaia', 'gatta', 'mari', 'nima', 'sara', 'timo',
+  'ana', 'caue', 'ema', 'gabbo', 'gaia', 'gatta', 'mari', 'nima', 'sara', 'timo',
 ];
 
 // Phaser cache key for a character's parsed JSON.

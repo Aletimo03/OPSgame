@@ -5,6 +5,22 @@
     "attack": 3,
     "defense": 1
   },
+  "moves": [
+    {
+      "name": "Pota!",
+      "dmg": 4
+    },
+    {
+      "name": "Graffio",
+      "dmg": 5
+    },
+    {
+      "name": "Vado a Brescia",
+      "dmg": 3,
+      "status": "imbarazzato",
+      "chance": 0.3
+    }
+  ],
   "locations": {
     "chapter-3": {
       "map": "first-floor-vertical-1",

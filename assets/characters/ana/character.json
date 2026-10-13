@@ -2,7 +2,7 @@
   "name": "Ana",
   "stats": {
     "maxHp": 26,
-    "attack": 4,
+    "attack": 5,
     "defense": 2
   },
   "locations": {

@@ -12,15 +12,20 @@
     },
     {
       "name": "Insulto",
-      "dmg": 9
+      "dmg": 9,
+      "status": "imbarazzato",
+      "chance": 0.25
     },
     {
       "name": "Manette",
-      "dmg": 5
+      "dmg": 5,
+      "status": "imbarazzato",
+      "chance": 0.6
     },
     {
       "name": "SEI IN ARRESTO",
-      "arrest": true
+      "arrest": true,
+      "arrestBelow": 0.4
     }
   ]
 }

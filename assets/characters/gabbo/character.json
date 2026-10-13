@@ -5,6 +5,22 @@
     "attack": 8,
     "defense": 3
   },
+  "moves": [
+    {
+      "name": "Chiamata a Marius",
+      "dmg": 5
+    },
+    {
+      "name": "Spintone da Plein",
+      "dmg": 6
+    },
+    {
+      "name": "Shot di Jäger",
+      "dmg": 3,
+      "status": "assonnato",
+      "chance": 0.25
+    }
+  ],
   "locations": {
     "chapter-1": {
       "map": "room-7",

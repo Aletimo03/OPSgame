@@ -1,5 +1,5 @@
 {
-  "name": "Ema",
+  "name": "Emanuele",
   "stats": {
     "maxHp": 28,
     "attack": 4,
@@ -20,14 +20,22 @@
     "chapter-1": {
       "dialogue": [
         "Ehi, sei nuovo qui?",
-        "Benvenuto in casa! Io sono Ema."
+        "Benvenuto in casa! Io sono Emanuele."
       ]
     },
     "chapter-8": {
       "dialogue": [
         "Ehi, dopo tutto quel casino...",
         "Sono contenta che sia tornata la pace!"
-      ]
+      ],
+      "dialogueAfter": "Li hai già presi, non fare il goloso!",
+      "item": {
+        "name": "Biscotti fatti in casa",
+        "description": "Ricetta segreta di Emanuele.",
+        "consumable": true,
+        "heal": 15,
+        "qty": 2
+      }
     }
   }
 }
