@@ -2,7 +2,7 @@
   "name": "Zio Nick",
   "stats": {
     "maxHp": 30,
-    "attack": 5,
+    "attack": 100,
     "defense": 2
   },
   "moves": [
