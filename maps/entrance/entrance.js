@@ -11,8 +11,10 @@ export default {
   theme: 'entrance',
   grid,
   spawns: {
-    default: { tx: 5, ty: 7 },
-    fromBaseFloor: { tx: 5, ty: 7 },
+    // row 6, not 7: the feet sit ~1.4 tiles below the sprite centre, so on
+    // row 7 they would overlap the bottom wall (row 8).
+    default: { tx: 5, ty: 6 },
+    fromBaseFloor: { tx: 5, ty: 6 },
   },
   warps: [{ tx: 5, ty: 0, to: 'base-floor', toSpawn: 'fromEntrance' }],
 };

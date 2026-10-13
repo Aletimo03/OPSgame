@@ -66,5 +66,5 @@ export const MAPS = {
 // absolute colliders/seats, once, before anyone reads the maps (js/core/furniture.js).
 for (const [key, map] of Object.entries(MAPS)) expandMapProps(map, key);
 
-// Where the game begins. (Temporarily the first floor for testing.)
-export const START_MAP = 'base-floor';
+// Where a new game begins: the entrance (its door leads into the base floor).
+export const START_MAP = 'entrance';

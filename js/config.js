@@ -36,9 +36,9 @@ export const DEFEAT_RESPAWN = { mapKey: 'base-floor', spawnName: 'living' };
 // 2-tile doorway you don't have to line up exactly to walk through.
 export const DOOR_WIDTH = 2;
 
-// DEV KNOB: protagonist walking speed in pixels/second. Bump this up
-// (e.g. 700–1200) to fast-travel around the big map while developing.
-export const PROTAGONIST_SPEED = 800;
+// Protagonist walking speed in pixels/second (1 tile = 48 px). For testing you
+// can bump it up (e.g. 700–1200) to fast-travel around the big map.
+export const PROTAGONIST_SPEED = 220;
 
 // Player (protagonist "Zio Nick") tuning.
 export const PLAYER = {

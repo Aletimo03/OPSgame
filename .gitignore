@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+
+# IDE / tooling (local only)
+.idea/
+.claude/
+.vscode/
+
+# Python caches from tools/sprites
+__pycache__/
+*.pyc
+
+# Node (only if one day a package.json appears)
+node_modules/
