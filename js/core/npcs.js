@@ -21,16 +21,26 @@ const FEET = { halfW: 0.43, top: 0.43, bottom: 1.42 };
 // Tiles ("tx,ty") where a standing NPC's feet would overlap a solid prop
 // (its `colliders`/`collider`, else its display box). Used for spawning AND strolling.
 export function propBlockedTiles(map) {
+  // Tiles where an NPC can't stand: its FEET box (≈1 tile wide, from ~0.9 to
+  // ~1.9 tiles below the sprite centre) would overlap a solid prop OR a
+  // non-floor tile. Checking only the centre tile let NPCs on the last row
+  // above a wall stand with their feet inside it ("walking on the walls").
   const boxes = (map.props || [])
     .filter((p) => p.solid)
     .flatMap((p) => propColliders(p));
+  const g = map.grid;
   const blocked = new Set();
-  if (!boxes.length) return blocked;
-  for (let ty = 0; ty < map.grid.length; ty++) {
-    for (let tx = 0; tx < map.grid[0].length; tx++) {
+  for (let ty = 0; ty < g.length; ty++) {
+    for (let tx = 0; tx < g[0].length; tx++) {
       const x0 = tx + 0.5 - FEET.halfW, x1 = tx + 0.5 + FEET.halfW;
       const y0 = ty + 0.5 + FEET.top, y1 = ty + 0.5 + FEET.bottom;
-      if (boxes.some((b) => x0 < b.tx + b.w && x1 > b.tx && y0 < b.ty + b.h && y1 > b.ty)) {
+      let wall = false;
+      for (let yy = Math.floor(y0); yy <= Math.ceil(y1) - 1 && !wall; yy++) {
+        for (let xx = Math.floor(x0); xx <= Math.ceil(x1) - 1; xx++) {
+          if (g[yy]?.[xx] !== TILES.FLOOR) { wall = true; break; }
+        }
+      }
+      if (wall || boxes.some((b) => x0 < b.tx + b.w && x1 > b.tx && y0 < b.ty + b.h && y1 > b.ty)) {
         blocked.add(tx + ',' + ty);
       }
     }
@@ -94,12 +104,21 @@ export function createNpcs(scene, map) {
     return { tx: sx, ty: sy };
   };
 
+  // Maps can list `npcSpots` (e.g. the kitchens): NPCs placed by raw map key
+  // take them in turn, so a crowd spreads over the room instead of piling up
+  // around the centre.
+  const spots = map.npcSpots || [];
+  let spotI = 0;
   placementsForMap(scene, map.key).forEach(({ character, data: cdata, at }) => {
-    // Anchor = the spawn point's tile (named spawn point) or the map centroid
-    // (raw map key). BFS from there to the nearest free floor tile.
+    // Anchor = the spawn point's tile (named spawn point), the next of the
+    // map's npcSpots, or the map centroid (raw map key). BFS from there to the
+    // nearest free floor tile.
     let ax, ay;
     if (at.tx != null && at.ty != null) {
       ax = at.tx; ay = at.ty;
+    } else if (spots.length) {
+      const sp = spots[spotI++ % spots.length];
+      ax = sp.tx; ay = sp.ty;
     } else {
       if (!centroid) centroid = floorCentroid(grid);
       ax = centroid.cx; ay = centroid.cy;
@@ -163,14 +182,31 @@ const tileOf = (s) => ({
 });
 
 // Freeze all NPCs in place (used while a dialogue/warp pauses the world).
-export function stopNpcs(npcs) {
-  npcs.list.forEach((n) => n.sprite.body.setVelocity(0));
+// Stop one NPC properly: no velocity, no walk animation left running, idle
+// frame for where it faces, and a short pause before it may stroll again.
+export function freezeNpc(npc, time = 0) {
+  const spr = npc.sprite;
+  spr.body.setVelocity(0);
+  if (npc.state === 'walking' || spr.anims.isPlaying) {
+    spr.anims.stop();
+    spr.setFrame(idleFrame(npc.facing || 'down'));
+  }
+  npc.state = 'idle';
+  npc.target = null;
+  npc.nextTime = Math.max(npc.nextTime || 0, time + 800);
+}
+
+// Freeze every NPC (overlays, cutscenes, warps).
+export function stopNpcs(npcs, time = 0) {
+  npcs.list.forEach((n) => freezeNpc(n, time));
 }
 
 // Drive each NPC's idle/stroll loop. Call once per frame from the scene's
 // update() while the world is active. `scene` provides the grid + player so
 // NPCs only step onto empty floor and never onto each other or the player.
-export function updateNpcs(scene, npcs, time) {
+// `frozen`: NPCs to keep still this frame (e.g. the one you're talking to);
+// everyone else strolls as usual.
+export function updateNpcs(scene, npcs, time, frozen = null) {
   const grid = scene.map.grid;
   const walkable = (tx, ty) =>
     grid[ty] && grid[ty][tx] === TILES.FLOOR && !npcs.blocked.has(tx + ',' + ty);
@@ -190,7 +226,9 @@ export function updateNpcs(scene, npcs, time) {
 
   for (const npc of npcs.list) {
     const spr = npc.sprite;
-    if (npc.wander) {
+    if (frozen && frozen.has(npc)) {
+      freezeNpc(npc, time);
+    } else if (npc.wander) {
       if (npc.state === 'walking') {
         const dx = npc.target.x - spr.x;
         const dy = npc.target.y - spr.y;
@@ -252,6 +290,9 @@ export function faceNpcToPlayer(npc, playerFacing, time) {
   npc.sprite.setFrame(idleFrame(facing));
 }
 
+// Typewriter speed: ms per character (Space while typing shows the whole line).
+const TYPE_MS = 18;
+
 // A bottom-of-screen dialogue box, pinned to the camera.
 export class Dialogue {
   constructor(scene) {
@@ -262,9 +303,12 @@ export class Dialogue {
 
   // `text` may be a single string OR an array of lines shown one at a time.
   // `onComplete` (optional) fires once the last line is dismissed.
-  show(name, text, portraitKey, onComplete) {
+  // `opts.big` (cutscenes): the rest of the screen is darkened, the portrait
+  // is half the screen tall and the text is larger.
+  show(name, text, portraitKey, onComplete, opts = {}) {
     if (this.open) return;
     this.open = true;
+    this.big = !!opts.big;
     this.mode = 'lines';
     this.name = name;
     this.portraitKey = portraitKey;
@@ -278,6 +322,7 @@ export class Dialogue {
   // when the player confirms. Navigate with up/down, confirm with space.
   ask(name, prompt, options, portraitKey, onSelect) {
     this.open = true;
+    this.big = false;
     this.mode = 'choice';
     this.name = name;
     this.portraitKey = portraitKey;
@@ -292,6 +337,11 @@ export class Dialogue {
   // line was shown, false if the box just closed (caller may want to know).
   advance() {
     if (!this.open || this.mode !== 'lines') return false;
+    // Typewriter still running: Space shows the whole line first.
+    if (this.typing) {
+      this.finishTyping();
+      return true;
+    }
     if (this.index >= this.lines.length - 1) {
       const cb = this.onComplete;
       this.hide();
@@ -324,10 +374,16 @@ export class Dialogue {
     const w = cam.width;
     const h = cam.height;
     const m = 20;
-    const bh = 124;
+    const big = this.big;
+    const bh = big ? 176 : 149; // normal box 20% bigger than the original 124 (user's request)
     const boxTop = h - m - bh;
     const last = this.index >= this.lines.length - 1;
 
+    if (big) {
+      // Darken everything else, like night, so the speaker stands out.
+      this.objs.push(this.scene.add.rectangle(0, 0, w, h, 0x05060c, 0.6)
+        .setOrigin(0, 0).setScrollFactor(0).setDepth(1950));
+    }
     const bg = this.scene.add
       .rectangle(w / 2, h - m - bh / 2, w - m * 2, bh, 0x0d0f17, 0.92)
       .setScrollFactor(0)
@@ -340,7 +396,7 @@ export class Dialogue {
     let textX = m + 18;
     if (this.portraitKey && this.scene.textures.exists(this.portraitKey)) {
       const src = this.scene.textures.get(this.portraitKey).getSourceImage();
-      const ph = bh * 1.95; // taller than the bar so it pops above
+      const ph = big ? h * 0.5 : bh * 1.95; // taller than the bar so it pops above
       const pw = (src.width / src.height) * ph;
       const portrait = this.scene.add
         .image(m + 16, h - m - 4, this.portraitKey)
@@ -355,15 +411,15 @@ export class Dialogue {
     const label = this.scene.add
       .text(textX, boxTop + 12, this.name, {
         fontFamily: 'monospace',
-        fontSize: '15px',
+        fontSize: big ? '20px' : '18px',
         color: '#ffd54a',
       })
       .setScrollFactor(0)
       .setDepth(2001);
     const body = this.scene.add
-      .text(textX, boxTop + 42, this.lines[this.index], {
+      .text(textX, boxTop + (big ? 42 : 48), '', {
         fontFamily: 'monospace',
-        fontSize: '19px',
+        fontSize: big ? '26px' : '23px',
         color: '#ffffff',
         wordWrap: { width: w - textX - m - 18 },
       })
@@ -372,7 +428,7 @@ export class Dialogue {
     const hint = this.scene.add
       .text(w - m - 14, h - m - 12, last ? '▼ space' : '▶ space', {
         fontFamily: 'monospace',
-        fontSize: '13px',
+        fontSize: big ? '13px' : '15px',
         color: '#9aa0a8',
       })
       .setOrigin(1, 1)
@@ -380,16 +436,52 @@ export class Dialogue {
       .setDepth(2001);
 
     this.objs.push(label, body, hint);
+    this.typeLine(body, this.lines[this.index], hint);
+  }
+
+  // Typewriter: reveal `full` one character every TYPE_MS ms. The text is laid
+  // out with the full line first (then emptied), so word-wrap never jumps.
+  typeLine(body, full, hint) {
+    this.stopTyping();
+    body.setText(full);
+    const wrapped = body.getWrappedText(full).join('\n');
+    body.setText('');
+    this.typingBody = body;
+    this.typingFull = wrapped;
+    this.typingHint = hint;
+    hint.setVisible(false);
+    let i = 0;
+    this.typing = this.scene.time.addEvent({
+      delay: TYPE_MS,
+      loop: true,
+      callback: () => {
+        i += 1;
+        body.setText(wrapped.slice(0, i));
+        if (i >= wrapped.length) this.finishTyping();
+      },
+    });
+  }
+
+  stopTyping() {
+    if (this.typing) this.typing.remove(false);
+    this.typing = null;
+  }
+
+  finishTyping() {
+    this.stopTyping();
+    if (this.typingBody?.active) this.typingBody.setText(this.typingFull);
+    if (this.typingHint?.active) this.typingHint.setVisible(true);
   }
 
   renderChoice() {
+    this.stopTyping();
     this.objs.forEach((o) => o.destroy());
     this.objs = [];
     const cam = this.scene.cameras.main;
     const w = cam.width;
     const h = cam.height;
     const m = 20;
-    const bh = 124;
+    const bh = Math.max(149, 66 + this.options.length * 31); // grows with the options (sizes +20%)
     const boxTop = h - m - bh;
 
     const bg = this.scene.add
@@ -402,7 +494,7 @@ export class Dialogue {
     let textX = m + 18;
     if (this.portraitKey && this.scene.textures.exists(this.portraitKey)) {
       const src = this.scene.textures.get(this.portraitKey).getSourceImage();
-      const ph = bh * 1.95;
+      const ph = Math.min(bh, 149) * 1.95;
       const pw = (src.width / src.height) * ph;
       const portrait = this.scene.add
         .image(m + 16, h - m - 4, this.portraitKey)
@@ -417,7 +509,7 @@ export class Dialogue {
     const prompt = this.scene.add
       .text(textX, boxTop + 12, this.prompt, {
         fontFamily: 'monospace',
-        fontSize: '16px',
+        fontSize: '19px',
         color: '#ffd54a',
       })
       .setScrollFactor(0)
@@ -427,9 +519,9 @@ export class Dialogue {
     this.options.forEach((opt, i) => {
       const selected = i === this.sel;
       const t = this.scene.add
-        .text(textX + 8, boxTop + 44 + i * 26, `${selected ? '▶ ' : '   '}${opt}`, {
+        .text(textX + 8, boxTop + 52 + i * 31, `${selected ? '▶ ' : '   '}${opt}`, {
           fontFamily: 'monospace',
-          fontSize: '18px',
+          fontSize: '22px',
           color: selected ? '#ffd54a' : '#ffffff',
         })
         .setScrollFactor(0)
@@ -439,6 +531,7 @@ export class Dialogue {
   }
 
   hide() {
+    this.stopTyping();
     this.open = false;
     this.objs.forEach((o) => o.destroy());
     this.objs = [];

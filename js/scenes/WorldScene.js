@@ -3,7 +3,7 @@
 // Switching maps = restart this scene with new { mapKey, spawnName } data.
 
 import {
-  TILE, PLAYER, DOOR_WIDTH, BATTLE_BG_KEY, BATTLE_BG_PATH, CAMERA_ZOOM, CAMERA_MARGIN,
+  TILE, TILES, PLAYER, DOOR_WIDTH, BATTLE_BG_KEY, BATTLE_BG_PATH, CAMERA_ZOOM, CAMERA_MARGIN,
   SEAT_HEAL_PER_SEC, DEFEAT_RESPAWN,
 } from '../config.js';
 import { drawMap, drawStairs, buildWallColliders } from '../core/MapRenderer.js';
@@ -15,15 +15,26 @@ import {
   feetY,
   feetCenterY,
 } from '../core/playerSprite.js';
-import { createNpcs, updateNpcs, stopNpcs, faceNpcToPlayer, Dialogue } from '../core/npcs.js';
+import { createNpcs, updateNpcs, stopNpcs, freezeNpc, faceNpcToPlayer, Dialogue } from '../core/npcs.js';
 import { resolveInteraction, CHARACTERS, baseStats } from '../core/characters.js';
 import { MAPS, START_MAP } from '../../maps/index.js';
 import { questState } from '../story/questState.js';
-import { advanceChapterIfDone, activeChapter, isStoryComplete } from '../story/chapters.js';
+import { CHAPTERS, advanceChapterIfDone, activeChapter, activeQuest, isStoryComplete } from '../story/chapters.js';
 import { QuestTracker } from '../story/QuestTracker.js';
 import { Inventory } from '../ui/Inventory.js';
 import { PauseMenu } from '../ui/PauseMenu.js';
 import { Phone } from '../ui/Phone.js';
+import { PhoneHud } from '../ui/PhoneHud.js';
+import { questNpcIds } from '../story/questGuide.js';
+import { addAffinity } from '../story/affinity.js';
+import { EVENTS } from '../story/events.js';
+import { FRIDGE, fridgeOpen, holdingCheese, fridgeCleaned, throwCheese } from '../story/fridge.js';
+import { advanceClock, clockNow, fmt, nightAlpha, phaseIcon } from '../story/clock.js';
+import { INVESTIGATION, investigationOpen, clueFound, cluesFound, findClue } from '../story/investigation.js';
+import {
+  SHOP_KEEPER, sideStepFor, startSide, completeSide, findSideThing, sideState, sideFound, shopStock, buy,
+} from '../story/sideQuests.js';
+import { KINDS as COLLECTIBLE_KINDS, collectionStatus, foundFlag, isFound } from '../story/collectibles.js';
 import { Minimap } from '../ui/Minimap.js';
 import { loadAudio, attachAudio } from '../core/audio.js';
 import { writeSave, clearSave } from '../core/save.js';
@@ -38,6 +49,8 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   init(data) {
+    this.inCutscene = false;
+    this.talkingTo = null;
     this.mapKey = data.mapKey || START_MAP;
     this.spawnName = data.spawnName || 'default';
     this.spawnPos = data.spawnPos || null; // exact pixel position (only when continuing a save)
@@ -149,7 +162,12 @@ export default class WorldScene extends Phaser.Scene {
 
     // Static room props (bed, desk, etc.), optionally solid, depth-sorted vs characters.
     this.sortBoxes = []; // y-sorted props, for characterDepth()
+    this.propShown = new Set();
     (map.props || []).forEach((p) => {
+      // `onlyIn`: shown only in those chapters (e.g. the aperitivo on the table).
+      // Checked on map entry, so it stays until you leave the room.
+      if (p.onlyIn && !p.onlyIn.includes(questState.activeChapter)) return;
+      this.propShown.add(p);
       const px = p.tx * TILE;
       const py = p.ty * TILE;
       const spr = this.add.image(px, py, p.key).setOrigin(0, 0);
@@ -213,11 +231,27 @@ export default class WorldScene extends Phaser.Scene {
 
     // NPCs (solid, interactable) + dialogue box.
     this.npcs = createNpcs(this, map);
+    // A bobbing "!" over every NPC the active quest still needs.
+    this.questMarks = this.npcs.list.map((npc) => {
+      const t = this.add
+        .text(npc.sprite.x, npc.sprite.y, '!', {
+          fontFamily: 'monospace', fontSize: '30px', fontStyle: 'bold',
+          color: '#ffd54a', stroke: '#000000', strokeThickness: 6,
+        })
+        .setOrigin(0.5, 1)
+        .setDepth(900000) // over every character/prop and the night veil (world camera), under the HUD
+        .setVisible(false);
+      t.bob = 0;
+      this.tweens.add({ targets: t, bob: -8, duration: 420, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      return { npc, t };
+    });
+    this.refreshQuestMarks();
     this.physics.add.collider(this.player, this.npcs.group);
     this.dialogue = new Dialogue(this);
 
     // Warp pads: an overlap zone on each door tile.
     this.setupWarps(map);
+    this.drawDoorPlates(map);
 
     // Camera.
     this.worldW = worldW;
@@ -243,9 +277,31 @@ export default class WorldScene extends Phaser.Scene {
     }
     this.spaceGuard = false; // set true by BattleScene on exit so the closing space doesn't re-interact
 
+    // Clock (top-left): in-game time + day/night icon (js/story/clock.js).
+    this.clockText = this.add
+      .text(10, 10, '', {
+        fontFamily: 'monospace',
+        fontSize: '18px',
+        color: '#ffffff',
+        fontStyle: 'bold',
+        backgroundColor: 'rgba(0,0,0,0.55)',
+        padding: { x: 8, y: 4 },
+      })
+      .setScrollFactor(0)
+      .setDepth(1000000);
+    // Night: a dark-blue veil over the world only (world camera, scroll 1),
+    // under the HUD and the "!" markers; its alpha follows the clock.
+    this.nightVeil = this.add
+      .rectangle(-50 * TILE, -50 * TILE, (map.grid[0].length + 100) * TILE, (map.grid.length + 100) * TILE, 0x0b1030, 1)
+      .setOrigin(0, 0)
+      .setDepth(880000)
+      .setAlpha(0);
+    this.lastClockMin = null;
+    this.updateClock();
+
     // Tiny HUD label so you always know which room you're in.
-    this.add
-      .text(10, 10, map.name, {
+    this.roomLabel = this.add
+      .text(10, 48, map.name, {
         fontFamily: 'monospace',
         fontSize: '16px',
         color: '#ffffff',
@@ -271,6 +327,8 @@ export default class WorldScene extends Phaser.Scene {
 
     // Active-quest checklist, pinned to the top-right.
     this.questTracker = new QuestTracker(this);
+    // Phone icon under it, with an unread-messages badge and the [P] hint.
+    this.phoneHud = new PhoneHud(this, this.questTracker);
     this.layoutHud();
     this.scale.on('resize', this.layoutHud, this);
     this.events.once('shutdown', () => this.scale.off('resize', this.layoutHud, this));
@@ -290,6 +348,9 @@ export default class WorldScene extends Phaser.Scene {
 
     // Entering this map completed an explore chapter → announce it.
     if (questState.activeChapter !== chapterBefore) this.announceChapter();
+    else this.time.delayedCall(500, () => this.showChapterCard()); // first time in this chapter (e.g. a new game)
+    this.time.delayedCall(900, () => this.storyIntros());
+    this.time.delayedCall(1300, () => this.playEvents());
     if (this.notice) this.showBanner(this.notice, 0.28);
 
     // Autosave: now (map entry), every few seconds (position), and on tab close.
@@ -323,6 +384,7 @@ export default class WorldScene extends Phaser.Scene {
     this.keyHints.setWordWrapWidth(Math.max(120, cam.width - 20));
     this.keyHints.setPosition(10, cam.height - 10);
     this.questTracker.refresh();
+    this.phoneHud.refresh();
   }
 
   // Camera bounds = the map plus CAMERA_MARGIN tiles all round. On an axis where
@@ -330,6 +392,7 @@ export default class WorldScene extends Phaser.Scene {
   // symmetrically so the map sits centred instead of in the top-left corner.
   // Re-run on window resize (the visible area changes).
   fitCameraBounds() {
+    if (this.inCutscene) return; // re-run by cutsceneEnd at the normal zoom
     const cam = this.cameras.main;
     const viewW = cam.width / cam.zoom;
     const viewH = cam.height / cam.zoom;
@@ -406,6 +469,74 @@ export default class WorldScene extends Phaser.Scene {
     );
   }
 
+  // A small plate on the wall beside every door that leads to a bedroom (its
+  // number) or a shared room (an icon), so you can tell the doors apart.
+  drawDoorPlates(map) {
+    const ICON = {
+      'base-kitchen': '🍳', 'first-floor-kitchen': '🍳', 'first-floor-bathroom': '🚿',
+      'laundry-room': '🧺', 'trashbin-room': '🗑️', entrance: '🚪',
+    };
+    const g = map.grid;
+    const used = new Set(); // one plate per wall tile (doors in a corner share neighbours)
+    const free = (x, y) => g[y]?.[x] === TILES.WALL && !used.has(`${x},${y}`);
+    for (const w of map.warps || []) {
+      const room = /^room-(\d+)$/.exec(w.to);
+      const label = room ? room[1] : ICON[w.to];
+      if (!label) continue;
+      const tw = w.w || DOOR_WIDTH;
+      const th = w.h || 1;
+      // Horizontal door → plate on the free wall tile to its left (else right);
+      // vertical door → above it (else below). Skip a tile another plate took.
+      const tries = tw >= th
+        ? [[w.tx - 1, w.ty], [w.tx + tw, w.ty]]
+        : [[w.tx, w.ty - 1], [w.tx, w.ty + th]];
+      const spot = tries.find(([x, y]) => free(x, y));
+      if (!spot) continue;
+      used.add(`${spot[0]},${spot[1]}`);
+      const cx = (spot[0] + 0.5) * TILE;
+      const cy = (spot[1] + 0.5) * TILE;
+      const t = this.add.text(cx, cy, label, {
+        fontFamily: 'monospace', fontSize: room ? '22px' : '24px', fontStyle: 'bold', color: '#1d1d24',
+      }).setOrigin(0.5).setDepth(4);
+      const pw = Math.max(TILE * 0.8, t.width + 12);
+      this.add.rectangle(cx, cy, pw, TILE * 0.72, 0xf2e3b3, 1)
+        .setStrokeStyle(3, 0x6b4f2a, 1).setDepth(3);
+    }
+  }
+
+  // Door assist: walking towards a doorway while a little off-centre would
+  // snag on the wall corner. Within ~1 tile of a door (sideways) and about to
+  // enter it, add a sideways slide towards the door's centre, so you don't
+  // have to line up perfectly.
+  assistDoor() {
+    const b = this.player.body;
+    const vx = b.velocity.x;
+    const vy = b.velocity.y;
+    if (!vx && !vy) return;
+    for (const z of this.warps.getChildren()) {
+      const w = z.warp;
+      const x0 = w.tx * TILE;
+      const y0 = w.ty * TILE;
+      const tw = (w.w || DOOR_WIDTH) * TILE;
+      const th = (w.h || 1) * TILE;
+      if (vy && tw >= th) {        // horizontal door, walking up/down into it
+        const ahead = vy > 0 ? y0 - b.bottom : b.top - (y0 + th);
+        const dx = x0 + tw / 2 - b.center.x;
+        if (ahead < TILE * 0.8 && ahead > -th && Math.abs(dx) < tw / 2 + TILE && Math.abs(dx) > 2) {
+          b.setVelocityX(Math.sign(dx) * Math.min(Math.abs(vy), Math.abs(dx) * 12));
+          return;
+        }
+      } else if (vx && th > tw) {  // vertical door, walking left/right into it
+        const ahead = vx > 0 ? x0 - b.right : b.left - (x0 + tw);
+        const dy = y0 + th / 2 - b.center.y;
+        if (ahead < TILE * 0.8 && ahead > -tw && Math.abs(dy) < th / 2 + TILE && Math.abs(dy) > 2) {
+          b.setVelocityY(Math.sign(dy) * Math.min(Math.abs(vx), Math.abs(dy) * 12));
+          return;
+        }
+      }
+    }
+  }
+
   doWarp(warp) {
     if (!this.canWarp || this.warpLocked) return;
     this.warpLocked = true;
@@ -418,6 +549,12 @@ export default class WorldScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.player) return;
     questState.stats.playMs += delta; // play time, for the ending screen
+    advanceClock(delta);
+    this.updateClock();
+    if (!this.inCutscene) this.phoneHud.update(); // badge follows new chapters / reading the phone
+    for (const { npc, t } of this.questMarks) {
+      t.setPosition(npc.sprite.x, npc.sprite.y - npc.sprite.displayHeight * 0.5 + 6 + t.bob);
+    }
     const maxHp = this.heroMaxHp();
 
     // Overlays. At most one is open; none opens during a dialogue or a warp.
@@ -434,26 +571,29 @@ export default class WorldScene extends Phaser.Scene {
     }
     const canPause = !busy && !overlays.some((o) => o.open);
     if (this.pauseMenu.update(canPause)) {
-      this.player.body.setVelocity(0);
-      stopNpcs(this.npcs);
+      this.holdPlayer();
+      stopNpcs(this.npcs, time);
       return;
     }
     for (const o of overlays) {
       const othersOpen = overlays.some((x) => x !== o && x.open);
       if (o.update(!busy && !othersOpen)) {
-        this.player.body.setVelocity(0);
-        stopNpcs(this.npcs);
+        this.holdPlayer();
+        stopNpcs(this.npcs, time);
         return;
       }
     }
 
     const pressedSpace = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    this.keyHints.setVisible(!this.dialogue.open);
+    this.keyHints.setVisible(!this.dialogue.open && !this.inCutscene);
 
     // While a dialogue is open, freeze movement; space closes it.
+    // Normal chat: only Zio Nick and the person he talks to stand still; the
+    // others keep strolling. In a cutscene everyone stands still, listening.
     if (this.dialogue.open) {
-      this.player.body.setVelocity(0);
-      stopNpcs(this.npcs);
+      this.holdPlayer();
+      if (this.inCutscene) stopNpcs(this.npcs, time);
+      else updateNpcs(this, this.npcs, time, this.talkingTo ? new Set([this.talkingTo]) : null);
       if (this.dialogue.mode === 'choice') {
         if (this.justPressed('up')) this.dialogue.moveSelection(-1);
         else if (this.justPressed('down')) this.dialogue.moveSelection(1);
@@ -464,9 +604,14 @@ export default class WorldScene extends Phaser.Scene {
       return;
     }
 
-    if (this.warpLocked) {
-      this.player.body.setVelocity(0);
-      stopNpcs(this.npcs);
+    if (this.talkingTo) { // the chat just ended: let them stand a moment, then stroll
+      freezeNpc(this.talkingTo, time + 700);
+      this.talkingTo = null;
+    }
+
+    if (this.warpLocked || this.inCutscene) { // cutscene: nobody moves between lines either
+      this.holdPlayer();
+      stopNpcs(this.npcs, time);
       return;
     }
 
@@ -481,6 +626,7 @@ export default class WorldScene extends Phaser.Scene {
     }
 
     movePlayer(this.player, this.cursors);
+    this.assistDoor(); // slide into a doorway you're slightly off-centre from
     this.player.setDepth(this.characterDepth(this.player)); // vs NPCs and props, by feet
     updateNpcs(this, this.npcs, time); // NPCs stroll around so they feel alive
 
@@ -490,6 +636,16 @@ export default class WorldScene extends Phaser.Scene {
     // Arm warps once the player is clear of every door zone.
     if (!this.canWarp && !this.physics.overlap(this.player, this.warps)) {
       this.canWarp = true;
+    }
+  }
+
+  // Zio Nick stands still: no velocity and no walk animation left running.
+  holdPlayer() {
+    const p = this.player;
+    p.body.setVelocity(0);
+    if (p.anims.isPlaying) {
+      p.anims.stop();
+      p.setFrame(idleFrame(p.facing));
     }
   }
 
@@ -512,12 +668,16 @@ export default class WorldScene extends Phaser.Scene {
       }
     }
     if (!target) {
-      this.trySit(); // nobody in front: maybe the player is standing on a seat
+      // Nobody in front: sit if standing on a seat, else look at the furniture ahead.
+      if (!this.trySit()) this.tryExamine(px, py);
       return;
     }
     faceNpcToPlayer(target, this.player.facing, this.time.now);
+    this.talkingTo = target; // stands still for the whole conversation (update)
     this.audio?.playSfx('npc-talk'); // interaction blip (no-op until a file is added)
+    const firstToday = !questState.didIn('greeted', target.id); // first chat this chapter → +1 heart
     questState.greet(target.id); // mark NPC as spoken-to
+    if (firstToday) this.bumpAffinity(target.id, 1);
 
     // Resolve what this character says/does for the CURRENT chapter, live from
     // their JSON. battle/item only ever come from a chapter entry, so a fight
@@ -541,9 +701,29 @@ export default class WorldScene extends Phaser.Scene {
       // Lines first, then a branching prompt; either choice leads to the fight.
       this.dialogue.show(target.name, act.dialogue, target.portraitKey, () => {
         const b = act.battle;
-        this.dialogue.ask(target.name, b.prompt, b.options, target.portraitKey, () =>
-          this.startBattle(target, ch)
+        const fight = (opts) => this.dialogue.ask(target.name, b.prompt, b.options, target.portraitKey, () =>
+          this.startBattle(target, ch, opts)
         );
+        // The melon investigation's accusation (final only): present a clue first.
+        const inv = INVESTIGATION;
+        const clues = cluesFound();
+        if (target.id === inv.accused && ch === inv.finalChapter && clues.length) {
+          this.dialogue.ask('🔍 Indagine', 'Presenta una prova', [...clues.map((c) => c.name), 'Nessuna prova'], null, (i) => {
+            const c = clues[i];
+            if (!c) return fight();
+            if (c.key) {
+              this.dialogue.show('🔍 Indagine', [c.text, `${target.name} impallidisce. La prova lo inchioda!`], null,
+                () => fight({ enemyHpFrac: inv.bonusFrac }));
+            } else {
+              const max = this.heroMaxHp();
+              questState.setHp(Math.max(1, questState.currentHp(max) - inv.penaltyHp), max);
+              this.dialogue.show('🔍 Indagine', [c.text, `Non prova niente. ${target.name} sorride. (−${inv.penaltyHp} HP)`], null,
+                () => fight());
+            }
+          });
+          return;
+        }
+        fight();
       });
     } else if (act.quiz) {
       // Quiz-based objective — the chapter advances only on a CORRECT answer.
@@ -581,6 +761,7 @@ export default class WorldScene extends Phaser.Scene {
         ? (act.dialogueAfter || `Hai già ${it.name} con te!`)
         : act.dialogue;
       this.dialogue.show(target.name, lines, target.portraitKey, () => {
+        if (already) this.afterTalk(target);
         if (!already) {
           if (it.consumable) questState.addSupply(it, target.id);
           else questState.addItem(it);
@@ -591,16 +772,298 @@ export default class WorldScene extends Phaser.Scene {
       });
     } else {
       this.onProgress();
-      this.dialogue.show(target.name, act.dialogue, target.portraitKey);
+      this.dialogue.show(target.name, act.dialogue, target.portraitKey, () => this.afterTalk(target));
     }
+  }
+
+  // After a plain chat (or an item already given): favours (side quests) and
+  // Alessio's shop. Never after battles or quizzes.
+  afterTalk(target) {
+    const st = sideStepFor(target.id);
+    if (st) {
+      const q = st.quest;
+      if (st.step === 'offer') {
+        this.dialogue.show(target.name, q.ask, target.portraitKey, () =>
+          this.dialogue.ask(target.name, `Favore: ${q.title}`, ['Ci penso io', 'Ora no'], target.portraitKey, (i) => {
+            if (i !== 0) return;
+            startSide(q);
+            this.showBanner(`★ Nuovo favore: ${q.title}`, 0.28, '#8fd3ff', 0x8fd3ff);
+            this.afterSideChange();
+          }));
+      } else if (st.step === 'remind') {
+        this.dialogue.show(target.name, q.remind, target.portraitKey);
+      } else {
+        this.dialogue.show(target.name, q.thanks, target.portraitKey, () => {
+          completeSide(q);
+          this.bumpAffinity(q.giver, 2);
+          this.showBanner(`★ Favore fatto! +${q.points} punti casa\n(totale ${questState.points})`, 0.28, '#8fd3ff', 0x8fd3ff);
+          this.afterSideChange();
+        });
+      }
+      return;
+    }
+    if (target.id === SHOP_KEEPER) { this.openShop(target); return; }
+    if (this.canRematch(target)) this.offerRematch(target);
+  }
+
+  // Rematch (character JSON `rematch`, e.g. Gabbo roaming the corridors from
+  // chapter 3): a fight for punti casa, once per chapter, no story effect.
+  canRematch(npc) {
+    const r = npc.data?.rematch;
+    if (!r) return false;
+    const order = Object.keys(CHAPTERS);
+    return order.indexOf(questState.activeChapter) >= order.indexOf(r.from);
+  }
+
+  offerRematch(target) {
+    const r = target.data.rematch;
+    const ch = questState.activeChapter;
+    if (questState.didIn('defeated', target.id, ch)) {
+      this.dialogue.show(target.name, r.after, target.portraitKey);
+      return;
+    }
+    this.dialogue.ask(target.name, r.prompt, r.options, target.portraitKey, (i) => {
+      if (i !== 0) return;
+      this.pendingRematch = { id: target.id, ch, reward: r.reward, name: target.name };
+      this.startBattle(target, ch);
+    });
+  }
+
+  // Called from onProgress (BattleScene calls it after a win): pay a rematch.
+  payRematch() {
+    const r = this.pendingRematch;
+    if (!r || !questState.didIn('defeated', r.id, r.ch)) return;
+    this.pendingRematch = null;
+    questState.points = (questState.points || 0) + r.reward;
+    this.bumpAffinity(r.id, 1);
+    this.showBanner(`⚔ ${r.name} battuto! +${r.reward} punti casa\n(totale ${questState.points})`, 0.28, '#ff8a65', 0xff8a65);
+    this.inventory.refresh();
+    this.saveGame();
+  }
+
+  // +n hearts with a housemate; a newly unlocked private message gets a banner
+  // (the phone badge counts it too).
+  bumpAffinity(id, n) {
+    const unlocked = addAffinity(id, n);
+    if (unlocked.length) {
+      const name = this.npcs?.list.find((x) => x.id === id)?.name || id;
+      this.time.delayedCall(900, () => this.showBanner(`💬 Nuovo messaggio privato da ${name}\n[P] per leggerlo`, 0.62, '#7CFC8A', 0x25d366));
+    }
+  }
+
+  afterSideChange() {
+    this.refreshQuestMarks();
+    this.inventory.refresh();
+    this.saveGame();
+  }
+
+  // Alessio's shop: spend punti casa (sideQuests.SHOP).
+  openShop(target) {
+    const stock = shopStock();
+    const pts = questState.points || 0;
+    const opts = [...stock.map((it) => `${it.name} — ${it.price} punti`), 'Niente'];
+    this.dialogue.ask(target.name, `O fra. Shop? (hai ${pts} punti casa)`, opts, target.portraitKey, (i) => {
+      const it = stock[i];
+      if (!it) return;
+      if (!buy(it)) {
+        this.dialogue.show(target.name, 'O fra, punti non bastano.', target.portraitKey);
+        return;
+      }
+      this.bumpAffinity(target.id, 1);
+      this.inventory.refresh();
+      this.saveGame();
+      this.showItemReceived(it.consumable ? `${it.name} x${it.qty ?? 1}` : it.name);
+    });
+  }
+
+  // Zio Nick's own bed (prop `sleep: true`): a short nap, full HP.
+  sleepInBed() {
+    this.warpLocked = true; // freeze input during the fade
+    const cam = this.cameras.main;
+    cam.fadeOut(500, 0, 0, 0);
+    cam.once('camerafadeoutcomplete', () => {
+      questState.heroHp = null; // null = full
+      this.saveGame();
+      this.time.delayedCall(600, () => {
+        cam.fadeIn(500, 0, 0, 0);
+        this.warpLocked = false;
+        this.showBanner('Zio Nick si fa un pisolino... 💤\nHP al massimo!', 0.28, '#7CFC8A', 0x7cfc8a);
+      });
+    });
+  }
+
+  // Clock HUD + night veil, redrawn once per in-game minute.
+  updateClock() {
+    const min = Math.floor(clockNow());
+    if (min === this.lastClockMin) return;
+    this.lastClockMin = min;
+    this.clockText.setText(`${phaseIcon(min)} ${fmt(min)}`);
+    this.nightVeil.setAlpha(nightAlpha(min));
+  }
+
+  // One-off scenes for this map + chapter (js/story/events.js), e.g. Ana's
+  // aperitivo. Lines are spoken only by the housemates actually in the room.
+  playEvents() {
+    if (!this.player?.active) return;
+    const ev = EVENTS.find((e) => e.map === this.mapKey && e.chapter === questState.activeChapter
+      && !questState.hasFlag(`event:${e.id}`));
+    if (!ev) return;
+    const busy = this.dialogue.open || this.warpLocked || this.seated
+      || [this.inventory, this.phone, this.minimap, this.pauseMenu].some((o) => o?.open);
+    if (busy) { this.time.delayedCall(1500, () => this.playEvents()); return; }
+    questState.setFlag(`event:${ev.id}`);
+    const here = new Map(this.npcs.list.map((n) => [n.id, n]));
+    const lines = ev.lines.filter((l) => here.has(l.who));
+    this.showBanner(ev.title, 0.2, '#ffd54a', 0xffd54a);
+    this.cutsceneStart();
+    const step = (i) => {
+      if (i >= lines.length) {
+        this.cutsceneEnd();
+        if (ev.gift) {
+          questState.addSupply(ev.gift, null);
+          this.inventory.refresh();
+          this.showItemReceived(`${ev.gift.name} x${ev.gift.qty ?? 1}`);
+        }
+        if (ev.hearts) [...new Set(lines.map((l) => l.who))].forEach((id) => this.bumpAffinity(id, ev.hearts));
+        this.onProgress(); // an event can be a chapter's objective (flag event:<id>)
+        return;
+      }
+      const n = here.get(lines[i].who);
+      this.cutsceneFocus(n, lines[i].text);
+      // 0.5 s on the zoomed, turned character, then the big line.
+      this.time.delayedCall(500, () =>
+        this.dialogue.show(n.name, lines[i].text, n.portraitKey, () => step(i + 1), { big: true }));
+    };
+    step(0);
+  }
+
+  // Cinematic mode for scenes: black bars, the camera leaves the player and
+  // zooms in on whoever is talking (cutsceneFocus), then comes back.
+  // Hide / show the HUD (clock, room name, tracker, phone icon, key hints).
+  setHudVisible(v) {
+    [this.clockText, this.roomLabel, this.keyHints, ...(this.questTracker?.objs || []), ...(this.phoneHud?.objs || [])]
+      .forEach((o) => o?.setVisible(v));
+    if (v) { this.questTracker?.refresh(); this.phoneHud?.refresh(); }
+  }
+
+  cutsceneStart() {
+    const cam = this.cameras.main;
+    this.inCutscene = true;
+    this.setHudVisible(false);
+    cam.stopFollow();
+    const W = this.scale.width;
+    const H = this.scale.height;
+    // Bars grow from the screen edges (scaleY tween; origin on the outer edge).
+    const bar = (y, oy) => this.add.rectangle(0, y, W, Math.round(H * 0.09), 0x000000, 1)
+      .setOrigin(0, oy).setScrollFactor(0).setDepth(1900).setScale(1, 0);
+    this.cutBars = [bar(0, 0), bar(H, 1)];
+    this.tweens.add({ targets: this.cutBars, scaleY: 1, duration: 400, ease: 'Sine.easeOut' });
+  }
+
+  cutsceneFocus(npc, text) {
+    const cam = this.cameras.main;
+    const s = npc.sprite;
+    // Turn to face the camera: front idle frame (not back or side).
+    s.anims.stop();
+    s.setFlipX(false);
+    s.setFrame(idleFrame('down'));
+    npc.facing = 'down';
+    cam.pan(s.x, s.y - s.displayHeight * 0.15, 450, 'Sine.easeInOut', true);
+    cam.zoomTo(CAMERA_ZOOM * 1.45, 450, 'Sine.easeInOut', true);
+    // A little hop (squash-and-stretch; the physics body owns x/y).
+    const base = s.scaleY;
+    this.tweens.add({ targets: s, scaleY: base * 1.1, duration: 120, yoyo: true, repeat: 1, ease: 'Sine.easeOut',
+      onComplete: () => s.setScale(s.scaleX, base) });
+    if (/!/.test(text)) cam.shake(220, 0.005); // exclamations shake the view
+  }
+
+  cutsceneEnd() {
+    const cam = this.cameras.main;
+    cam.zoomTo(CAMERA_ZOOM, 450, 'Sine.easeInOut', true);
+    cam.pan(this.player.x, this.player.y, 450, 'Sine.easeInOut', true, (c, p) => {
+      if (p < 1) return;
+      cam.startFollow(this.player, true, 0.1, 0.1);
+      this.inCutscene = false;
+      this.setHudVisible(true);
+      this.fitCameraBounds(); // bounds were computed for the normal zoom
+    });
+    const bars = this.cutBars || [];
+    this.tweens.add({ targets: bars, scaleY: 0, duration: 350, ease: 'Sine.easeIn', onComplete: () => bars.forEach((b) => b.destroy()) });
+    this.cutBars = null;
+  }
+
+  // One-off story explanations: the premise at the very start, the
+  // investigation when it opens (chapter 3). Waits if something is on screen.
+  storyIntros() {
+    if (!this.player?.active) return;
+    const busy = this.dialogue.open || this.warpLocked || this.seated
+      || [this.inventory, this.phone, this.minimap, this.pauseMenu].some((o) => o?.open);
+    const want = !questState.hasFlag('premise-seen') && questState.activeChapter === 'chapter-1' ? 'premise'
+      : !questState.hasFlag('investigation-intro') && investigationOpen() ? 'investigation' : null;
+    if (!want) return;
+    if (busy) { this.time.delayedCall(1500, () => this.storyIntros()); return; }
+    if (want === 'premise') {
+      questState.setFlag('premise-seen');
+      this.dialogue.show('🍈 Il caso dei due meloni', INVESTIGATION.premise);
+    } else {
+      questState.setFlag('investigation-intro');
+      this.dialogue.show('🔍 Indagine aperta', INVESTIGATION.intro);
+    }
+    this.saveGame();
+  }
+
+  // Fridge minigame (js/scenes/FridgeScene.js) over the paused world.
+  startFridge() {
+    this.holdPlayer();
+    this.scene.pause();
+    this.scene.launch('FridgeScene', { returnScene: 'WorldScene' });
+  }
+
+  // Called by FridgeScene after a win: fridge clean, cheese in hand.
+  onFridgeDone() {
+    fridgeCleaned();
+    this.inventory.refresh();
+    this.onProgress();
+    this.showBanner('🧀 Formaggio ammuffito in mano:\nbuttalo nei bidoni', 0.28, '#ffd54a', 0xffd54a);
+  }
+
+  // A collectible hidden in a piece of furniture was found (tryExamine).
+  findCollectible(h) {
+    questState.setFlag(foundFlag(h.id));
+    const st = collectionStatus()[h.kind];
+    const k = COLLECTIBLE_KINDS[h.kind] || { name: 'Oggetto', plural: 'Oggetti', icon: '★' };
+    const all = st && st.found === st.total;
+    this.showBanner(
+      `${k.icon} Hai trovato: ${k.name}!\n${st ? `${st.found}/${st.total}` : ''}${all ? ` — ${k.plural} tutti trovati!` : ''}`,
+      0.28, '#ffd54a', 0xffd54a
+    );
+    this.inventory.refresh();
+    this.saveGame();
+  }
+
+  // Show "!" only over the NPCs the active quest still needs.
+  // Blue "?" instead over NPCs with a favour to offer or to hand in.
+  refreshQuestMarks() {
+    const ids = questNpcIds(this);
+    (this.questMarks || []).forEach(({ npc, t }) => {
+      const side = sideStepFor(npc.id);
+      const sideMark = side && side.step !== 'remind';
+      const fight = !ids.has(npc.id) && !sideMark && this.canRematch(npc)
+        && !questState.didIn('defeated', npc.id); // ⚔ = rematch available
+      t.setText(ids.has(npc.id) ? '!' : fight ? '⚔' : '?');
+      t.setColor(ids.has(npc.id) ? '#ffd54a' : fight ? '#ff8a65' : '#8fd3ff');
+      t.setVisible(ids.has(npc.id) || !!sideMark || fight);
+    });
   }
 
   // Progress changed: roll the story forward, refresh the HUD and save. Also
   // called by BattleScene after a win. Announces a completed chapter.
   onProgress() {
     const before = questState.activeChapter;
+    this.payRematch();
     advanceChapterIfDone();
     this.questTracker?.refresh();
+    this.refreshQuestMarks();
     this.saveGame();
     if (questState.activeChapter !== before) this.announceChapter();
     // Last chapter done → the ending, once (the flag is saved).
@@ -626,7 +1089,46 @@ export default class WorldScene extends Phaser.Scene {
       0.28,
       '#7CFC8A',
       0x7cfc8a
-    );
+    );    this.time.delayedCall(1400, () => this.showChapterCard());
+    this.time.delayedCall(4200, () => this.storyIntros());
+    this.time.delayedCall(3600, () => this.playEvents()); // e.g. chapter 7 starting while you're already in the kitchen
+  }
+
+  // Big "CAPITOLO N / title / mission" card across the screen, once per chapter
+  // (flag `card:<chapter>`, saved). Doesn't block movement; fades out alone.
+  showChapterCard() {
+    const id = questState.activeChapter;
+    const ch = activeChapter();
+    if (!ch || questState.hasFlag(`card:${id}`) || isStoryComplete()) return;
+    questState.setFlag(`card:${id}`);
+    this.saveGame();
+    const cam = this.cameras.main;
+    const W = cam.width;
+    const H = cam.height;
+    const num = /(\d+)$/.exec(id)?.[1];
+    const quest = activeQuest();
+    const objs = [
+      this.add.rectangle(W / 2, H * 0.42, W, 150, 0x05060a, 0.88).setStrokeStyle(2, 0xffd54a, 0.6),
+      this.add.text(W / 2, H * 0.42 - 46, num ? `CAPITOLO ${num}` : 'CAPITOLO', {
+        fontFamily: 'monospace', fontSize: '16px', color: '#9aa0a8', letterSpacing: 6,
+      }).setOrigin(0.5),
+      this.add.text(W / 2, H * 0.42 - 6, ch.title, {
+        fontFamily: 'monospace', fontSize: '30px', color: '#ffd54a', fontStyle: 'bold',
+        align: 'center', wordWrap: { width: W - 60 },
+      }).setOrigin(0.5),
+      this.add.text(W / 2, H * 0.42 + 40, quest ? quest.title : '', {
+        fontFamily: 'monospace', fontSize: '15px', color: '#ffffff',
+        align: 'center', wordWrap: { width: W - 60 },
+      }).setOrigin(0.5),
+    ];
+    objs.forEach((o) => o.setScrollFactor(0).setDepth(2600000).setAlpha(0));
+    this.tweens.add({
+      targets: objs, alpha: 1, duration: 450, ease: 'Sine.easeOut',
+      onComplete: () => this.tweens.add({
+        targets: objs, alpha: 0, delay: 2300, duration: 600,
+        onComplete: () => objs.forEach((o) => o.destroy()),
+      }),
+    });
   }
 
   // Depth of a character (player or NPC): its feet line, so it sorts against
@@ -663,9 +1165,71 @@ export default class WorldScene extends Phaser.Scene {
       for (const s of p.seats || []) {
         const inside = fx >= s.tx * TILE && fx <= (s.tx + s.w) * TILE
           && fy >= s.ty * TILE && fy <= (s.ty + s.h) * TILE;
-        if (inside) return this.sitOn(s);
+        if (inside) {
+          this.sitOn(s);
+          return true;
+        }
       }
     }
+    return false;
+  }
+
+  // Space facing a piece of furniture with `examine` lines (catalogue): show
+  // them. (px, py) = the point one tile ahead of the player's feet; it counts
+  // if it falls within ~0.4 tile of one of the prop's colliders.
+  tryExamine(px, py) {
+    const m = 0.4 * TILE;
+    // The fridge task (chapter 4): the right end of the cabinets is the fridge.
+    if (fridgeOpen() && this.mapKey === FRIDGE.map) {
+      const z = FRIDGE.zone;
+      if (px >= z.tx * TILE - m && px <= (z.tx + z.w) * TILE + m && py >= z.ty * TILE - m && py <= (z.ty + z.h) * TILE + m) {
+        this.dialogue.show('Frigorifero', FRIDGE.intro, null, () => this.startFridge());
+        return true;
+      }
+    }
+    for (const p of this.map.props || []) {
+      if (!p.examine?.length && !p.hidden && !p.side) continue;
+      if (!this.propShown.has(p)) continue; // not in the room this chapter
+      const hit = propColliders(p).some((c) =>
+        px >= c.tx * TILE - m && px <= (c.tx + c.w) * TILE + m
+        && py >= c.ty * TILE - m && py <= (c.ty + c.h) * TILE + m);
+      if (hit && p.furniture === 'trashbins' && holdingCheese()) {
+        // Throw the mouldy cheese away (fridge task, chapter 4).
+        this.dialogue.show(p.label || 'Bidoni', FRIDGE.throwLines, null, () => {
+          throwCheese();
+          this.inventory.refresh();
+          this.onProgress();
+        });
+        return true;
+      }
+      if (hit) {
+        const h = p.hidden && !isFound(p.hidden.id) ? p.hidden : null;
+        const sideHere = p.side && sideState(p.side) === 'active' && !sideFound(p.side);
+        const clueHere = p.clue && investigationOpen() && !clueFound(p.clue);
+        const lines = p.examine?.length ? p.examine : ['Frughi un po\'...'];
+        this.dialogue.show(p.label || 'Mobile', h || sideHere || clueHere ? [...lines, 'Aspetta... c\'è qualcosa qui!'] : lines, null, () => {
+          if (h) this.findCollectible(h);
+          if (clueHere) {
+            const c = findClue(p.clue);
+            if (c) {
+              const n = cluesFound().length;
+              this.time.delayedCall(10, () => this.dialogue.show('🔍 Indizio', [c.text, `Indizi trovati: ${n}. Sono nello zaino (I).`]));
+              this.saveGame();
+            }
+          }
+          if (sideHere) {
+            const q = findSideThing(p.side);
+            if (q) {
+              this.showBanner(`★ Trovato: ${q.thing}\nPortalo a chi te l'ha chiesto`, 0.4, '#8fd3ff', 0x8fd3ff);
+              this.afterSideChange();
+            }
+          }
+          if (p.sleep) this.sleepInBed();
+        });
+        return true;
+      }
+    }
+    return false;
   }
 
   // No sitting pose in the sprite sheet yet: the player just faces the table
@@ -701,6 +1265,7 @@ export default class WorldScene extends Phaser.Scene {
   // No other penalty — talk to the enemy again to retry.
   onDefeat() {
     questState.heroHp = null;
+    this.pendingRematch = null; // a lost rematch pays nothing
     this.warpLocked = true;
     this.cameras.main.fadeOut(400);
     this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -770,9 +1335,10 @@ export default class WorldScene extends Phaser.Scene {
   // Pause the overworld and overlay the battle; we resume here afterwards so the
   // player is exactly where they were.
   // `chapter` = the chapter this fight belongs to (a win is credited to it).
-  startBattle(npc, chapter) {
+  startBattle(npc, chapter, opts = {}) {
     this.scene.pause();
     this.scene.launch('BattleScene', {
+      enemyHpFrac: opts.enemyHpFrac || 0, // enemy starts this fraction below full (investigation bonus)
       enemyKey: npc.spriteKey,    // texture for the enemy sprite
       enemyChar: npc.character,   // character.json folder (enemy stats)
       enemyName: npc.name,

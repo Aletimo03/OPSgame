@@ -6,28 +6,76 @@
     "defense": 2
   },
   "locations": {
+    "chapter-1": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-2": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-3": {
       "map": "first-floor-main",
       "facing": "down"
     },
+    "chapter-4": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
     "chapter-8": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-9": {
       "map": "base-floor-vertical-1",
       "facing": "down"
     },
-    "chapter-9": {
+    "chapter-10": {
       "map": "first-floor-vertical-1",
       "facing": "down"
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "Alessio ti amo troppo puzo boca",
   "chapters": {
-    "chapter-8": {
+    "chapter-9": {
       "dialogue": [
-        "Ciao! Hai visto Alessio in giro?",
-        "Comunque... pace fatta, dai!"
+        "Meloni? Io mangio solo noodles ultimamente.",
+        "Però stanotte qualcuno pregava in cucina..."
       ]
     },
-    "chapter-9": {
+    "chapter-10": {
       "dialogue": [
         "Non ti lascio passare finché non rispondi.",
         "Domanda facile facile..."
@@ -42,7 +90,7 @@
         ],
         "answer": 1,
         "correct": "ESATTO! Alessio ti amo troppo!",
-        "wrong": "Ma come ti permetti?! Riprova."
+        "wrong": "Ma come ti permetti?! Senza rispetto. Riprova."
       }
     }
   }

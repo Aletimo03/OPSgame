@@ -66,5 +66,6 @@ export const MAPS = {
 // absolute colliders/seats, once, before anyone reads the maps (js/core/furniture.js).
 for (const [key, map] of Object.entries(MAPS)) expandMapProps(map, key);
 
-// Where a new game begins: the entrance (its door leads into the base floor).
-export const START_MAP = 'entrance';
+// Where a new game begins: Zio Nick wakes up in his own room (room-20, first
+// floor) and his two melons are gone (see STORY.md).
+export const START_MAP = 'room-20';

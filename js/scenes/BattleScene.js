@@ -44,6 +44,7 @@ export default class BattleScene extends Phaser.Scene {
         this.returnScene = data.returnScene || 'WorldScene';
         // Chapter this fight belongs to — a win is credited to it.
         this.chapter = data.chapter || questState.activeChapter;
+        this.enemyHpFrac = data.enemyHpFrac || 0; // start the enemy this far below full (investigation)
     }
 
     preload() {
@@ -124,6 +125,7 @@ export default class BattleScene extends Phaser.Scene {
         this.enemyStatus = {};
 
         this.enemyHp = this.enemyMax = this.enemyStats.maxHp;
+        if (this.enemyHpFrac) this.enemyHp = Math.max(1, Math.round(this.enemyMax * (1 - this.enemyHpFrac)));
         // Hero HP persists between battles (questState.heroHp); enemies start full.
         this.heroMax = this.heroStats.maxHp;
         this.heroHp = questState.currentHp(this.heroMax);

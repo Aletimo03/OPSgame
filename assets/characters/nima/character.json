@@ -10,27 +10,76 @@
       "map": "base-kitchen",
       "facing": "down"
     },
+    "chapter-2": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-3": {
       "map": "first-floor-vertical-2",
       "facing": "down"
     },
+    "chapter-4": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
     "chapter-8": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-9": {
       "map": "base-floor-vertical-1",
       "facing": "down"
+    },
+    "chapter-10": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "من بحق الجحيم قام بتنظيف المطبخ؟",
   "chapters": {
     "chapter-1": {
       "dialogue": [
-        "Oh, finalmente ci conosciamo!",
-        "Se ti serve qualcosa, chiedi pure."
+        "Buongiorns! Your melons? Ieri erano in frigo, due.",
+        "Now frigo vuoto... but at least in ordine 😅"
       ]
     },
-    "chapter-8": {
+    "chapter-9": {
       "dialogue": [
-        "Almeno ora la cucina è pulita.",
-        "Grazie per aver messo ordine!"
+        "Finally la cucina è pulita... الحمد لله",
+        "Thank you for messo ordine! Every thing al suo posto, please.",
+        "Tonight viene Elisa, so please cucina in ordine 🙏"
       ]
     }
   }

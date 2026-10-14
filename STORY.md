@@ -11,7 +11,11 @@ node --no-warnings tools/checks/story-check.mjs
 
 ## Premessa
 
-**Zio Nick** si è appena trasferito nel co-housing e si comporta da "sbirro" della casa. Il primo giorno conosce i coinquilini, poi si mette sulle tracce di **Gabbo** e della sua banda: **Gatta** e **Mari**. Alla fine scopre che dietro a tutto c'era **Caue**, la mente insospettabile che cita le Scritture.
+**Zio Nick si sveglia nella sua camera (la 20, al primo piano) e i suoi due meloni sono spariti.** Ieri sera erano in frigo, stamattina no. Da quel momento, da vero sbirro di casa che si fa gli affari di tutti, interroga i coinquilini e segue ogni pista:
+- **Gabbo**, che scappa all'Alcatraz con uno zaino sospetto;
+- la sua banda: **Gatta**, che dice di portarli a Brescia, e **Mari**, che se la prende perché Fede non arriva.
+
+Gli indizi portano a **Caue**: li aveva presi lui, perché «chi ha due meloni ne dia uno a chi non ne ha». Nello scontro finale Zio Nick si riprende i suoi due meloni.
 
 ## Come si gioca
 
@@ -24,7 +28,7 @@ node --no-warnings tools/checks/story-check.mjs
 | M | mappa del piano dove ti trovi, con gli obiettivi segnati (quelli sull'altro piano sono elencati come "altro piano") |
 | Esc | pausa: *Riprendi* / *Ricomincia da capo* (chiude anche zaino, telefono e mappa) |
 
-In basso a sinistra c'è sempre il promemoria dei tasti.
+Spazio davanti a un mobile lo **esamina** (descrizioni da riscrivere a piacere in `js/core/furniture-catalog.js`). Un **"!"** giallo sopra un coinquilino vuol dire che serve alla missione in corso. In giro per casa ci sono **12 calzini spaiati** nascosti nei mobili: li trovi esaminandoli, li conti nello zaino e alla fine del gioco. All'inizio di ogni capitolo appare il suo titolo a tutto schermo, e il riquadro della missione ti dice sotto ogni obiettivo **chi** cercare e **dove**. In basso a sinistra c'è sempre il promemoria dei tasti. In alto a destra, sotto la missione, l'icona del telefono mostra in rosso quanti messaggi non hai ancora letto.
 
 Il gioco **salva da solo**:
 - a ogni progresso;
@@ -36,6 +40,7 @@ All'avvio puoi scegliere **Continua** o **Nuova partita**. La nuova partita chie
 
 **Gli HP di Zio Nick restano tra uno scontro e l'altro.** Fuori dagli scontri si vedono solo nello zaino (I).
 - per recuperarli ti siedi su una sedia o uno sgabello in cucina (+3 HP al secondo) e ti alzi con le frecce o Spazio;
+- oppure dormi nel **letto di Zio Nick**, nella **camera 20** al primo piano: un pisolino e gli HP tornano al massimo;
 - gli oggetti che aumentano gli HP massimi curano anche della stessa quantità;
 - se perdi uno scontro ti risvegli **sul divano del salotto** con gli HP pieni, e puoi riprovare parlando di nuovo con il nemico.
 
@@ -51,75 +56,99 @@ All'avvio puoi scegliere **Continua** o **Nuova partita**. La nuova partita chie
 | `nima` | Nima | vuole la cucina sempre pulita | 28 / 4 / 2 |
 | `ana` | Ana | "gumba bro", presenza fissa nei corridoi | 26 / 5 / 2 |
 | `gabbo` | Gabbo | il ricercato, sempre diretto al Plein | 34 / 8 / 3 |
-| `gatta` | Gatta | complice di Gabbo, sogna Brescia | 20 / 3 / 1 |
-| `mari` | Mari | complice, aspetta Fede Papi da sempre | 30 / 6 / 3 |
+| `gatta` | Gatta (Federico "Fede" Gatta) | complice di Gabbo, sogna Brescia | 34 / 9 / 3 |
+| `mari` | Mari | complice, aspetta Fede Papi da sempre | 46 / 13 / 5 |
 | `gaia` | Gaia | ama Alessio più di tutti | 28 / 5 / 2 |
-| `caue` | Caue | il boss finale, cita i Colossesi | 48 / 9 / 4 |
-| `timo` | Timo (Alessio) | fornisce l'equipaggiamento a Zio Nick | 30 / 6 / 2 |
+| `caue` | Caue | il boss finale, cita i Colossesi | 70 / 17 / 6 |
+| `timo` | Alessio | fornisce l'equipaggiamento a Zio Nick | 30 / 6 / 2 |
 
-> Nel gioco il personaggio `timo` si chiama "Timo", ma le etichette delle missioni lo chiamano "Alessio". Va uniformato: è nella roadmap di CLAUDE.md.
+### Come parlano
+
+Ogni personaggio ha un `persona.md` in `assets/characters/<id>/` con il suo modo di parlare: vale per dialoghi e messaggi nel gruppo.
+
+| Personaggio | Come parla |
+|---|---|
+| Zio Nick | non parla mai: le sue manie le nominano gli altri (si fa gli affari di tutti, corre 10–15 km, due uova a colazione, lavora al museo) |
+| Emanuele | "O Szio Nick...", "sz" al posto della "z", sempre "grszie", domande tipo "dov'è la farmacia?" |
+| Ana | in inglese, invita agli aperitivi (guacamole) |
+| Gabbo | "O fra" all'inizio di **ogni** frase e "diahane" alla fine |
+| Alessio | taciturno, "O fra" solo all'inizio della prima frase |
+| Gaia | "senza rispetto", sempre con Alessio |
+| Nima | inglese + italiano un po' rotto, apre spesso con *Buongiorns*, *Goodnights*, *Buonanots*; ogni tanto scritte in arabo; fissato con l'ordine in cucina |
+| Mari | fiorellini ed emoji ovunque, manda sticker; aspetta sempre Fede |
+| Gatta (Fede) | "pota" e Brescia |
+| Sara | ogni tanto un "porco d\*o" |
+| Caue | non scrive quasi mai nel gruppo; quando appare, predica con i versetti |
+
+Nel gruppo "Cucina di su" arrivano **da 2 a 5 messaggi per capitolo**: il primo dà l'indizio della missione, gli altri sono chiacchiere di casa.
+
+> Il personaggio `timo` nel gioco si chiama **Alessio** (Timo e Alessio sono la stessa persona).
 
 ## I capitoli
 
-### Capitolo 1 — Moving In · *interazione*
+La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena sveglio. Anche caricando un salvataggio si riparte sempre da lì.
+
+### Capitolo 1 — Il risveglio · *interazione*
 - **Dove:** cucina del piano terra (`base-kitchen`).
-- **Obiettivi:** salutare **Emanuele**, **Sara** e **Nima**.
+- **Obiettivi:** chiedere dei meloni a **Emanuele**, **Sara** e **Nima**.
 - **Cosa succede:**
-  - Emanuele dà il benvenuto, Nima si offre di aiutare.
-  - Sara sta facendo il caffè e te ne dà: **Caffè della moka** ×2, consumabile, cura 12 HP.
-  - Nei corridoi ci sono già Ana e Mari, con le loro frasi di sempre.
+  - Emanuele non li ha visti («giuro su Lameszia Terme») e chiede dov'è il fruttivendolo.
+  - Nima conferma: ieri erano in frigo, due; ora il frigo è vuoto, ma almeno in ordine.
+  - Sara: prima il caffè. Ti dà il **Caffè della moka** ×2, consumabile, cura 12 HP.
   - **Gabbo è nella room-7** e, se lo trovi, puoi già affrontarlo: «chiama Marius, tutti al Plein!». È uno scontro facoltativo.
 
 ### Capitolo 2 — Alcatraz · *interazione → scontro*
 - **Dove:** corridoio principale del piano terra (`base-floor-main`).
-- **Obiettivo:** affrontare **Gabbo**.
-- **Cosa succede:** Gabbo annuncia la fuga all'Alcatraz e sfida lo sbirro.
-- **Nota:** il capitolo si completa **appena parli con Gabbo**, prima dello scontro. Anche perdendo la battaglia, la storia va avanti.
+- **Obiettivo:** **battere Gabbo**, che esce con uno zaino enorme.
+- **Cosa succede:** «nello zaino c'è solo Jäger, non meloni, sbirro, diahane!».
+- **Nota:** il capitolo si completa **solo vincendo** lo scontro. Se perdi ti risvegli in salotto e puoi riprovare. Averlo battuto nel capitolo 1 (scontro facoltativo) non conta.
 
-### Capitolo 3 — Supplies · *ricerca*
+### Capitolo 3 — Rinforzi · *ricerca*
 - **Dove:** cucina del primo piano (`first-floor-kitchen`).
-- **Obiettivi:** ottenere **Trenbolone** da Timo/Alessio e **Palle a terra** da Sara.
-- **Ricompense:** Trenbolone (+5 ATK), Palle a terra (+10 HP). Sara te le dà dopo una «sessione di lamentele».
-- **Comparse:**
-  - Caue nella room-13;
-  - Gaia nel corridoio principale del 1° piano;
-  - Gatta e Nima nei corridoi verticali.
+- **Obiettivi:** farsi dare qualcosa da **Alessio** («O fra. Meloni no.») e da **Sara**, che aggiunge una sessione di lamentele sui meloni.
+- **Ricompense:** Trenbolone (+5 ATK), Palle a terra (+10 HP).
 
-### Capitolo 4 — La Banda · *scontro*
-- **Dove:** corridoio principale del piano terra.
-- **Obiettivo:** **sconfiggere Gatta**. Serve vincere: perdere non basta.
-- **Cosa succede:** «Pota, vuoi fare a botte bro?». Dopo la vittoria se ne va davvero a Brescia.
+### Capitolo 4 — La Banda · *scontro + minigioco*
+- **Dove:** corridoio principale del piano terra (Gatta) e cucina del primo piano (il frigo). Sono le 23:00.
+- **Obiettivi**, in qualsiasi ordine:
+  - **sconfiggere Gatta**, che dice di portare i meloni a Brescia. Serve vincere. Dopo: «I meloni non ce li ho, giuro su Brescia».
+  - **pulire il frigo di su.** Nima scrive nel gruppo che c'è un formaggio ammuffito pieno di mosche. Davanti al frigo (la parte destra dei pensili) parte il minigioco in prima persona: muovi il mirino con le frecce o WASD e con Spazio spruzzi detersivo bianco sulle **10 mosche**. Hai 3 spruzzi, poi 3 secondi di ricarica. Quando sono tutte giù, schermo nero per mezzo secondo e il frigo torna pulito.
+  - **buttare il formaggio ammuffito** (ce l'hai nello zaino) nei bidoni della cucina.
 
 ### Capitolo 5 — L'Esame di Caue · *quiz*
 - **Dove:** corridoio principale del primo piano.
-- **Obiettivo:** rispondere giusto alla domanda di **Caue**.
-- **Domanda:** «Chi ha lasciato i piatti sporchi nel lavandino?» → risposta giusta: **Gabbo**.
-- In caso di errore si può riprovare.
+- **Domanda:** «Completa la parola: Chi ha due meloni...» → **«...ne dia uno a chi non ne ha»**. È l'indizio che tornerà nel finale.
 
 ### Capitolo 6 — Ispezione · *esplorazione*
-- **Obiettivi:** entrare nella **lavanderia** e nella **cucina del primo piano** durante questo capitolo.
-- **Nota:** valgono solo le visite fatte a capitolo in corso. Se il capitolo inizia mentre sei già in una delle due stanze, quella stanza conta subito.
+- **Obiettivi:** cercare i meloni nella **lavanderia** e nella **cucina del piano terra** (non quella di su, dove si prepara l'aperitivo). In lavatrice solo calzini spaiati.
+- Nel gruppo Ana invita tutti all'aperitivo di stasera in cucina di su.
 
-### Capitolo 7 — La Spesa · *ricerca*
-- **Obiettivi:** **Caffè** da Sara (cucina del piano terra) e **Birra** da Mari (corridoio verticale del 1° piano).
-- **Ricompense:** Caffè (+2 ATK), Birra (+2 DEF). Mari offre la birra mentre aspetta Fede.
+### Capitolo 7 — L'aperitivo · *scena*
+- **Dove:** cucina del primo piano, alle 19:00. Ci sono tutti i coinquilini (tranne Caue e Gabbo).
+- **Obiettivo:** raggiungere l'aperitivo di Ana. Entrando in cucina parte la scena: ognuno dice la sua, la visuale zooma su chi parla, che si gira verso la telecamera, e la battuta appare in grande con il resto dello schermo oscurato.
+- **Alla fine:** 2 *Guacamole di Ana* (curano 25) e un cuore con ognuno dei presenti. Il capitolo si completa.
 
-### Capitolo 8 — Pace Fatta · *interazione*
-- **Obiettivi:** parlare con **Ana** (corridoio verticale 2 del piano terra) e con **Gaia** (verticale 1).
-- **Cosa succede:** il giro dei saluti dopo il caos. Emanuele e Nima commentano la pace ritrovata.
-  - Emanuele ti regala i **Biscotti fatti in casa** ×2, consumabili, curano 15 HP: giusto in tempo per gli scontri finali.
+### Capitolo 8 — La Spesa · *ricerca*
+- **Obiettivi:** senza meloni servono provviste: **Caffè** da Sara (cucina del piano terra) e **Birra** da Mari (1° piano).
+- **Ricompense:** Caffè (+2 ATK), Birra (+2 DEF).
 
-### Capitolo 9 — Caccia Grossa · *misto, in qualsiasi ordine*
+### Capitolo 9 — Gli indizi · *interazione*
+- **Obiettivi:** chiedere in giro ad **Ana** e **Gaia** (corridoi del piano terra).
+- **Cosa succede:**
+  - Ana ha visto Caue salire con un sacchetto grosso;
+  - Gaia (che mangia solo noodles) ha sentito qualcuno pregare in cucina di notte;
+  - Emanuele ti regala i **Biscotti fatti in casa** ×2 (curano 15 HP).
+
+### Capitolo 10 — Caccia Grossa · *misto, in qualsiasi ordine*
 - **Obiettivi:**
-  - **sconfiggere Mari** nel corridoio principale del 1° piano: «Fede non arriva mai per colpa tua!»;
-  - **rispondere al quiz di Gaia** nel verticale 1 del 1° piano: «Chi ama Gaia più di tutti?» → **Alessio**;
-  - ottenere il **Verbale** da Timo/Alessio, in cucina del 1° piano.
-- **Ricompensa:** Verbale (+3 DEF).
+  - **sconfiggere Mari**: «Fede non arriva e tu pensi solo ai meloni!»;
+  - **rispondere al quiz di Gaia**: «Chi ama Gaia più di tutti?» → **Alessio**;
+  - ottenere il **Verbale** da Alessio: «Meloni scomparsi. Tutto scritto.» (+3 DEF).
 
-### Capitolo 10 — Il Plein Finale · *finale*
-- **Obiettivi:** ottenere il **Distintivo d'Oro** da Timo/Alessio (cucina del 1° piano) e **sconfiggere Caue** (corridoio principale del piano terra).
-- **Cosa succede:** Caue rivela che era lui a tirare i fili «dall'inizio». Lo scontro finale è contro il boss più forte del gioco.
-- **Ricompensa:** Distintivo d'Oro (+5 ATK, +15 HP, +3 DEF). L'ordine non è obbligato, ma conviene prendere il distintivo prima.
+### Capitolo 11 — I due meloni · *finale*
+- **Obiettivi:** il **Distintivo d'Oro** da Alessio e **sconfiggere Caue** (corridoio principale del piano terra).
+- **Cosa succede:** Caue stringe i due meloni: «Sta scritto: chi ha due meloni ne dia uno a chi non ne ha. Tu ne avevi due, io nessuno». Vinci e te li riprendi.
+- **Ricompensa:** Distintivo d'Oro (+5 ATK, +15 HP, +3 DEF).
 
 ## Crescita di Zio Nick
 
@@ -158,19 +187,35 @@ All'avvio puoi scegliere **Continua** o **Nuova partita**. La nuova partita chie
 
 **Gli scontri della storia.** Ho simulato 20.000 scontri ciascuno, con le regole esatte del gioco, partendo con gli HP pieni e con gli oggetti che hai a quel punto della storia. Siccome i danni restano, conviene sedersi a riposare prima degli scontri importanti.
 
-| Nemico | Quando | Vittorie | HP rimasti in media |
-|---|---|---|---|
-| Gabbo | cap. 1 (facoltativo) / cap. 2 | 96–98% | 18 su 30: teso |
-| Gatta | cap. 4 | 100% | 38 su 40 |
-| Mari | cap. 9 | 100% | 35 su 40 |
-| Caue | cap. 10, senza distintivo | 100% | 31 su 40 |
-| Caue | cap. 10, con distintivo | 100% | 52 su 55 |
+| Nemico | HP / ATK / DEF | Quando | Vittorie | HP rimasti in media |
+|---|---|---|---|---|
+| Gabbo | 34 / 8 / 3 | cap. 1 (facoltativo) / cap. 2 | 98% | 14 su 30: teso |
+| Gatta | 34 / 9 / 3 | cap. 4 | 98% | 22 su 40 |
+| Mari | 46 / 13 / 5 | cap. 10 | 100% | 23 su 40 |
+| Caue | 70 / 17 / 6 | cap. 11, senza distintivo | 45% | 16 su 40 |
+| Caue | 70 / 17 / 6 | cap. 11, con distintivo | 96% | 26 su 55 |
 
-Dal capitolo 4 in poi gli scontri sono troppo facili. Ribilanciare è nella roadmap di CLAUDE.md.
+Ribilanciati leggermente il 14/10/2026 (prima Gatta, Mari e Caue si battevano sempre quasi senza danni): ora lasciano il segno e conviene sedersi o usare i consumabili tra uno scontro e l'altro; contro Caue il **Distintivo d'Oro** fa la differenza.
+
+## Oltre la storia
+
+- **Orologio e giorno/notte:** in alto a sinistra c'è l'ora del gioco (☀️ giorno, 🌅 alba, 🌆 sera, 🌙 notte), che scorre di un minuto ogni secondo di gioco. Di notte la casa si scurisce. Ogni capitolo comincia a un'ora sua (cap. 1 alle 7:30, cap. 2 alle 22:30, cap. 3 alle 11:00, cap. 4 alle 23:00, cap. 5 alle 16:00, cap. 6 alle 9:00, cap. 7 (aperitivo) alle 19:00, cap. 8 alle 17:30, cap. 9 alle 18:30, cap. 10 alle 10:30, cap. 11 alle 21:00) e i messaggi del telefono hanno orari coerenti.
+- **Le scenette** (come l'aperitivo) sono "da film": bande nere, interfaccia nascosta, la visuale zooma su chi parla, che si gira verso la telecamera e fa un saltello; dopo mezzo secondo la battuta appare in grande, col ritratto alto mezzo schermo e il resto oscurato. Lo schermo trema sulle battute urlate.
+- **Arredi nuovi:** l'aperitivo sul tavolo della cucina di su (solo nel capitolo 7), un armadio nell'anticamera di ogni camera singola, il divano visto da dietro nel soggiorno del piano terra.
+- **Si riparte sempre dalla camera di Zio Nick**, qualunque sia il salvataggio.
+- **Scegli capitolo** (schermata iniziale): riparti da un capitolo già raggiunto. Quel capitolo e i successivi si azzerano (obiettivi, oggetti e consumabili ricevuti lì, scene viste); restano calzini, favori, punti casa, affinità e indizi.
+
+- **Telefono (P):** si apre sulla lista delle chat, come WhatsApp: il gruppo "Cucina di su" e le **chat private** coi coinquilini. Ognuna ha il suo pallino dei non letti, e accanto al nome ci sono i cuori di affinità.
+- **Affinità ❤:** ogni coinquilino ha da 0 a 5 cuori. Li guadagni chiacchierando (il primo saluto di ogni capitolo), facendo favori, battendo Gabbo nelle rivincite e comprando da Alessio. A 2 e 4 cuori ti scrive un messaggio privato.
+- **Favori ★ e punti casa:** Emanuele (la moka, dal cap. 2), Gaia (i noodles, cap. 3), Ana (l'avocado, cap. 4), Nima (il coperchio, cap. 5) e Sara (il detersivo, cap. 6) ti chiedono di trovare qualcosa nei mobili. Il "?" azzurro indica chi ha un favore. Riportandoglielo guadagni **punti casa**, da spendere nel **negozio di Alessio**: Proteine (cura 20), Pre-workout (+2 ATK), Cintura da palestra (+2 DEF).
+- **Gabbo in giro ⚔:** dal capitolo 3 Gabbo gira per i corridoi, in un posto diverso a ogni capitolo. Una rivincita per capitolo, e se vinci prendi 8 punti casa.
+- **L'indagine 🔍:** all'inizio una breve premessa sul caso dei meloni. Dal capitolo 3 l'indagine si apre: 4 indizi nascosti nei mobili (bidoni del piano terra, isola e pensili di su, comodino della camera 13), elencati nello zaino. Nel finale, prima dello scontro con Caue, puoi presentare una prova: quella giusta lo fa partire con il 30% di HP in meno, quella sbagliata ti costa 6 HP.
+- **L'aperitivo di Ana 🥑:** è il capitolo 7 (vedi sopra).
+- **La casa vive in cucina di su:** nei capitoli in cui non hanno un ruolo nella storia, i coinquilini stanno in cucina al primo piano.
 
 ## Il finale
 
-Quando completi il capitolo 10 partono i **titoli di coda**, una volta sola, con:
+Quando completi il capitolo 11 i due meloni tornano a casa 🍈🍈 e partono i **titoli di coda**, una volta sola, con:
 - tempo di gioco;
 - scontri vinti e persi;
 - oggetti raccolti.
@@ -183,7 +228,7 @@ Il telefono (P) è una chat stile WhatsApp del gruppo **Cucina di su**:
 - in alto c'è il messaggio fissato 📌 con la missione attuale e dove andare per ogni obiettivo;
 - sotto ci sono i messaggi, con un separatore per ogni capitolo.
 
-A ogni capitolo arriva un messaggio-indizio da un coinquilino. I testi sono nei file `js/story/chapter-N/chapter-N.js`, alla voce `phone`. Sono **provvisori**: riscrivili con lo stile vero del vostro gruppo.
+A ogni capitolo arrivano 2–5 messaggi normali dai coinquilini: il primo dà l'indizio su dove andare, gli altri sono chiacchiere di casa. **Nessuno sa dei meloni di Zio Nick**: in chat non se ne parla mai, ne parlano solo i coinquilini che lui interroga di persona. I testi sono nei file `js/story/chapter-N/chapter-N.js`, alla voce `phone`. Sono **provvisori**: riscrivili con lo stile vero del vostro gruppo.
 
 ## Idee per i prossimi capitoli
 

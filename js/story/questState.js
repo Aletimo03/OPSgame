@@ -35,6 +35,13 @@ class QuestState {
     this.heroHp = null;        // hero HP outside battle; null = full. Persists between fights.
     this.supplies = {};        // consumables: { [name]: { name, description, heal, qty } }
     this.stats = { playMs: 0, wins: 0, losses: 0 }; // for the ending screen
+    this.affinity = {}; // hearts per housemate (js/story/affinity.js)
+    this.extraMessages = []; // phone messages unlocked by affinity: { from, text|sticker, dm, chapter }
+    this.reached = 'chapter-1'; // furthest chapter ever reached (title-screen chapter select)
+    this.clock = null; // in-game clock { chapter, min } (js/story/clock.js)
+    this.side = {}; // side quests: id → 'active' | 'done' (js/story/sideQuests.js)
+    this.points = 0; // punti casa, earned with favours, spent at Alessio's shop
+    this.phoneSeen = {}; // per chat ('group' or a character id): messages already read (js/story/phoneChats.js)
   }
 
   // ── consumables (usable in battle from the Zaino menu) ─────────────────────
@@ -184,6 +191,13 @@ class QuestState {
       heroHp: this.heroHp,
       supplies: Object.values(this.supplies).map((x) => ({ ...x })),
       stats: { ...this.stats },
+      phoneSeen: { ...this.phoneSeen },
+      reached: this.reached,
+      clock: this.clock ? { ...this.clock } : null,
+      side: { ...this.side },
+      affinity: { ...this.affinity },
+      extraMessages: this.extraMessages.map((m) => ({ ...m })),
+      points: this.points,
     };
   }
 
@@ -202,6 +216,23 @@ class QuestState {
     if (Number.isFinite(data.heroHp)) this.heroHp = data.heroHp; // after items (addItem heals)
     if (Array.isArray(data.supplies)) {
       for (const x of data.supplies) if (x && x.name) this.supplies[x.name] = { ...x };
+    }
+    if (data.affinity && typeof data.affinity === 'object') {
+      for (const [k, v] of Object.entries(data.affinity)) if (Number.isFinite(v)) this.affinity[k] = Math.max(0, v);
+    }
+    if (Array.isArray(data.extraMessages)) {
+      this.extraMessages = data.extraMessages.filter((m) => m && m.from && (m.text || m.sticker)).map((m) => ({ ...m }));
+    }
+    if (typeof data.reached === 'string') this.reached = data.reached;
+    if (data.clock && typeof data.clock.chapter === 'string' && Number.isFinite(data.clock.min)) this.clock = { ...data.clock };
+    if (data.side && typeof data.side === 'object') {
+      for (const [k, v] of Object.entries(data.side)) if (v === 'active' || v === 'done') this.side[k] = v;
+    }
+    if (Number.isFinite(data.points)) this.points = Math.max(0, data.points);
+    // Older saves stored one number (group chat only, before private chats).
+    if (Number.isFinite(data.phoneSeen)) this.phoneSeen = { group: Math.max(0, data.phoneSeen) };
+    else if (data.phoneSeen && typeof data.phoneSeen === 'object') {
+      for (const [k, v] of Object.entries(data.phoneSeen)) if (Number.isFinite(v)) this.phoneSeen[k] = Math.max(0, v);
     }
     if (data.stats && typeof data.stats === 'object') {
       for (const k of Object.keys(this.stats)) {

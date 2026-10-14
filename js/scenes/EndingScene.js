@@ -7,6 +7,7 @@ import { questState } from '../story/questState.js';
 import { CHAPTERS } from '../story/chapters.js';
 import { CHARACTERS, getCharData } from '../core/characters.js';
 import { PLAYER } from '../config.js';
+import { collectionStatus } from '../story/collectibles.js';
 
 const FONT = 'monospace';
 
@@ -39,12 +40,16 @@ export default class EndingScene extends Phaser.Scene {
     this.add.rectangle(0, 0, W, H, 0x05060a, 0.97).setOrigin(0, 0);
     const lines = [
       ['FINE', { fontSize: '56px', color: '#ffd54a', fontStyle: 'bold' }, 70],
-      ['OPSgame — Le indagini di Zio Nick', { fontSize: '20px', color: '#c8ccd4' }, 50],
+      ['OPSgame — Zio Nick e i due meloni', { fontSize: '20px', color: '#c8ccd4' }, 50],
+      ['🍈🍈  I due meloni sono tornati a casa', { fontSize: '18px', color: '#ffd54a' }, 26],
       [`${Object.keys(CHAPTERS).length} capitoli completati`, { fontSize: '18px', color: '#7CFC8A' }, 40],
       [`Tempo di gioco   ${formatTime(st.playMs)}`, { fontSize: '16px', color: '#ffffff' }, 26],
       [`Scontri vinti    ${st.wins}`, { fontSize: '16px', color: '#ffffff' }, 26],
       [`Scontri persi    ${st.losses}`, { fontSize: '16px', color: '#ffffff' }, 26],
-      [`Oggetti raccolti ${collected}`, { fontSize: '16px', color: '#ffffff' }, 46],
+      [`Oggetti raccolti ${collected}`, { fontSize: '16px', color: '#ffffff' }, 26],
+      ...Object.values(collectionStatus()).map((c) =>
+        [`${c.plural.padEnd(16)} ${c.found}/${c.total}`, { fontSize: '16px', color: '#ffffff' }, 26]),
+      ['', { fontSize: '4px' }, 20],
       [`Con ${PLAYER.NAME} e`, { fontSize: '14px', color: '#9aa0a8' }, 22],
       [cast, { fontSize: '14px', color: '#9aa0a8', align: 'center', wordWrap: { width: W - 80 } }, 50],
       ['Grazie per aver giocato!', { fontSize: '20px', color: '#ffd54a' }, 60],

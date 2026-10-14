@@ -20,6 +20,6 @@ export default {
   warps: [{ tx: 8, ty: 0, to: 'first-floor', toSpawn: 'fromBathroom' }],
   props: [
     // washing machine, top wall, centred on the room (interior x 1–10 → centre 5.5)
-    { furniture: 'laundry', dir: 's', tx: 4.62, ty: 0.55 },
+    { furniture: 'laundry', dir: 's', tx: 4.62, ty: 0.55, side: 'detersivo', hidden: { kind: 'sock', id: 'lavatrice' } },
   ],
 };

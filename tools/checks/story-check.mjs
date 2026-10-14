@@ -41,6 +41,13 @@ const { DEFEAT_RESPAWN } = await imp('js/config.js');
 const { propColliders } = await imp('js/core/props.js');
 const { FURNITURE } = await imp('js/core/furniture-catalog.js');
 const { FURNITURE_ERRORS, checkFurnitureEntry } = await imp('js/core/furniture.js');
+const { HIDDEN, KINDS: COLLECTIBLE_KINDS } = await imp('js/story/collectibles.js');
+const { SIDE_QUESTS, SHOP } = await imp('js/story/sideQuests.js');
+const { CLUES, INVESTIGATION } = await imp('js/story/investigation.js');
+const { rewindTo, rewindChoices, itemChaptersFrom } = await imp('js/story/rewind.js');
+const { AFFINITY_DMS } = await imp('js/story/affinity.js');
+const { EVENTS } = await imp('js/story/events.js');
+const { FRIDGE } = await imp('js/story/fridge.js');
 
 // CHARACTERS lives in js/core/characters.js, which only needs the game at call
 // time — reading the array from the source keeps this script Phaser-free.
@@ -161,9 +168,7 @@ if (check(saved, 'loadSave returned nothing')) {
   const start = applySave(saved);
   check(JSON.stringify(questState.toJSON()) === snap, 'questState does not round-trip through the save');
   check(questState.buffs.attack === 3, 'buffs are not re-derived from items on load');
-  check(start.mapKey === START_MAP && start.spawnPos?.x === 100 && start.facing === 'left', 'start data != saved position');
-  check(applySave({ ...saved, x: 1e9 }).spawnPos === null, 'out-of-bounds position is not rejected');
-  check(applySave({ ...saved, mapKey: '??' }).mapKey === START_MAP, 'unknown map does not fall back to START_MAP');
+  check(start.mapKey === START_MAP && !start.spawnPos, 'loading must always start in Zio Nick\'s room (START_MAP)');
   store.set('opsgame-save', '{bad');
   check(loadSave() === null, 'corrupt save is not ignored');
   store.set('opsgame-save', JSON.stringify({ ...saved, quest: { ...saved.quest, activeChapter: '??' } }));
@@ -171,6 +176,35 @@ if (check(saved, 'loadSave returned nothing')) {
 }
 clearSave();
 check(loadSave() === null, 'clearSave did not clear');
+
+// ── 3b. chapter select (rewind) ─────────────────────────────────────────────
+// Play the whole story (worst case, as above), rewind to the middle chapter,
+// and check that chapter + later are fresh while earlier ones stay done.
+{
+  questState.reset();
+  const itemCh = itemChaptersFrom(DATA);
+  const mid = order[Math.floor(order.length / 2)];
+  // fake a finished run: every chapter visited/greeted, all items, all flags
+  for (const ch of order) {
+    questState.activeChapter = ch;
+    questState.greet('ana', ch);
+    questState.setFlag(`card:${ch}`);
+  }
+  for (const [name, ch] of Object.entries(itemCh)) questState.addItem({ name, buff: { attack: 1 } });
+  questState.reached = order[order.length - 1];
+  questState.setFlag('ending-seen');
+  questState.points = 7;
+  check(rewindChoices().length === order.length, 'chapter select does not offer every reached chapter');
+  rewindTo(mid, itemCh);
+  const later = order.slice(order.indexOf(mid));
+  check(questState.activeChapter === mid, 'rewind: wrong active chapter');
+  check(later.every((ch) => !questState.didIn('greeted', 'ana', ch)), 'rewind: later chapters still have actions logged');
+  check(order.slice(0, order.indexOf(mid)).every((ch) => questState.didIn('greeted', 'ana', ch)), 'rewind: earlier chapters lost their log');
+  check(questState.items.every((it) => !later.includes(itemCh[it.name])), 'rewind: items from later chapters kept');
+  check(!questState.hasFlag('ending-seen') && !questState.hasFlag(`card:${mid}`), 'rewind: later flags kept');
+  check(questState.points === 7 && questState.reached === order[order.length - 1], 'rewind: lost points or furthest chapter');
+  check(!activeQuest().complete, `rewind: ${mid} starts already complete`);
+}
 
 // ── 4. hero HP, defeat respawn, seats ────────────────────────────────────────
 questState.reset();
@@ -224,6 +258,171 @@ for (const [key, map] of Object.entries(MAPS)) {
   });
 }
 
+// Collectibles: unique ids, known kinds, and each one findable — some spot the
+// player can walk to has the point one tile ahead (WorldScene.tryExamine:
+// body centre + facing × 1 tile) within 0.4 tile of the prop's collider.
+{
+  const ids = new Set();
+  for (const h of HIDDEN) {
+    check(!ids.has(h.id), `collectible id '${h.id}' is used twice`);
+    ids.add(h.id);
+    check(COLLECTIBLE_KINDS[h.kind], `collectible '${h.id}' has unknown kind '${h.kind}'`);
+  }
+  for (const [key, map] of Object.entries(MAPS)) {
+    const hiddenProps = (map.props || []).filter((p) => p.hidden || p.side || p.clue);
+    if (!hiddenProps.length) continue;
+    const g = map.grid, R = g.length, C = g[0].length;
+    const boxes = (map.props || []).filter((p) => p.solid).flatMap((p) => propColliders(p));
+    const ok = (cx, cy) => {
+      const x0 = cx - FX, x1 = cx + FX, y0 = cy + FY0, y1 = cy + FY1;
+      if (x0 < 0 || y0 < 0 || x1 > C || y1 > R) return false;
+      for (let ty = Math.floor(y0); ty <= Math.ceil(y1) - 1; ty++)
+        for (let tx = Math.floor(x0); tx <= Math.ceil(x1) - 1; tx++) if (g[ty][tx] === 1) return false;
+      return !boxes.some((b) => x0 < b.tx + b.w && x1 > b.tx && y0 < b.ty + b.h && y1 > b.ty);
+    };
+    const sp = map.spawns.default;
+    const start = [Math.round((sp.tx + 0.5) / STEP), Math.round((sp.ty + 0.5) / STEP)];
+    const seen = new Set([start.join()]), q = [start];
+    while (q.length) {
+      const [i, j] = q.shift();
+      for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const n = [i + di, j + dj], k = n.join();
+        if (!seen.has(k) && ok(n[0] * STEP, n[1] * STEP)) { seen.add(k); q.push(n); }
+      }
+    }
+    const pts = [...seen].map((k) => k.split(',').map(Number));
+    for (const p of hiddenProps) {
+      const cols = propColliders(p), M = 0.4;
+      const findable = pts.some(([i, j]) => [[0, -1], [0, 1], [-1, 0], [1, 0]].some(([dx, dy]) => {
+        const x = i * STEP + dx, y = j * STEP + (FY0 + FY1) / 2 + dy;
+        return cols.some((c) => x >= c.tx - M && x <= c.tx + c.w + M && y >= c.ty - M && y <= c.ty + c.h + M);
+      }));
+      check(findable, `${key}: '${p.hidden?.id || p.side || p.clue}' in ${p.key} can't be examined from anywhere reachable`);
+    }
+  }
+}
+
+// Side quests: unique ids, a giver placed in some chapter from `from` on, a
+// valid start chapter, exactly one prop carrying the thing; shop prices sane.
+{
+  const ids = new Set();
+  for (const q of SIDE_QUESTS) {
+    check(!ids.has(q.id), `side quest id '${q.id}' is used twice`);
+    ids.add(q.id);
+    check(order.includes(q.from), `side quest '${q.id}': unknown start chapter ${q.from}`);
+    const later = order.slice(order.indexOf(q.from));
+    check(later.some((ch) => DATA[q.giver]?.locations?.[ch]), `side quest '${q.id}': giver ${q.giver} is never placed from ${q.from} on`);
+    const props = Object.values(MAPS).flatMap((m) => (m.props || []).filter((p) => p.side === q.id));
+    check(props.length === 1, `side quest '${q.id}': ${props.length} props carry its thing (need exactly 1)`);
+    check(q.points > 0 && q.ask?.length && q.thanks?.length && q.remind, `side quest '${q.id}': missing points/texts`);
+  }
+  // Investigation: each clue on exactly one prop, at least one key clue, valid chapters.
+  for (const c of CLUES) {
+    const n = Object.values(MAPS).flatMap((m) => (m.props || []).filter((p) => p.clue === c.id)).length;
+    check(n === 1, `clue '${c.id}': ${n} props carry it (need exactly 1)`);
+  }
+  check(CLUES.some((c) => c.key), 'investigation: no key clue');
+  check(order.includes(INVESTIGATION.opensAt) && order.includes(INVESTIGATION.finalChapter), 'investigation: unknown chapter');
+  check(DATA[INVESTIGATION.accused]?.chapters?.[INVESTIGATION.finalChapter]?.battle, 'investigation: the accused has no final battle');
+  // Events: known map/chapter, speakers are characters, at least one of them is
+  // placed in that map in that chapter (else the scene would be empty).
+  for (const e of EVENTS) {
+    check(MAPS[e.map] && order.includes(e.chapter), `event '${e.id}': unknown map or chapter`);
+    check(e.lines.every((l) => NPCS.includes(l.who) && l.text), `event '${e.id}': bad line`);
+    const placed = e.lines.filter((l) => resolveSpawn(DATA[l.who]?.locations?.[e.chapter]?.map || '')?.map === e.map);
+    check(placed.length > 0, `event '${e.id}': nobody who speaks is in ${e.map} in ${e.chapter}`);
+    if (e.gift) check(e.gift.consumable ? e.gift.heal > 0 : e.gift.buff, `event '${e.id}': bad gift`);
+  }
+  // Affinity messages: known characters, texts present, thresholds in range.
+  for (const [id, list] of Object.entries(AFFINITY_DMS)) {
+    check(NPCS.includes(id), `affinity: unknown character '${id}'`);
+    for (const m of list) check((m.text || m.sticker) && m.at >= 1 && m.at <= 5, `affinity: bad message for ${id}`);
+  }
+  for (const it of SHOP) check(it.price > 0 && (it.consumable ? it.heal > 0 : it.buff), `shop item '${it.name}' is malformed`);
+}
+
+// Every chapter has a valid start time for the in-game clock (js/story/clock.js).
+for (const id of order) check(/^\d{1,2}:\d{2}$/.test(CHAPTERS[id].time || ''), `${id}: missing or bad \`time\` ('HH:MM')`);
+
+// Every map: from its default spawn, on foot (feet box vs walls + solid
+// furniture), every other spawn and every warp must be reachable. Catches
+// furniture that walls off a door, an anteroom or a spawn.
+function floodFill(map) {
+  const g = map.grid, R = g.length, C = g[0].length;
+  const boxes = (map.props || []).filter((p) => p.solid).flatMap((p) => propColliders(p));
+  const ok = (cx, cy) => {
+    const x0 = cx - FX, x1 = cx + FX, y0 = cy + FY0, y1 = cy + FY1;
+    if (x0 < 0 || y0 < 0 || x1 > C || y1 > R) return false;
+    for (let ty = Math.floor(y0); ty <= Math.ceil(y1) - 1; ty++)
+      for (let tx = Math.floor(x0); tx <= Math.ceil(x1) - 1; tx++) if (g[ty][tx] === 1) return false;
+    return !boxes.some((b) => x0 < b.tx + b.w && x1 > b.tx && y0 < b.ty + b.h && y1 > b.ty);
+  };
+  const sp = map.spawns.default;
+  const start = [Math.round((sp.tx + 0.5) / STEP), Math.round((sp.ty + 0.5) / STEP)];
+  const seen = new Set([start.join()]), q = [start];
+  while (q.length) {
+    const [i, j] = q.shift();
+    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const n = [i + di, j + dj], k = n.join();
+      if (!seen.has(k) && ok(n[0] * STEP, n[1] * STEP)) { seen.add(k); q.push(n); }
+    }
+  }
+  return { ok, pts: [...seen].map((k) => k.split(',').map(Number)) };
+}
+for (const [key, map] of Object.entries(MAPS)) {
+  const { ok, pts } = floodFill(map);
+  const sp0 = map.spawns.default;
+  check(ok(sp0.tx + 0.5, sp0.ty + 0.5), `${key}: the default spawn's feet are blocked`);
+  for (const [name, sp] of Object.entries(map.spawns)) {
+    const near = pts.some(([i, j]) => Math.abs(i * STEP - (sp.tx + 0.5)) <= 0.5 && Math.abs(j * STEP - (sp.ty + 0.5)) <= 0.5);
+    check(near, `${key}: spawn '${name}' can't be reached on foot`);
+  }
+  for (const w of map.warps || []) {
+    const ww = w.w || 2, wh = w.h || 1;
+    const hit = pts.some(([i, j]) => {
+      const x = i * STEP, y = j * STEP;
+      return x + FX > w.tx && x - FX < w.tx + ww && y + FY1 > w.ty && y + FY0 < w.ty + wh + 0.6;
+    });
+    check(hit, `${key}: the door to ${w.to} can't be reached on foot`);
+  }  for (const [name, ar] of Object.entries(map.areas || {})) {
+    const inside = pts.some(([i, j]) => {
+      const x = i * STEP, y = j * STEP + (FY0 + FY1) / 2;
+      return x > ar.x0 && x < ar.x1 + 1 && y > ar.y0 && y < ar.y1 + 1;
+    });
+    check(inside, `${key}: the ${name} can't be reached on foot`);
+  }
+}
+
+// The fridge task: its zone can be reached and faced on foot (point one tile
+// ahead of the feet, within 0.4 tile of the zone, like WorldScene.tryExamine).
+{
+  const map = MAPS[FRIDGE.map];
+  check(map && order.includes(FRIDGE.chapter), 'fridge: unknown map or chapter');
+  if (map) {
+    const { pts } = floodFill(map);
+    const z = FRIDGE.zone, M = 0.4;
+    const ok = pts.some(([i, j]) => [[0, -1], [0, 1], [-1, 0], [1, 0]].some(([dx, dy]) => {
+      const x = i * STEP + dx, y = j * STEP + (FY0 + FY1) / 2 + dy;
+      return x >= z.tx - M && x <= z.tx + z.w + M && y >= z.ty - M && y <= z.ty + z.h + M;
+    }));
+    check(ok, 'fridge: its zone can\'t be faced from anywhere reachable');
+    check((map.props || []).some((p) => p.furniture === 'trashbins'), 'fridge: no bins in its kitchen to throw the cheese');
+  }
+}
+
+// npcSpots: on floor and clear of solid furniture (feet box), so a spread-out
+// crowd never starts inside a table.
+for (const [key, map] of Object.entries(MAPS)) {
+  const boxes = (map.props || []).filter((p) => p.solid).flatMap((p) => propColliders(p));
+  for (const sp of map.npcSpots || []) {
+    const cx = sp.tx + 0.5, cy = sp.ty + 0.5;
+    const x0 = cx - FX, x1 = cx + FX, y0 = cy + FY0, y1 = cy + FY1;
+    const wall = [Math.floor(y0), Math.ceil(y1) - 1].some((ty) => [Math.floor(x0), Math.ceil(x1) - 1].some((tx) => map.grid[ty]?.[tx] !== 0));
+    const prop = boxes.some((b) => x0 < b.tx + b.w && x1 > b.tx && y0 < b.ty + b.h && y1 > b.ty);
+    check(!wall && !prop, `${key}: npcSpot (${sp.tx},${sp.ty}) is ${wall ? 'in a wall' : 'inside furniture'}`);
+  }
+}
+
 // Orientable furniture: every catalogue view is well-formed, every map entry
 // expanded, and every prop image (plain or catalogue) exists on disk.
 let views = 0;
@@ -241,5 +440,5 @@ for (const [key, map] of Object.entries(MAPS)) {
   }
 }
 
-console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views.`);
+console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${CLUES.length} clues.`);
 process.exit(fails ? 1 : 0);

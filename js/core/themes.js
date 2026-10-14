@@ -13,10 +13,18 @@ export const THEMES = {
   },
 
   // Grey tile look everywhere — face ~#888b96, grout ~#6f7278.
+  // Plain light floor + WHITE walls (the real building's walls are white).
+  // `wallStyle` turns on the 3/4 white-wall drawing in MapRenderer:
+  //   wallFace  — a wall whose front faces you (floor right below it)
+  //   wallTop   — the darker band along a front wall's top edge
+  //   wallBase  — the skirting board at the bottom of a front wall
+  //   wallEdge  — thin line where any wall meets the floor
   white: {
-    void: 0x14151a, wall: 0x565b63,
+    void: 0x14151a, wall: 0xe9eaed,
     floor: 0xDCDCDC, tileGrout: 0xD3D3D3,
     door: 0xb0b5bd,
+    wallStyle: true,
+    wallFace: 0xf8f8f6, wallTop: 0xd9dce1, wallBase: 0xc6cad1, wallEdge: 0xa3a9b2,
   },
 
   // Entrance / lobby — warm wood tiles.

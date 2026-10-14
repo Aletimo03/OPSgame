@@ -1,22 +1,26 @@
 // maps/first-floor-rooms/room-14/room-14.js
-import { makeRoom, setDoor } from '../../../js/core/roomBuilder.js';
+import { makeRoomSuite } from '../../../js/core/roomBuilder.js';
 
-const grid = makeRoom(14, 16);
-setDoor(grid, 4, 15); // south door -> back to the first floor
+// Bedroom (top) + anteroom (bottom-left, you enter from below) + bathroom
+// (bottom-right, open doorway from the anteroom). See makeRoomSuite.
+const suite = makeRoomSuite(17, 16);
+const { grid } = suite;
 
 export default {
   key: 'room-14',
   name: 'Room 14',
   theme: 'white',
   grid,
+  areas: suite.areas, // bedroom / anteroom / bathroom… (story-check: each reachable)
   spawns: {
-    default: { tx: 4, ty: 13 },
-    fromFirstFloor: { tx: 4, ty: 13 },
+    default: { ...suite.spawn },
+    fromFirstFloor: { ...suite.spawn },
   },
-  warps: [{ tx: 4, ty: 15, to: 'first-floor', toSpawn: 'fromRoom14' }],
+  warps: [{ ...suite.door, to: 'first-floor', toSpawn: 'fromRoom14' }],
   props: [
+    { furniture: 'armadio', dir: 'e', tx: 0.99, ty: 15.5 }, // anteroom, against its left wall
     { furniture: 'bed', dir: 's', tx: -2.40, ty: -3.00 },
-    { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67 },
+    { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67, hidden: { kind: 'sock', id: 'room-14-tavolino' } },
     { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17 },
   ],
 };

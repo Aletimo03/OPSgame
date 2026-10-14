@@ -38,7 +38,7 @@ export const DOOR_WIDTH = 2;
 
 // Protagonist walking speed in pixels/second (1 tile = 48 px). For testing you
 // can bump it up (e.g. 700–1200) to fast-travel around the big map.
-export const PROTAGONIST_SPEED = 220;
+export const PROTAGONIST_SPEED = 600;
 
 // Player (protagonist "Zio Nick") tuning.
 export const PLAYER = {

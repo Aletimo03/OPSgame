@@ -1,23 +1,30 @@
 // js/story/chapter-8/chapter-8.js
-// Chapter 8 — INTERACT QUEST. After all the chaos, do the rounds and make peace.
-// `{ npc: 'id' }` completes when questState.isGreeted(id) is true — set in
-// WorldScene.tryInteract the moment you talk to that NPC.
-//
-// NOTE: like all of these Sets, `greeted` is permanent, so an interact objective
-// is satisfied by ANY past conversation with that id. These two (Ana, Gaia) are
-// chosen because they aren't *required* talks in earlier chapters; if you'd
-// rather force a fresh greeting, pick ids the player can't have met yet.
+// Chapter 8 — SEARCH / FETCH QUEST. Gather supplies scattered across the house.
+// `{ item: 'Name' }` completes when questState.hasItem('Name') is true. The
+// items are handed over by NPCs whose character.json defines an `item` in their
+// `chapters.chapter-7` entry (Sara → Caffè in the base kitchen, Mari → Birra in
+// a first-floor corridor). Multiple item objectives = a multi-stop fetch run.
 export default {
   id: 'chapter-8',
-  title: 'Chapter 8 — Pace Fatta',
+  title: "Capitolo 8 — La Spesa",
+  // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
+  time: '17:30',
   // Hint sent to the house group chat (phone, key P) when this chapter starts.
-  phone: [{ from: 'ema', text: 'È tornata la pace! Passa a fare un saluto ad Ana e Gaia nei corridoi del piano terra.' }],
+  phone: [
+    { from: 'sara', text: "Servono provviste: io ho il caffè nella cucina di sotto, Mari ha la birra al primo piano." },
+    { from: 'mari', text: "Birra fresca al primo piano 🌼🍺 mentre aspetto Fede 🥺" },
+    { from: 'mari', sticker: "🍺" },
+    { from: 'gatta', text: "Pota, la birra di Brescia è meglio" },
+    { from: 'ema', text: "O Sara, ma il supermercato più vicino qual è? Grszie" },
+    // private chats (dm: true)
+    { from: 'gatta', text: "Pota, sabato vieni a Brescia?", dm: true },
+  ],
   quest: {
-    id: 'make-peace',
-    title: 'Fai il giro e saluta tutti',
+    id: 'gather-supplies',
+    title: "Senza meloni servono provviste",
     objectives: [
-      { npc: 'ana',  label: 'Parla con Ana' },
-      { npc: 'gaia', label: 'Parla con Gaia' },
+      { item: 'Caffè', label: 'Prendi il Caffè da Sara' },
+      { item: 'Birra', label: 'Prendi la Birra da Mari' },
     ],
   },
 };

@@ -21,6 +21,25 @@ function wallTouchesFloor(grid, x, y) {
   return false;
 }
 
+// White wall, 3/4 look (themes with `wallStyle`). A wall with floor right
+// below it shows its FRONT: white face, a darker band at the top, a skirting
+// board at the bottom. Every side touching floor gets a thin edge line, so
+// rooms read clearly against the light floor.
+const isOpen = (grid, x, y) => grid[y] && grid[y][x] !== undefined && grid[y][x] !== TILES.WALL;
+function drawWhiteWall(g, grid, x, y, px, py, t) {
+  const below = isOpen(grid, x, y + 1);
+  if (below) {
+    g.fillStyle(t.wallFace, 1).fillRect(px, py, TILE, TILE);
+    g.fillStyle(t.wallTop, 1).fillRect(px, py, TILE, 6);
+    g.fillStyle(t.wallBase, 1).fillRect(px, py + TILE - 7, TILE, 7);
+  }
+  g.fillStyle(t.wallEdge, 1);
+  if (below) g.fillRect(px, py + TILE - 2, TILE, 2);
+  if (isOpen(grid, x, y - 1)) g.fillRect(px, py, TILE, 2);
+  if (isOpen(grid, x - 1, y)) g.fillRect(px, py, 2, TILE);
+  if (isOpen(grid, x + 1, y)) g.fillRect(px + TILE - 2, py, 2, TILE);
+}
+
 // Draw void / walls / floor / doors / grid lines onto one Graphics object.
 export function drawMap(scene, grid, themeName = 'default') {
   const t = THEMES[themeName] || THEMES.default;
@@ -31,8 +50,10 @@ export function drawMap(scene, grid, themeName = 'default') {
   g.fillStyle(t.void, 1);
   g.fillRect(0, 0, cols * TILE, rows * TILE);
 
-  // Grout inset: full tile in grout colour, then face inset by GROUT pixels.
-  const GROUT = 2;
+  // Plain floor: one flat colour, no grout lines between tiles (the user's
+  // choice). Set GROUT > 0 to bring back a tiled look (inset face of
+  // `t.floor` over a `t.tileGrout` background).
+  const GROUT = 0;
   const grout = t.tileGrout ?? t.floor;
 
   for (let y = 0; y < rows; y++) {
@@ -42,15 +63,16 @@ export function drawMap(scene, grid, themeName = 'default') {
       const code = grid[y][x];
 
       if (code === TILES.FLOOR || code === TILES.DOOR) {
-        // Grout background (fills the full tile, becomes the visible grout line)
-        g.fillStyle(grout, 1);
-        g.fillRect(px, py, TILE, TILE);
-        // Tile face (inset so the grout peeks around each edge)
+        if (GROUT > 0) {
+          g.fillStyle(grout, 1); // grout background, visible around the inset face
+          g.fillRect(px, py, TILE, TILE);
+        }
         g.fillStyle(t.floor, 1);
         g.fillRect(px + GROUT, py + GROUT, TILE - GROUT * 2, TILE - GROUT * 2);
       } else if (wallTouchesFloor(grid, x, y)) {
         g.fillStyle(t.wall, 1); // only the wall ring bordering the floor
         g.fillRect(px, py, TILE, TILE);
+        if (t.wallStyle) drawWhiteWall(g, grid, x, y, px, py, t);
       }
     }
   }

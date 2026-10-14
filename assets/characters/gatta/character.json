@@ -1,9 +1,9 @@
 {
   "name": "Gatta",
   "stats": {
-    "maxHp": 20,
-    "attack": 3,
-    "defense": 1
+    "maxHp": 34,
+    "attack": 9,
+    "defense": 3
   },
   "moves": [
     {
@@ -22,6 +22,18 @@
     }
   ],
   "locations": {
+    "chapter-1": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-2": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-3": {
       "map": "first-floor-vertical-1",
       "facing": "down"
@@ -29,21 +41,63 @@
     "chapter-4": {
       "map": "base-floor-main",
       "facing": "down"
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
+    "chapter-8": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-9": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-10": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "Pota figa bro, vado a Brescia ",
   "chapters": {
     "chapter-4": {
       "dialogue": [
-        "Pota, vuoi fare a botte bro?",
-        "Vai a Brescia a piangere!"
+        "Pota, cerchi i meloni bro?",
+        "Li porto a Brescia, vai a piangere!"
       ],
-      "dialogueAfter": "Ok ok, hai vinto pota. Vado davvero a Brescia.",
+      "dialogueAfter": "Ok ok, hai vinto pota. I meloni non ce li ho, giuro su Brescia.",
       "battle": {
-        "prompt": "Gatta ti sbarra la strada. Che fai?",
+        "prompt": "Gatta dice di avere i tuoi meloni. Che fai?",
         "options": [
-          "La affronto",
-          "Le offro un'aperitivo"
+          "Lo affronto",
+          "Gli offro un aperitivo"
         ]
       }
     }

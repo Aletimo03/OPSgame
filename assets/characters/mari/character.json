@@ -1,9 +1,9 @@
 {
   "name": "Mari",
   "stats": {
-    "maxHp": 30,
-    "attack": 6,
-    "defense": 3
+    "maxHp": 46,
+    "attack": 13,
+    "defense": 5
   },
   "moves": [
     {
@@ -30,23 +30,65 @@
       "map": "base-floor-vertical-2",
       "facing": "down"
     },
+    "chapter-3": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-4": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
+    "chapter-8": {
       "map": "first-floor-vertical-1",
       "facing": "down"
     },
     "chapter-9": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-10": {
       "map": "first-floor-main",
       "facing": "down"
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
-  "default": "Sto aspettando Fede Papi ",
+  "default": "Sto aspettando Fede Papi 🌸🥺✨",
   "chapters": {
-    "chapter-7": {
+    "chapter-8": {
       "dialogue": [
-        "Mentre aspetto Fede... vuoi una birra?",
-        "Tieni, è fresca."
+        "Mentre aspetto Fede... vuoi una birra? 🌸🍺",
+        "Tieni, è fresca 🌼✨"
       ],
-      "dialogueAfter": "La birra te l'ho già data!",
+      "dialogueAfter": "La birra te l'ho già data! 🌸🥰",
       "item": {
         "name": "Birra",
         "description": "Fresca, in attesa di Fede.",
@@ -55,12 +97,12 @@
         }
       }
     },
-    "chapter-9": {
+    "chapter-10": {
       "dialogue": [
-        "Basta! Fede non arriva mai per colpa tua!",
-        "Adesso me la paghi, sbirro."
+        "Basta! Fede non arriva mai per colpa tua! 😤🌸",
+        "Adesso me la paghi, sbirro 🌷💢"
       ],
-      "dialogueAfter": "Va bene... hai vinto. Aspetterò Fede in pace.",
+      "dialogueAfter": "Va bene... hai vinto. Aspetterò Fede in pace 🌸🕊️✨",
       "battle": {
         "prompt": "Mari è furiosa. Che fai?",
         "options": [

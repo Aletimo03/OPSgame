@@ -10,13 +10,61 @@
       "map": "base-kitchen",
       "facing": "down"
     },
+    "chapter-2": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-3": {
       "map": "first-floor-kitchen",
       "facing": "down"
     },
+    "chapter-4": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
+    "chapter-8": {
       "map": "base-kitchen",
       "facing": "down"
+    },
+    "chapter-9": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-10": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "Accendi la cappa o ti accoppo",
@@ -24,7 +72,7 @@
     "chapter-1": {
       "dialogue": [
         "Ciao! Stavo preparando il caffè.",
-        "Ne vuoi un po'?"
+        "I meloni? Prima il caffè. Ne vuoi un po'?"
       ],
       "dialogueAfter": "La moka è finita! Ne faccio un'altra più tardi.",
       "item": {
@@ -38,7 +86,7 @@
     "chapter-3": {
       "dialogue": [
         "Ehi! Ho qualcosa per te.",
-        "Una bella sessione di lamentele da ascoltare visto che non ho niente da fare "
+        "Una bella sessione di lamentele da ascoltare, porco d*o, visto che non ho niente da fare"
       ],
       "dialogueAfter": "Ti ho già parlato troppo, basta!",
       "item": {
@@ -49,7 +97,7 @@
         }
       }
     },
-    "chapter-7": {
+    "chapter-8": {
       "dialogue": [
         "Provviste? Ho appena fatto il caffè.",
         "Tieni, portane un po' in giro."

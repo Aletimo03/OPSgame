@@ -69,9 +69,9 @@ export function objectiveTargets(scene) {
   const ch = questState.activeChapter;
   return q.objectives.map((o) => {
     const t = { label: o.label, done: o.done, who: null, place: null, mapKey: null, tx: null, ty: null };
-    if (o.visit) {
-      t.place = o.visit;
-      t.mapKey = o.visit;
+    if (o.visit || o.place) {
+      t.place = o.visit || o.place;
+      t.mapKey = t.place;
     } else if (!o.flag) {
       const id = o.item
         ? CHARACTERS.find((c) => getCharData(scene, c).chapters?.[ch]?.item?.name === o.item)
@@ -86,4 +86,21 @@ export function objectiveTargets(scene) {
     t.where = placeName(t.place);
     return t;
   });
+}
+
+// Ids of the characters the active quest still needs (talk / beat / quiz /
+// item giver), for the "!" marker over their heads in WorldScene.
+export function questNpcIds(scene) {
+  const q = activeQuest();
+  const ids = new Set();
+  if (!q) return ids;
+  const ch = questState.activeChapter;
+  for (const o of q.objectives) {
+    if (o.done) continue;
+    const id = o.item
+      ? CHARACTERS.find((c) => getCharData(scene, c).chapters?.[ch]?.item?.name === o.item)
+      : o.npc || o.defeat || o.quiz;
+    if (id) ids.add(id);
+  }
+  return ids;
 }

@@ -10,25 +10,80 @@
       "map": "base-kitchen",
       "facing": "down"
     },
+    "chapter-2": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-3": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-4": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
     "chapter-8": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-9": {
       "map": "base-floor-main",
       "facing": "down"
+    },
+    "chapter-10": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
-  "default": "Ci vediamo in giro!",
+  "default": "O Szio Nick, ma dov'è la farmacia? Grszie!",
   "chapters": {
     "chapter-1": {
       "dialogue": [
-        "Ehi, sei nuovo qui?",
-        "Benvenuto in casa! Io sono Emanuele."
+        "O Szio Nick, già sveglio?",
+        "I tuoi due meloni? Io non li ho visti, giuro su Lameszia Terme.",
+        "Ma il fruttivendolo più vicino dov'è? Grszie!"
       ]
     },
-    "chapter-8": {
+    "chapter-9": {
       "dialogue": [
-        "Ehi, dopo tutto quel casino...",
-        "Sono contenta che sia tornata la pace!"
+        "O Szio Nick, che giornata...",
+        "Tieni, almeno mangia qualcosa. Grszie che mi fai compagnia!"
       ],
-      "dialogueAfter": "Li hai già presi, non fare il goloso!",
+      "dialogueAfter": "O Szio Nick, li hai già presi, non fare il goloso! Grszie.",
       "item": {
         "name": "Biscotti fatti in casa",
         "description": "Ricetta segreta di Emanuele.",

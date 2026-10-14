@@ -11,6 +11,7 @@ import chapter7 from './chapter-7/chapter-7.js';
 import chapter8 from './chapter-8/chapter-8.js';
 import chapter9 from './chapter-9/chapter-9.js';
 import chapter10 from './chapter-10/chapter-10.js';
+import chapter11 from './chapter-11/chapter-11.js';
 
 export const CHAPTERS = {
   'chapter-1': chapter1,
@@ -23,13 +24,14 @@ export const CHAPTERS = {
   'chapter-8': chapter8,
   'chapter-9': chapter9,
   'chapter-10': chapter10,
+  'chapter-11': chapter11,
 };
 
 // Play order. When the active chapter's quest is complete, the story advances
 // to the next chapter that actually has a quest defined.
-const ORDER = [
+export const ORDER = [
   'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
-  'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10',
+  'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
 ];
 
 // The whole story is finished: the last chapter is active and its quest done.
@@ -52,6 +54,13 @@ export function activeChapter() {
 }
 
 // Call after progress changes (e.g. greeting an NPC) to roll forward chapters.
+// The furthest chapter ever reached (chapter select on the title screen).
+export function markReached() {
+  if (ORDER.indexOf(questState.activeChapter) > ORDER.indexOf(questState.reached)) {
+    questState.reached = questState.activeChapter;
+  }
+}
+
 export function advanceChapterIfDone() {
   const q = activeQuest();
   if (!q || !q.complete) return;
@@ -59,6 +68,7 @@ export function advanceChapterIfDone() {
   for (let j = i + 1; j < ORDER.length; j++) {
     if (CHAPTERS[ORDER[j]] && CHAPTERS[ORDER[j]].quest) {
       questState.activeChapter = ORDER[j];
+      markReached();
       // The room you're standing in when a chapter starts counts as visited
       // for it (otherwise "inspect X" would need you to leave X and re-enter).
       if (questState.currentMap) questState.visit(questState.currentMap);

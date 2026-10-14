@@ -126,6 +126,12 @@ export default {
     // living's room
     { tx: 22, ty: 17, w: 2, h: 1, to: 'room-12', toSpawn: 'default' },
   ],
+  // The living room (interior x 22–31, y 18–26): a sofa seen from behind, in
+  // the middle and a bit low, so the defeat respawn (living, 26,21) stays free
+  // and lands on its seat side ("si risveglia sul divano del salotto").
+  props: [
+    { furniture: 'divano', dir: 'n', tx: 24.49, ty: 22.5 },
+  ],
   // NPCs are placed by each character's JSON `locations` (per chapter), not here.
   // For this map/chapter: ana, mari (ch1–2) and gabbo (ch2 battle) sit in the living.
 };

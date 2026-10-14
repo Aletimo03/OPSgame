@@ -3,6 +3,7 @@
 // and its objectives as a done/todo checklist. Rebuilt whenever progress
 // changes (call refresh()) and once per scene (it's recreated on every map).
 import { activeQuest } from './chapters.js';
+import { objectiveTargets } from './questGuide.js';
 
 const DEPTH = 1000000;
 const W = 280; // panel width (px)
@@ -19,6 +20,7 @@ export class QuestTracker {
     this.objs.forEach((o) => o.destroy());
     this.objs = [];
 
+    this.bottom = 12; // screen y just below the panel (PhoneHud sits there)
     const q = activeQuest();
     if (!q) return;
 
@@ -48,12 +50,21 @@ export class QuestTracker {
       fontStyle: 'bold',
     }).height + 10;
 
-    for (const o of q.objectives) {
+    // Each open objective gets a small "→ who, where" line under it (questGuide).
+    const where = objectiveTargets(this.scene);
+    q.objectives.forEach((o, i) => {
       ty += text(ty, `${o.done ? '☑' : '☐'} ${o.label}`, {
         fontSize: '13px',
         color: o.done ? '#8f97a3' : '#ffffff',
       }).height + 6;
-    }
+      const t = where[i];
+      if (!o.done && t && t.where && t.where !== '—') {
+        ty += text(ty - 4, `   → ${t.who ? `${t.who}, ` : ''}${t.where}`, {
+          fontSize: '11px',
+          color: '#8fb3d9',
+        }).height + 4;
+      }
+    });
     // Background last (now that the height is known), one depth step below.
     add(
       this.scene.add
@@ -61,6 +72,7 @@ export class QuestTracker {
         .setOrigin(0, 0)
         .setStrokeStyle(2, 0xffffff, 0.55)
     ).setDepth(DEPTH - 1);
+    this.bottom = ty + PAD - 6;
   }
 
   refresh() {

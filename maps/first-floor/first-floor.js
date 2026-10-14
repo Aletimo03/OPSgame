@@ -149,8 +149,8 @@ export default {
   // in its top-left corner. Colliders = the rack feet only: you can walk behind
   // the rails (between them and the wall) and get hidden by them.
   props: [
-    { furniture: 'hanger', dir: 's', tx: 25.6, ty: 18 },
-    { furniture: 'hanger_zionick', dir: 's', tx: 28.8, ty: 18 },
+    { furniture: 'hanger', dir: 's', tx: 25.6, ty: 18, side: 'coperchio' },
+    { furniture: 'hanger_zionick', dir: 's', tx: 28.8, ty: 18, hidden: { kind: 'sock', id: 'stendino-zionick' } },
     { furniture: 'hanger', dir: 's', tx: 28.8, ty: 21.4 },
   ],
   // NPCs are placed by each character's JSON `locations` (per chapter), not here.

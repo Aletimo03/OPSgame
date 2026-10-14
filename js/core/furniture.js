@@ -13,6 +13,9 @@
 //   scale            optional size multiplier (default 1): scales the image AND
 //                    every relative collider / seat / baseY with it
 //   key, solid, ysort  optional overrides of the catalogue values
+//   hidden           optional collectible found by examining it: { kind, id }
+//   label, examine   optional texts overriding the catalogue's for this piece
+//   sleep            true = examining it is a nap that restores full HP
 
 import { FURNITURE } from './furniture-catalog.js';
 
@@ -57,6 +60,10 @@ export function checkFurnitureEntry(type, dir) {
     if (!FACINGS.includes(s.facing)) out.push(`${type}_${dir}: seat ${i + 1} facing must be ${FACINGS.join('/')}`);
   });
   if (d.baseY != null && !num(d.baseY)) out.push(`${type}_${dir}: baseY must be a number`);
+  const ex = FURNITURE[type].examine;
+  if (ex != null && !(Array.isArray(ex) && ex.length && ex.every((l) => typeof l === 'string' && l))) {
+    out.push(`${type}: examine must be a non-empty list of lines`);
+  }
   return out;
 }
 
@@ -83,6 +90,18 @@ export function expandProp(p, mapKey = '?') {
     furniture: p.furniture,
     dir: p.dir,
   };
+  if (p.hidden) prop.hidden = { ...p.hidden }; // collectible (js/story/collectibles.js)
+  const def = FURNITURE[p.furniture];
+  // Texts: the map entry can override the catalogue's (e.g. Zio Nick's own bed).
+  const examine = p.examine || def.examine;
+  if (examine?.length) {
+    prop.label = p.label || def.label || p.furniture;
+    prop.examine = examine.slice();
+  }
+  if (p.onlyIn) prop.onlyIn = [...p.onlyIn]; // shown only in these chapters (WorldScene)
+  if (p.clue) prop.clue = p.clue; // melon-investigation clue (js/story/investigation.js)
+  if (p.side) prop.side = p.side; // side-quest thing hidden here (js/story/sideQuests.js)
+  if (p.sleep) prop.sleep = true; // examining it = a nap, full HP (WorldScene.sleepInBed)
   const ysort = p.ysort ?? d.ysort;
   if (ysort === false) prop.ysort = false;
   if (d.baseY != null) prop.baseY = r4(p.ty + d.baseY * k);

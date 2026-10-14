@@ -2,7 +2,8 @@
 // Save / load the run in the browser's localStorage (one slot).
 //
 // What's saved: the whole questState (chapter, progress log, items) plus where
-// the player stands (map + pixel position + facing). WorldScene autosaves on
+// the player stands (map + pixel position + facing; the position is kept for
+// reference only: loading always starts in Zio Nick's room, see applySave). WorldScene autosaves on
 // every map entry, every progress event, every few seconds and when the tab
 // closes — there is no manual "save" button. TitleScene offers Continua /
 // Nuova partita; the in-game Esc menu offers "Ricomincia da capo".
@@ -11,8 +12,7 @@
 // ignored (the title screen just offers a new game).
 import { questState } from '../story/questState.js';
 import { CHAPTERS } from '../story/chapters.js';
-import { MAPS, START_MAP } from '../../maps/index.js';
-import { TILE } from '../config.js';
+import { START_MAP } from '../../maps/index.js';
 
 const KEY = 'opsgame-save';
 const VERSION = 1;
@@ -74,18 +74,8 @@ export function clearSave() {
 // Falls back to the start map if the saved map/position no longer fits (e.g.
 // the map was edited or removed since the save was written).
 export function applySave(data) {
+  // Progress comes back; the position doesn't: whatever the save, you always
+  // wake up in Zio Nick's room (START_MAP), as the story begins (user's choice).
   questState.restore(data.quest);
-  const map = MAPS[data.mapKey];
-  if (!map) return { mapKey: START_MAP, spawnName: 'default' };
-
-  const w = map.grid[0].length * TILE;
-  const h = map.grid.length * TILE;
-  const inside = Number.isFinite(data.x) && Number.isFinite(data.y)
-    && data.x >= 0 && data.y >= 0 && data.x < w && data.y < h;
-  return {
-    mapKey: data.mapKey,
-    spawnName: 'default',
-    spawnPos: inside ? { x: data.x, y: data.y } : null,
-    facing: data.facing,
-  };
+  return { mapKey: START_MAP, spawnName: 'default' };
 }

@@ -1,20 +1,25 @@
 // js/story/chapter-7/chapter-7.js
-// Chapter 7 — SEARCH / FETCH QUEST. Gather supplies scattered across the house.
-// `{ item: 'Name' }` completes when questState.hasItem('Name') is true. The
-// items are handed over by NPCs whose character.json defines an `item` in their
-// `chapters.chapter-7` entry (Sara → Caffè in the base kitchen, Mari → Birra in
-// a first-floor corridor). Multiple item objectives = a multi-stop fetch run.
+// Chapter 7 — Ana's aperitivo. A story beat, not an optional extra: the
+// chapter completes when the aperitivo scene has played (flag
+// `event:aperitivo`, set by WorldScene.playEvents, js/story/events.js), which
+// happens the first time you enter the first-floor kitchen in this chapter.
+// The invitation arrives in chapter 6's group chat.
 export default {
   id: 'chapter-7',
-  title: 'Chapter 7 — La Spesa',
-  // Hint sent to the house group chat (phone, key P) when this chapter starts.
-  phone: [{ from: 'sara', text: 'Servono provviste: io ho il caffè nella cucina di sotto, Mari ha la birra al primo piano.' }],
+  title: "Capitolo 7 — L'aperitivo",
+  // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
+  time: '19:00',
+  phone: [
+    { from: 'ana', text: "Guacamole ready 🥑 cucina di su, come bros!" },
+    { from: 'nima', text: "Buonaseras! Please, dopo piatti nel lavandino 🙏" },
+    { from: 'ema', text: "O Ana, ma a che ora? Grszie" },
+  ],
   quest: {
-    id: 'gather-supplies',
-    title: 'Raccogli le provviste per la casa',
+    id: 'aperitivo',
+    title: "Vai all'aperitivo di Ana",
     objectives: [
-      { item: 'Caffè', label: 'Prendi il Caffè da Sara' },
-      { item: 'Birra', label: 'Prendi la Birra da Mari' },
+      // `place` tells questGuide (tracker, phone, minimap) where it happens.
+      { flag: 'event:aperitivo', place: 'first-floor-kitchen', label: "Raggiungi l'aperitivo in cucina di su" },
     ],
   },
 };

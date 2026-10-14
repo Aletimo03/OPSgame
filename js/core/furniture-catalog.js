@@ -3,6 +3,8 @@
 // the logic that turns a map entry into a normal prop is js/core/furniture.js.
 //
 //   FURNITURE[type].group = 'kitchen' | 'rooms' | 'others'   (sub-folder of assets/furniture/)
+//   FURNITURE[type].label / .examine = name + lines shown when you press Space
+//                                       facing it (optional; placeholder texts, rewrite freely)
 //   FURNITURE[type].dirs[dir] = {
 //     w, h,                       // image display size, in tiles
 //     colliders: [{ x, y, w, h }],// solid boxes, RELATIVE to the image's top-left, in tiles
@@ -26,6 +28,8 @@
 export const FURNITURE = {
   // Kitchens: wall of cabinets (the maps stretch it: 2x longer, 1.1x taller than natural). Collider = the whole unit.
   kitchen_shelfs: {
+    label: "Pensili della cucina",
+    examine: ["Pentole, padelle e tazze di almeno cinque persone diverse.", "Nessuno sa di chi sia la padella antiaderente graffiata."],
     group: 'kitchen',
     dirs: {
       s: {
@@ -36,6 +40,8 @@ export const FURNITURE = {
   },
   // Kitchens: 4 recycling bins in a column. Collider = all of them.
   trashbins: {
+    label: "Bidoni della differenziata",
+    examine: ["Giallo plastica, grigio indifferenziato, blu carta, verde vetro.", "Qualcuno ha buttato il cartone della pizza nella plastica. Di nuovo."],
     group: 'kitchen',
     dirs: {
       s: {
@@ -46,6 +52,8 @@ export const FURNITURE = {
   },
   // Kitchens: island with 3 stools. Collider = from 1 tile below the slab top to 1 below its bottom, so you can step "behind" it; every stool is a seat.
   island: {
+    label: "Isola",
+    examine: ["Il piano è ancora appiccicoso dalla colazione di qualcuno."],
     group: 'kitchen',
     dirs: {
       s: {
@@ -57,6 +65,8 @@ export const FURNITURE = {
   },
   // Kitchens: table with 8 chairs. Collider = the wooden top only (chairs walkable, all seats). ysort: false = always under characters (user's choice).
   main_table: {
+    label: "Tavolo grande",
+    examine: ["Il tavolo delle riunioni di casa. Ci sono ancora le briciole dell'ultima."],
     group: 'kitchen',
     dirs: {
       s: {
@@ -68,6 +78,8 @@ export const FURNITURE = {
   },
   // Kitchens: sofa (s = old sofa_horizzontal.png, w = old sofa_vertical.png). Colliders = back + armrests; baseY at the back so a seated character is drawn in front.
   sofa: {
+    label: "Divano",
+    examine: ["Morbidissimo. Chi si siede qui non si rialza più."],
     group: 'kitchen',
     dirs: {
       s: {
@@ -84,6 +96,8 @@ export const FURNITURE = {
   },
   // Bedrooms: bed (lots of empty margin in the PNG; the collider is the visible bed).
   bed: {
+    label: "Letto",
+    examine: ["Un letto rifatto... più o meno."],
     group: 'rooms',
     dirs: {
       s: {
@@ -94,6 +108,8 @@ export const FURNITURE = {
   },
   // Bedrooms: small table with fruit.
   fruit_table: {
+    label: "Tavolino",
+    examine: ["Una ciotola di frutta. La banana ha visto giorni migliori."],
     group: 'rooms',
     dirs: {
       s: {
@@ -104,6 +120,8 @@ export const FURNITURE = {
   },
   // Bedrooms: bedside table with phone.
   phone_little_table: {
+    label: "Comodino",
+    examine: ["Un caricatore che non è di nessuno, ma tutti lo usano."],
     group: 'rooms',
     dirs: {
       s: {
@@ -115,6 +133,8 @@ export const FURNITURE = {
   // Laundry: front-loading washing machine. Collider = the bottom 60% (you can
   // overlap its top, which is against the wall anyway).
   laundry: {
+    label: "Lavatrice",
+    examine: ["La lavatrice condivisa.", "C'è un calzino spaiato incastrato nella guarnizione."],
     group: 'others',
     dirs: {
       s: {
@@ -126,6 +146,8 @@ export const FURNITURE = {
   // Laundry: clothes drying rack (empty). Collider = the feet (bottom 30%), so
   // you can walk behind the rails and be hidden by them.
   hanger: {
+    label: "Stendino",
+    examine: ["Uno stendino vuoto. Raro come un unicorno."],
     group: 'others',
     dirs: {
       s: {
@@ -136,11 +158,47 @@ export const FURNITURE = {
   },
   // Laundry: Zio Nick's drying rack (with his clothes). Same rules as `hanger`.
   hanger_zionick: {
+    label: "Stendino di Zio Nick",
+    examine: ["I panni di Zio Nick. Nessuno osa toccarli."],
     group: 'others',
     dirs: {
       s: {
         w: 3.02, h: 2.36,
         colliders: [{ x: 0.01, y: 1.65, w: 3, h: 0.7 }],
+      },
+    },
+  },
+  // Aperitivo spread (Ana's aperitivo, chapter 7): drinks and snacks laid on the
+  // kitchen table. Not solid, always under characters (like the table).
+  aperitivo: {
+    label: "L'aperitivo di Ana",
+    examine: ["Guacamole, hummus, patatine, olive e Spritz.", "Ana ha esagerato, come sempre 🥑"],
+    group: 'kitchen',
+    dirs: {
+      s: { w: 7.03, h: 2.04, solid: false, ysort: false },
+    },
+  },
+  // Sofa seen from behind (its front faces up, away from the camera).
+  divano: {
+    label: 'Divano',
+    examine: ['Il divano del salotto, visto da dietro.', 'Qui ci si risveglia dopo le batoste.'],
+    group: 'others',
+    dirs: {
+      n: {
+        w: 5.03, h: 2.24,
+        colliders: [{ x: 0.01, y: 1.23, w: 5, h: 1 }],
+      },
+    },
+  },
+  // Wardrobe seen from the side (front faces right: against a left wall).
+  armadio: {
+    label: 'Armadio',
+    examine: ["Un armadio. Dentro, vestiti di qualcuno che non è Zio Nick."],
+    group: 'rooms',
+    dirs: {
+      e: {
+        w: 1.12, h: 3.86,
+        colliders: [{ x: 0.01, y: 2.7, w: 1.1, h: 1.15 }],
       },
     },
   },

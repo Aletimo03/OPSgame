@@ -1,9 +1,9 @@
 {
   "name": "Caue",
   "stats": {
-    "maxHp": 48,
-    "attack": 9,
-    "defense": 4
+    "maxHp": 70,
+    "attack": 17,
+    "defense": 6
   },
   "moves": [
     {
@@ -32,7 +32,7 @@
       "map": "first-floor-main",
       "facing": "down"
     },
-    "chapter-10": {
+    "chapter-11": {
       "map": "base-floor-main",
       "facing": "down"
     }
@@ -41,31 +41,31 @@
   "chapters": {
     "chapter-5": {
       "dialogue": [
-        "Fermo lì. Prima di passare, una domanda.",
-        "Se rispondi bene, la via è tua."
+        "Fermo lì. Cerchi qualcosa, sbirro?",
+        "Rispondi bene, e la via è tua."
       ],
-      "dialogueAfter": "La saggezza ti accompagna. Passa pure.",
+      "dialogueAfter": "La saggezza ti accompagna. Ricorda: chi ha due meloni...",
       "quiz": {
-        "prompt": "Chi ha lasciato i piatti sporchi nel lavandino?",
+        "prompt": "Completa la parola: «Chi ha due meloni...»",
         "options": [
-          "Gabbo",
-          "Nessuno, era già pulito",
-          "Io non c'entro"
+          "...ne dia uno a chi non ne ha",
+          "...se li mangia con due uova",
+          "...li nasconde a Gabbo"
         ],
         "answer": 0,
-        "correct": "Esatto! Sapevo che eri sveglio.",
+        "correct": "Esatto. Ricordatelo, sbirro.",
         "wrong": "Mmm... no. Rifletti e riprova."
       }
     },
-    "chapter-10": {
+    "chapter-11": {
       "dialogue": [
-        "Pensavi davvero che fosse Gabbo la mente?",
-        "Ero io a tirare i fili, dall'inizio.",
-        "Ma sta scritto: ora ti perdono... dopo averti sconfitto."
+        "Cercavi questi? Due meloni.",
+        "Sta scritto: chi ha due meloni ne dia uno a chi non ne ha.",
+        "Tu ne avevi due. Io nessuno. Ora ti perdono... dopo averti sconfitto."
       ],
-      "dialogueAfter": "Hai vinto. La pace sia con te, sbirro.",
+      "dialogueAfter": "Hai vinto. Riprenditi i tuoi meloni, sbirro. La pace sia con te.",
       "battle": {
-        "prompt": "Il boss finale ti sfida. Che fai?",
+        "prompt": "Caue stringe i tuoi due meloni. Che fai?",
         "options": [
           "Lo affronto con tutto",
           "Cito anch'io i Colossesi"

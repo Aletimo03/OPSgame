@@ -17,14 +17,16 @@ export default {
   // Furniture from the catalogue (js/core/furniture-catalog.js): each entry only
   // sets where the image's top-left goes; size, colliders, seats and depth line
   // live in the catalogue.
+  // Where NPCs placed in this kitchen start (in turn), spread around the room.
+  npcSpots: [{ tx: 4, ty: 11 }, { tx: 17, ty: 9 }, { tx: 11, ty: 9 }, { tx: 21, ty: 4 }, { tx: 10, ty: 13 }, { tx: 27, ty: 14 }, { tx: 6, ty: 14 }, { tx: 12, ty: 14 }],
   props: [
     // wall of cabinets along the top wall, top-left (door is top-right). Relative to
     // the image's natural size: 2x longer, 1.1x taller. Its top deliberately pokes
     // above the map edge. Collider = the whole unit (stand at its counter).
-    { furniture: 'kitchen_shelfs', dir: 's', tx: 0.89, ty: -2.89 },
+    { furniture: 'kitchen_shelfs', dir: 's', tx: 0.89, ty: -2.89, side: 'noodles', hidden: { kind: 'sock', id: 'cucina-terra-pensili' } },
     // 4 recycling bins in a column against the left wall, upper part, just below
     // the shelves. Collider = all of them.
-    { furniture: 'trashbins', dir: 's', tx: -0.41, ty: 2.91 },
+    { furniture: 'trashbins', dir: 's', tx: -0.41, ty: 2.91, clue: 'buccia' },
     // island in the middle (new art, 3 stools). Collider = the band from 1 tile below
     // the slab's top edge to 1 tile below its bottom edge: you can step 1 tile
     // "behind" the slab (it then hides your legs) and still reach every stool.

@@ -1,22 +1,31 @@
 // maps/first-floor-rooms/room-20/room-20.js
-import { makeRoom, setDoor } from '../../../js/core/roomBuilder.js';
+// Zio Nick's own room. Examining his bed = a nap that fully restores HP
+// (`sleep: true`, WorldScene.sleepInBed). The other pieces get his own texts.
+import { makeRoomSuite } from '../../../js/core/roomBuilder.js';
 
-const grid = makeRoom(14, 16);
-setDoor(grid, 4, 15); // south door -> back to the first floor
+// Bedroom (top) + anteroom (bottom-left, you enter from below) + bathroom
+// (bottom-right, open doorway from the anteroom). See makeRoomSuite.
+const suite = makeRoomSuite(17, 16);
+const { grid } = suite;
 
 export default {
   key: 'room-20',
-  name: 'Room 20',
+  name: 'Room 20 — Zio Nick',
   theme: 'white',
   grid,
+  areas: suite.areas, // bedroom / anteroom / bathroom… (story-check: each reachable)
   spawns: {
-    default: { tx: 4, ty: 13 },
-    fromFirstFloor: { tx: 4, ty: 13 },
+    default: { ...suite.spawn },
+    fromFirstFloor: { ...suite.spawn },
   },
-  warps: [{ tx: 4, ty: 15, to: 'first-floor', toSpawn: 'fromRoom20' }],
+  warps: [{ ...suite.door, to: 'first-floor', toSpawn: 'fromRoom20' }],
   props: [
-    { furniture: 'bed', dir: 's', tx: -2.40, ty: -3.00 },
-    { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67 },
-    { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17 },
+    { furniture: 'armadio', dir: 'e', tx: 0.99, ty: 15.5 }, // anteroom, against its left wall
+    { furniture: 'bed', dir: 's', tx: -2.40, ty: -3.00, sleep: true,
+      label: 'Letto di Zio Nick', examine: ['Il letto di Zio Nick. Stamattina, appena sveglio, i due meloni non c\'erano più.', 'Un pisolino qui e torni come nuovo.'] },
+    { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67,
+      label: 'Tavolino', examine: ['Un portauova vuoto: due uova a colazione, ogni giorno. Nemmeno una di più.'] },
+    { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17,
+      label: 'Comodino', examine: ['Il badge del museo, le cuffie e l\'orologio da corsa: 15 km stamattina.'] },
   ],
 };

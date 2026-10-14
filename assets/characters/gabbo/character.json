@@ -29,14 +29,78 @@
     "chapter-2": {
       "map": "base-floor-main",
       "facing": "down"
+    },
+    "chapter-3": {
+      "map": "first-floor-vertical-2",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-4": {
+      "map": "base-floor-vertical-1",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-5": {
+      "map": "base-floor-vertical-2",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-6": {
+      "map": "first-floor-vertical-1",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-7": {
+      "map": "base-floor-vertical-2",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-8": {
+      "map": "base-floor-main",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-9": {
+      "map": "first-floor-vertical-2",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-10": {
+      "map": "base-floor-vertical-1",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-11": {
+      "map": "first-floor-vertical-1",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
     }
   },
-  "default": "Non ho niente da dirti, sbirro.",
+  "default": "O fra, non ho niente da dirti, sbirro, diahane",
+  "rematch": {
+    "from": "chapter-3",
+    "prompt": "O fra, rivincita? Se vinci ti do punti casa, diahane",
+    "options": [
+      "Accetto la sfida",
+      "Lascia stare"
+    ],
+    "reward": 8,
+    "after": "O fra, basta per oggi, diahane"
+  },
   "chapters": {
     "chapter-1": {
       "dialogue": [
-        "O fra, è il capitolo 1 chiama Marius",
-        "Tutti al Plein!"
+        "O fra, meloni? Chiama Marius, diahane",
+        "O fra, tutti al Plein, diahane!"
       ],
       "battle": {
         "prompt": "Che cosa fai?",
@@ -48,8 +112,8 @@
     },
     "chapter-2": {
       "dialogue": [
-        "O fra, andiamo all'Alcatraz diahane",
-        "Non mi prendi mai, sbirro!"
+        "O fra, andiamo all'Alcatraz, diahane",
+        "O fra, nello zaino c'è solo Jäger, non meloni, sbirro, diahane!"
       ],
       "battle": {
         "prompt": "Che cosa fai?",
