@@ -490,7 +490,8 @@ export default class WorldScene extends Phaser.Scene {
       const tries = tw >= th
         ? [[w.tx - 1, w.ty], [w.tx + tw, w.ty]]
         : [[w.tx, w.ty - 1], [w.tx, w.ty + th]];
-      const spot = tries.find(([x, y]) => free(x, y));
+      // A warp may pin its plate (`plateAt`), e.g. the room-26/27 corner.
+      const spot = w.plateAt ? [w.plateAt.tx, w.plateAt.ty] : tries.find(([x, y]) => free(x, y));
       if (!spot) continue;
       used.add(`${spot[0]},${spot[1]}`);
       const cx = (spot[0] + 0.5) * TILE;

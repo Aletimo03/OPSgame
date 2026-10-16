@@ -141,8 +141,8 @@ export default {
     { tx: 56, ty: 8, w: 2, h: 1, to: 'first-floor-kitchen', toSpawn: 'default' },
     // room-25 caps the top of the left corridor; 26 & 27 open off the living
     { tx: 10, ty: 8, w: 2, h: 1, to: 'room-25', toSpawn: 'default' },
-    { tx: 21, ty: 18, w: 1, h: 2, to: 'room-26', toSpawn: 'default' },
-    { tx: 22, ty: 17, w: 2, h: 1, to: 'room-27', toSpawn: 'default' },
+    { tx: 21, ty: 18, w: 1, h: 2, to: 'room-26', toSpawn: 'default', plateAt: { tx: 21, ty: 20 } }, // plate under the door
+    { tx: 22, ty: 17, w: 2, h: 1, to: 'room-27', toSpawn: 'default', plateAt: { tx: 24, ty: 17 } }, // plate right of the door
   ],
   // Drying racks in the square hall (the open `living`, interior x 22–31,
   // y 18–26), along its top wall and right side, away from the room-26/27 doors
