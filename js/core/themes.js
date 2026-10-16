@@ -19,12 +19,17 @@ export const THEMES = {
   //   wallTop   — the darker band along a front wall's top edge
   //   wallBase  — the skirting board at the bottom of a front wall
   //   wallEdge  — thin line where any wall meets the floor
+  //   wallRise  — extra height (tiles) of a front wall, drawn upward over the
+  //               wall/void above it (never over a floor): taller-looking walls
   white: {
     void: 0x14151a, wall: 0xe9eaed,
-    floor: 0xDCDCDC, tileGrout: 0xD3D3D3,
+    // Floor: a neutral light grey (the warm dark grey #6b6560 read as brown),
+    // still clearly darker than the white walls.
+    floor: 0xb1b3b6, tileGrout: 0xa8aaad,
     door: 0xb0b5bd,
     wallStyle: true,
     wallFace: 0xf8f8f6, wallTop: 0xd9dce1, wallBase: 0xc6cad1, wallEdge: 0xa3a9b2,
+    wallRise: 1.5,
   },
 
   // Entrance / lobby — warm wood tiles.

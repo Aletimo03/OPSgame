@@ -15,29 +15,88 @@ function wallTouchesFloor(grid, x, y) {
       const nx = x + dx;
       const ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
-      if (grid[ny][nx] !== TILES.WALL) return true; // floor or door
+      if (grid[ny][nx] === TILES.FLOOR) return true; // floor only: doors sit IN the wall line, so walls stay straight around them
     }
   }
   return false;
 }
 
-// White wall, 3/4 look (themes with `wallStyle`). A wall with floor right
-// below it shows its FRONT: white face, a darker band at the top, a skirting
-// board at the bottom. Every side touching floor gets a thin edge line, so
-// rooms read clearly against the light floor.
+// White wall, 3/4 look (themes with `wallStyle`).
+//  • A wall with FLOOR right below it (not a door) shows its FRONT: white face,
+//    a darker band at the top, a skirting board at the bottom.
+//  • Front walls rise `wallRise` tiles upward over the wall / outside area
+//    above them (never over a floor), so outer walls look taller. A door in
+//    such a wall gets the same rise as a lintel above it, so the wall runs on.
+//  • Every horizontal run of front walls / lintels rises to ONE height (the
+//    run's minimum), so its top edge is straight; a corner tile at the end of
+//    a run rises with it (if it can), so corners stay square.
+//  • Every side touching floor gets a thin edge line.
 const isOpen = (grid, x, y) => grid[y] && grid[y][x] !== undefined && grid[y][x] !== TILES.WALL;
-function drawWhiteWall(g, grid, x, y, px, py, t) {
-  const below = isOpen(grid, x, y + 1);
-  if (below) {
-    g.fillStyle(t.wallFace, 1).fillRect(px, py, TILE, TILE);
-    g.fillStyle(t.wallTop, 1).fillRect(px, py, TILE, 6);
-    g.fillStyle(t.wallBase, 1).fillRect(px, py + TILE - 7, TILE, 7);
+const isFloorAt = (grid, x, y) => grid[y]?.[x] === TILES.FLOOR;
+
+// How far (tiles) the space above (x, y) is free to draw on: up to `rise`,
+// stopping at the first open tile above.
+function freeAbove(grid, x, y, rise) {
+  let free = 0;
+  for (let k = 1; k <= Math.ceil(rise); k++) {
+    if (isOpen(grid, x, y - k)) break;
+    free = k;
   }
-  g.fillStyle(t.wallEdge, 1);
-  if (below) g.fillRect(px, py + TILE - 2, TILE, 2);
-  if (isOpen(grid, x, y - 1)) g.fillRect(px, py, TILE, 2);
-  if (isOpen(grid, x - 1, y)) g.fillRect(px, py, 2, TILE);
-  if (isOpen(grid, x + 1, y)) g.fillRect(px + TILE - 2, py, 2, TILE);
+  return Math.min(free, rise);
+}
+
+// rise[y][x] in px for every tile that rises (front walls, lintels, corners).
+function computeRise(grid, rise) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const out = Array.from({ length: rows }, () => new Array(cols).fill(0));
+  const rises = (x, y) => isFloorAt(grid, x, y + 1)
+    && (grid[y][x] === TILES.WALL || grid[y][x] === TILES.DOOR);
+  for (let y = 0; y < rows; y++) {
+    let x = 0;
+    while (x < cols) {
+      if (!rises(x, y)) { x++; continue; }
+      let e = x;
+      let min = Infinity;
+      while (e < cols && rises(e, y)) { min = Math.min(min, freeAbove(grid, e, y, rise)); e++; }
+      for (let k = x; k < e; k++) out[y][k] = min * TILE;
+      // square corners: the wall tiles just outside the run
+      for (const cx of [x - 1, e]) {
+        if (grid[y][cx] === TILES.WALL && !isFloorAt(grid, cx, y + 1)) {
+          out[y][cx] = Math.max(out[y][cx], Math.min(freeAbove(grid, cx, y, rise), min) * TILE);
+        }
+      }
+      x = e;
+    }
+  }
+  return out;
+}
+
+function drawWhiteWall(g, grid, x, y, px, py, t, riseMap) {
+  const front = isFloorAt(grid, x, y + 1);
+  const up = riseMap[y][x];
+  if (front || up > 0) {
+    const top = py - up;
+    g.fillStyle(front ? t.wallFace : t.wall, 1).fillRect(px, top, TILE, TILE + up);
+    g.fillStyle(t.wallTop, 1).fillRect(px, top, TILE, 6);
+    if (front) g.fillStyle(t.wallBase, 1).fillRect(px, py + TILE - 7, TILE, 7);
+    g.fillStyle(t.wallEdge, 1).fillRect(px, top, TILE, 2); // top edge of the tall wall
+  }
+  g.fillStyle(t.wallEdge, 1); // edges only against real floor (not doors)
+  if (front) g.fillRect(px, py + TILE - 2, TILE, 2);
+  if (isFloorAt(grid, x, y - 1)) g.fillRect(px, py, TILE, 2);
+  if (isFloorAt(grid, x - 1, y)) g.fillRect(px, py, 2, TILE);
+  if (isFloorAt(grid, x + 1, y)) g.fillRect(px + TILE - 2, py, 2, TILE);
+}
+
+// Lintel: the tall wall continuing above a door in a front wall.
+function drawLintel(g, x, y, px, py, t, riseMap) {
+  const up = riseMap[y][x];
+  if (up <= 0) return;
+  g.fillStyle(t.wallFace, 1).fillRect(px, py - up, TILE, up);
+  g.fillStyle(t.wallTop, 1).fillRect(px, py - up, TILE, 6);
+  g.fillStyle(t.wallEdge, 1).fillRect(px, py - up, TILE, 2);
+  g.fillStyle(t.wallEdge, 1).fillRect(px, py - 2, TILE, 2);
 }
 
 // Draw void / walls / floor / doors / grid lines onto one Graphics object.
@@ -56,6 +115,7 @@ export function drawMap(scene, grid, themeName = 'default') {
   const GROUT = 0;
   const grout = t.tileGrout ?? t.floor;
 
+  const riseMap = t.wallStyle ? computeRise(grid, t.wallRise || 0) : null;
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       const px = x * TILE;
@@ -72,7 +132,16 @@ export function drawMap(scene, grid, themeName = 'default') {
       } else if (wallTouchesFloor(grid, x, y)) {
         g.fillStyle(t.wall, 1); // only the wall ring bordering the floor
         g.fillRect(px, py, TILE, TILE);
-        if (t.wallStyle) drawWhiteWall(g, grid, x, y, px, py, t);
+        if (t.wallStyle) drawWhiteWall(g, grid, x, y, px, py, t, riseMap);
+      }
+    }
+  }
+
+  // Lintels above doors set in tall front walls.
+  if (riseMap) {
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        if (grid[y][x] === TILES.DOOR) drawLintel(g, x, y, x * TILE, y * TILE, t, riseMap);
       }
     }
   }
