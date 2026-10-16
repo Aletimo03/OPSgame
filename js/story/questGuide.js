@@ -4,7 +4,7 @@
 // stale. Used by the phone (P: "where to go") and the minimap (M: markers).
 import { questState } from './questState.js';
 import { activeQuest } from './chapters.js';
-import { CHARACTERS, getCharData } from '../core/characters.js';
+import { CHARACTERS, getCharData, locationFor } from '../core/characters.js';
 import { SPAWN_POINTS, resolveSpawn } from '../../maps/spawn-points/spawn-points.js';
 import { MAPS } from '../../maps/index.js';
 
@@ -77,7 +77,7 @@ export function objectiveTargets(scene) {
         ? CHARACTERS.find((c) => getCharData(scene, c).chapters?.[ch]?.item?.name === o.item)
         : o.npc || o.defeat || o.quiz;
       const data = id ? getCharData(scene, id) : null;
-      const loc = data?.locations?.[ch];
+      const loc = data ? locationFor(data, ch) : null;
       if (loc) {
         const sp = resolveSpawn(loc.map);
         Object.assign(t, { who: data.name || id, place: loc.map, mapKey: sp.map, tx: sp.tx ?? null, ty: sp.ty ?? null });

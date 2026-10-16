@@ -95,6 +95,10 @@ for (const n of NPCS) {
   for (const [ch, loc] of Object.entries(DATA[n].locations || {})) {
     check(MAPS[resolveSpawn(loc.map).map], `${n}.locations.${ch}.map "${loc.map}" is not a map or spawn point`);
     check(CHAPTERS[ch], `${n}.locations has "${ch}", which is not a registered chapter`);
+    for (const alt of loc.alt || []) {
+      check(MAPS[resolveSpawn(alt.map).map], `${n}.locations.${ch}.alt map "${alt.map}" is not a map or spawn point`);
+      check(alt.flag, `${n}.locations.${ch}.alt entry without a flag`);
+    }
   }
 }
 

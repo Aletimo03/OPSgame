@@ -51,7 +51,11 @@ export function getCharData(scene, folder) {
 // Battle and item are only ever returned from a chapter entry.
 export function resolveInteraction(data) {
   const ch = questState.activeChapter;
-  const entry = data && data.chapters && data.chapters[ch];
+  let entry = data && data.chapters && data.chapters[ch];
+  // `when: [{ flag, dialogue, dialogueAfter? }]`: once that flag is set, the
+  // chapter entry speaks those lines instead (e.g. Gabbo before / at the Alcatraz).
+  const alt = entry?.when?.find((w) => questState.hasFlag(w.flag));
+  if (alt) entry = { ...entry, ...alt, when: undefined };
   if (entry) {
     return {
       dialogue: entry.dialogue ?? data.default ?? '...',
@@ -77,8 +81,13 @@ export function baseStats(data) {
 
 // Where a character is during a given chapter (explicit per chapter): returns
 // { map, tx, ty, facing? } or null if they don't appear that chapter.
+// A location may carry `alt: [{ flag, map, facing?, wander?, wanderRadius? }]`:
+// once that flag is set the character is there instead (Gabbo moves from the
+// house hall to the Alcatraz in chapter 12).
 export function locationFor(data, chapter) {
-  return (data && data.locations && data.locations[chapter]) || null;
+  const loc = (data && data.locations && data.locations[chapter]) || null;
+  const alt = loc?.alt?.find((a) => questState.hasFlag(a.flag));
+  return alt || loc;
 }
 
 // Build the list of characters that should be spawned in `mapKey` for the
