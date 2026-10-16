@@ -51,6 +51,10 @@ export const PLAYER = {
   // Add these two lines:
   PORTRAIT_KEY: 'zionick-portrait',
   PORTRAIT_PATH: 'assets/characters/zionick/portrait.png',
+  // Seated poses: 4x4 sheet, rows down / left / right / up (sit_source.jpg = the user's art).
+  SIT_KEY: 'zionick-sit',
+  SIT_PATH: 'assets/characters/zionick/sit.png',
+  SIT_FRAMERATE: 3, // slow "breathing" loop through the 4 seated frames
 
 };
 

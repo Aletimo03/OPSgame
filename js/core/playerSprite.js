@@ -75,6 +75,36 @@ export function createWalkAnims(scene, key) {
   return { down: mk('down', ROW.DOWN), side: mk('side', ROW.SIDE), up: mk('up', ROW.UP) };
 }
 
+// Seated poses (PLAYER.SIT_KEY, a 4x4 sheet: rows down / left / right / up,
+// each facing drawn as is, nothing mirrored). Slices it and builds the slow
+// loops `sit-<facing>`. Returns false if the art is missing.
+const SIT_ROWS = ['down', 'left', 'right', 'up'];
+export function prepareSitTexture(scene) {
+  if (!scene.textures.exists(PLAYER.SIT_KEY)) return false;
+  const tex = scene.textures.get(PLAYER.SIT_KEY);
+  const src = tex.getSourceImage();
+  const fw = Math.floor(src.width / COLS);
+  const fh = Math.floor(src.height / SIT_ROWS.length);
+  if (!tex.has(0)) {
+    let f = 0;
+    for (let r = 0; r < SIT_ROWS.length; r++) {
+      for (let c = 0; c < COLS; c++) tex.add(f++, 0, c * fw, r * fh, fw, fh);
+    }
+  }
+  SIT_ROWS.forEach((dir, r) => {
+    const key = `sit-${dir}`;
+    if (scene.anims.exists(key)) return;
+    scene.anims.create({
+      key,
+      frames: scene.anims.generateFrameNumbers(PLAYER.SIT_KEY, { start: r * COLS, end: r * COLS + COLS - 1 }),
+      frameRate: PLAYER.SIT_FRAMERATE,
+      repeat: -1,
+      yoyo: true,
+    });
+  });
+  return true;
+}
+
 export function idleFrame(facing) {
   switch (facing) {
     case 'up':

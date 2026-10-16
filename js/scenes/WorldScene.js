@@ -12,6 +12,7 @@ import {
   createPlayerAnims,
   movePlayer,
   idleFrame,
+  prepareSitTexture,
   feetY,
   feetCenterY,
 } from '../core/playerSprite.js';
@@ -70,6 +71,7 @@ export default class WorldScene extends Phaser.Scene {
       if (file.key === PLAYER.SPRITE_KEY) this.playerLoaded = false;
     });
     this.load.image(PLAYER.SPRITE_KEY, PLAYER.SPRITE_PATH);
+    if (!this.textures.exists(PLAYER.SIT_KEY)) this.load.image(PLAYER.SIT_KEY, PLAYER.SIT_PATH);
 
       // Clean, direct load using your new config settings
       if (!this.textures.exists(PLAYER.PORTRAIT_KEY)) {
@@ -227,6 +229,7 @@ export default class WorldScene extends Phaser.Scene {
     this.player.body.setOffset((frameW - bw) / 2, frameH - bh - frameH * 0.04);
 
     createPlayerAnims(this);
+    this.canSitPose = prepareSitTexture(this);
     this.physics.add.collider(this.player, this.walls);
 
     // NPCs (solid, interactable) + dialogue box.
@@ -643,6 +646,7 @@ export default class WorldScene extends Phaser.Scene {
   // Zio Nick stands still: no velocity and no walk animation left running.
   holdPlayer() {
     const p = this.player;
+    if (this.seated) { p.body.setVelocity(0); return; } // keep the seated pose
     p.body.setVelocity(0);
     if (p.anims.isPlaying) {
       p.anims.stop();
@@ -1233,16 +1237,28 @@ export default class WorldScene extends Phaser.Scene {
     return false;
   }
 
-  // No sitting pose in the sprite sheet yet: the player just faces the table
-  // (seat.facing) and stays put. Healing happens in restTick().
+  // Sit down: slide onto the middle of the seat, swap to the seated sheet
+  // (PLAYER.SIT_KEY, one pose per facing) with a little squash, then loop the
+  // seated frames slowly. Healing happens in restTick().
   sitOn(seat) {
     this.seated = seat;
     this.healAcc = 0;
-    this.player.body.setVelocity(0);
-    this.player.anims.stop();
-    this.player.facing = seat.facing;
-    this.player.setFlipX(seat.facing === 'right'); // side art faces LEFT natively
-    this.player.setFrame(idleFrame(seat.facing));
+    p.body.setVelocity(0);
+    p.anims.stop();
+    p.facing = seat.facing;
+    // Centre the feet on the seat sideways (the seat is a feet area in tiles).
+    const dx = (seat.tx + seat.w / 2) * TILE - p.body.center.x;
+    if (Math.abs(dx) > 1) this.tweens.add({ targets: p, x: p.x + dx, duration: 120, ease: 'Sine.easeOut' });
+    if (this.canSitPose) {
+      p.setFlipX(false); // every seated facing has its own art
+      p.setTexture(PLAYER.SIT_KEY, 0);
+      p.anims.play(`sit-${seat.facing}`);
+      this.tweens.add({ targets: p, scaleY: PLAYER.SCALE * 0.9, duration: 90, yoyo: true, ease: 'Quad.easeOut' });
+    } else {
+      p.setFlipX(seat.facing === 'right'); // side art faces LEFT natively
+      p.setFrame(idleFrame(seat.facing));
+    }
+    p.setDepth(this.characterDepth(p));
     this.showBanner('Zio Nick si siede e riprende fiato\n(frecce o Spazio per alzarsi)', 0.18);
   }
 
