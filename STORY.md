@@ -61,6 +61,8 @@ All'avvio puoi scegliere **Continua** o **Nuova partita**. La nuova partita chie
 | `gaia` | Gaia | ama Alessio più di tutti | 28 / 5 / 2 |
 | `caue` | Caue | il boss finale, cita i Colossesi | 70 / 17 / 6 |
 | `timo` | Alessio | fornisce l'equipaggiamento a Zio Nick | 30 / 6 / 2 |
+| `ernesto` | Ernesto, "Er Fresco" | piemontese, designer di prodotto (sta progettando un draghetto per gli ovetti Kinder), porta salame e formaggi in cucina | 28 / 5 / 2 |
+| `lilia` | Lilia | sorella di Gaia, ospite: compare solo 3 volte (cap. 3, 7, 10), sempre con l'IQOS | 26 / 4 / 2 |
 
 ### Come parlano
 
@@ -73,7 +75,9 @@ Ogni personaggio ha un `persona.md` in `assets/characters/<id>/` con il suo modo
 | Ana | in inglese, invita agli aperitivi (guacamole) |
 | Gabbo | "O fra" all'inizio di **ogni** frase e "diahane" alla fine |
 | Alessio | taciturno, "O fra" solo all'inizio della prima frase |
-| Gaia | "senza rispetto", sempre con Alessio |
+| Gaia | "senza rispetto", sempre con Alessio; Zio Nick le chiede sempre di sua sorella Lilia |
+| Ernesto | italiano normale, nessun tormentone; sempre down per vino e aperitivi, parla del suo cibo piemontese e del draghetto Kinder |
+| Lilia | inizia spesso con "compa", dice "amunì" per "andiamo", ama Andrea Raineri (il suo ragazzo), si arrabbia se le chiedi una heets |
 | Nima | inglese + italiano un po' rotto, apre spesso con *Buongiorns*, *Goodnights*, *Buonanots*; ogni tanto scritte in arabo; fissato con l'ordine in cucina |
 | Mari | fiorellini ed emoji ovunque, manda sticker; aspetta sempre Fede |
 | Gatta (Fede) | "pota" e Brescia |
@@ -107,6 +111,7 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - **Dove:** cucina del primo piano (`first-floor-kitchen`).
 - **Obiettivi:** farsi dare qualcosa da **Alessio** («O fra. Meloni no.») e da **Sara**, che aggiunge una sessione di lamentele sui meloni.
 - **Ricompense:** Trenbolone (+5 ATK), Palle a terra (+10 HP).
+- **Extra:** nel corridoio del primo piano c'è **Lilia**, la sorella di Gaia, venuta a trovarla (prima apparizione).
 
 ### Capitolo 4 — La Banda · *scontro + minigioco*
 - **Dove:** corridoio principale del piano terra (Gatta) e cucina del primo piano (il frigo). Sono le 23:00.
@@ -124,7 +129,7 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - Nel gruppo Ana invita tutti all'aperitivo di stasera in cucina di su.
 
 ### Capitolo 7 — L'aperitivo · *scena*
-- **Dove:** cucina del primo piano, alle 19:00. Ci sono tutti i coinquilini (tranne Caue e Gabbo).
+- **Dove:** cucina del primo piano, alle 19:00. Ci sono tutti i coinquilini (tranne Caue e Gabbo), più Lilia ed Ernesto (vino e salame dal Piemonte).
 - **Obiettivo:** raggiungere l'aperitivo di Ana. Entrando in cucina parte la scena: ognuno dice la sua, la visuale zooma su chi parla, che si gira verso la telecamera, e la battuta appare in grande con il resto dello schermo oscurato.
 - **Alla fine:** 2 *Guacamole di Ana* (curano 25) e un cuore con ognuno dei presenti. Il capitolo si completa.
 
@@ -144,11 +149,21 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
   - **sconfiggere Mari**: «Fede non arriva e tu pensi solo ai meloni!»;
   - **rispondere al quiz di Gaia**: «Chi ama Gaia più di tutti?» → **Alessio**;
   - ottenere il **Verbale** da Alessio: «Meloni scomparsi. Tutto scritto.» (+3 DEF).
+- Accanto a Gaia c'è di nuovo **Lilia**: chiederle una heets è un errore.
 
 ### Capitolo 11 — I due meloni · *finale*
 - **Obiettivi:** il **Distintivo d'Oro** da Alessio e **sconfiggere Caue** (corridoio principale del piano terra).
 - **Cosa succede:** Caue stringe i due meloni: «Sta scritto: chi ha due meloni ne dia uno a chi non ne ha. Tu ne avevi due, io nessuno». Vinci e te li riprendi.
 - **Ricompensa:** Distintivo d'Oro (+5 ATK, +15 HP, +3 DEF).
+
+### Capitolo 12 — Notte all'Alcatraz · *uscita* (epilogo, scheletro)
+- **Quando:** dopo il finale, alle 23:30. I meloni sono tornati, ma Alessio non si fa più trovare: sta sempre con Gaia.
+- **Obiettivi:**
+  - trovare **Gabbo** nella hall del piano terra (il salotto): «O fra, Alessio non c'è, è sempre con Gaia… mi servi te per andare a pushare, diahane»;
+  - uscire dalla **porta d'ingresso** (prima di parlare con Gabbo non si esce): parte il video dell'uscita e ti ritrovi all'**Alcatraz**, la discoteca di Milano;
+  - **salire sul palco** con Gabbo, nella sala principale.
+- **Dopo:** il gioco finisce qui (titoli di coda). Dall'Alcatraz si torna a casa dalla porta della lobby.
+- **Da completare:** il video (`assets/cutscenes/alcatraz.mp4`) e la grafica del locale (per ora pavimento scuro, palco e bar colorati).
 
 ## Crescita di Zio Nick
 
