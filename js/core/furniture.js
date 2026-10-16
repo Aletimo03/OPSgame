@@ -29,7 +29,7 @@ export const FURNITURE_ERRORS = [];
 
 export const furnitureKey = (type, dir) => FURNITURE[type]?.dirs?.[dir]?.key || `${type}_${dir}`;
 // assets/furniture/<group>/<type>/<type>_<dir>.png (no group → assets/furniture/<type>/…).
-export const FURNITURE_GROUPS = ['kitchen', 'rooms', 'others'];
+export const FURNITURE_GROUPS = ['kitchen', 'rooms', 'others', 'bathroom'];
 export const furniturePath = (type, dir) => {
   const group = FURNITURE[type]?.group;
   return FURNITURE[type]?.dirs?.[dir]?.path

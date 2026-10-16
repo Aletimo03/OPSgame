@@ -1,7 +1,7 @@
 // maps/first-floor-rooms/room-22/room-22.js
 // DOUBLE room: corridor on the left (you enter from below), bedroom A on its
 // right, then the bathroom, then bedroom B across the top. See makeDoubleSuite.
-import { makeDoubleSuite } from '../../../js/core/roomBuilder.js';
+import { makeDoubleSuite, bathroomFixtures } from '../../../js/core/roomBuilder.js';
 
 const suite = makeDoubleSuite();
 const { grid, origins } = suite;
@@ -24,5 +24,5 @@ export default {
     fromFirstFloor: { ...suite.spawn },
   },
   warps: [{ ...suite.door, to: 'first-floor', toSpawn: 'fromRoom22' }],
-  props: [...bedroom(origins.b), ...bedroom(origins.a)],
+  props: [...bedroom(origins.b), ...bedroom(origins.a), ...bathroomFixtures(suite.areas.bathroom)],
 };

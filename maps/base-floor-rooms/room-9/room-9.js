@@ -1,5 +1,5 @@
 // maps/base-floor-rooms/room-9/room-9.js
-import { makeRoomSuite } from '../../../js/core/roomBuilder.js';
+import { makeRoomSuite, bathroomFixtures } from '../../../js/core/roomBuilder.js';
 
 // Bedroom (top) + anteroom (bottom-left, you enter from below) + bathroom
 // (bottom-right, open doorway from the anteroom). See makeRoomSuite.
@@ -18,7 +18,8 @@ export default {
   },
   warps: [{ ...suite.door, to: 'base-floor', toSpawn: 'fromRoom9' }],
   props: [
-    { furniture: 'armadio', dir: 'e', tx: 0.99, ty: 15.5 }, // anteroom, against its left wall
+    ...bathroomFixtures(suite.areas.bathroom), // shower, sink, toilet
+    { furniture: 'armadio', dir: 'e', tx: 0.99, ty: suite.areas.anteroom.y0 - 0.5 }, // anteroom, against its left wall
     { furniture: 'bed', dir: 's', tx: -2.40, ty: -3.00 },
     { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67, hidden: { kind: 'sock', id: 'room-9-tavolino' } },
     { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17 },

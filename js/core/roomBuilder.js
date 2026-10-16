@@ -77,20 +77,24 @@ export function gridRows(grid) {
 // The openings are plain floor (no warp); only the entrance is a DOOR tile.
 // Returns { grid, door, spawn, areas } — door/spawn in grid tiles, areas are
 // the interior boxes { x0, y0, x1, y1 } (inclusive) of each part.
-export function makeRoomSuite(cols, rows) {
-  const total = rows + Math.round(rows / 2); // bedroom + strip (shared wall row)
+// WALL_T: thickness (rows) of the wall between the bedroom and the strip
+// below it; 2 makes it read as a real wall (its front, seen from the strip,
+// rises over the extra row).
+export function makeRoomSuite(cols, rows, WALL_T = 2) {
+  const total = rows + Math.round(rows / 2) + (WALL_T - 1); // bedroom + thick wall + strip
   const g = makeRoom(cols, total);
-  const top = rows - 1;                      // wall between bedroom and strip
+  const top = rows - 1;                      // first row of the wall between bedroom and strip
   const split = Math.floor(cols / 2);        // wall between anteroom and bathroom
-  for (let x = 0; x < cols; x++) g[top][x] = TILES.WALL;
+  for (let r = 0; r < WALL_T; r++) for (let x = 0; x < cols; x++) g[top + r][x] = TILES.WALL;
   for (let y = top; y < total; y++) g[y][split] = TILES.WALL;
 
-  const ante = { x0: 1, y0: top + 1, x1: split - 1, y1: total - 2 };
-  const bath = { x0: split + 1, y0: top + 1, x1: cols - 2, y1: total - 2 };
+  const stripTop = top + WALL_T;
+  const ante = { x0: 1, y0: stripTop, x1: split - 1, y1: total - 2 };
+  const bath = { x0: split + 1, y0: stripTop, x1: cols - 2, y1: total - 2 };
   const bed = { x0: 1, y0: 1, x1: cols - 2, y1: top - 1 };
-  // Entrance + bedroom doorway, centred on the anteroom's width.
+  // Entrance + bedroom doorway (through the whole thick wall), centred on the anteroom.
   const doorX = ante.x0 + Math.floor((ante.x1 - ante.x0 + 1 - DOOR_WIDTH) / 2);
-  for (let i = 0; i < DOOR_WIDTH; i++) g[top][doorX + i] = TILES.FLOOR;
+  for (let r = 0; r < WALL_T; r++) for (let i = 0; i < DOOR_WIDTH; i++) g[top + r][doorX + i] = TILES.FLOOR;
   // Bathroom doorway, centred on the strip's height.
   const doorY = ante.y0 + Math.floor((ante.y1 - ante.y0 + 1 - DOOR_WIDTH) / 2);
   for (let i = 0; i < DOOR_WIDTH; i++) g[doorY + i][split] = TILES.FLOOR;
@@ -160,4 +164,26 @@ export function makeDoubleSuite() {
     areas: { corridor, bedroomA: bedA, bathroom: bath, bedroomB: bedB },
     origins: { a: { ox: wallX, oy: bathBottom }, b: { ox: 0, oy: 0 } },
   };
+}
+
+// Bathroom fixtures for a bathroom `area` ({ x0, y0, x1, y1 } interior tiles,
+// from makeRoomSuite / makeDoubleSuite):
+//  • the SINK towards the left of the top wall (one tile in from the left
+//    wall, so the doorway stays clear), 1.8× catalogue size;
+//  • the TOILET right next to it, 1.5×;
+//  • the corner SHOWER (top view, mirrored) in the bottom-right corner, 1.5×.
+// Sizes match the catalogue entries × the scales below.
+export const FIXTURE_SCALE = 1.5;
+export const SINK_SCALE = FIXTURE_SCALE * 1.2;
+export function bathroomFixtures(area) {
+  const k = FIXTURE_SCALE;
+  const SINK_W = 1.01 * SINK_SCALE;
+  const SHOWER_W = 2.21 * k, SHOWER_H = 2.33 * k;
+  const sinkX = area.x0 + 1;
+  const wcX = sinkX + SINK_W + 0.15;
+  return [
+    { furniture: 'lavandino', dir: 's', tx: sinkX, ty: area.y0 - 0.35, scale: SINK_SCALE },
+    { furniture: 'wc', dir: 's', tx: wcX, ty: area.y0 - 0.55, scale: k },
+    { furniture: 'doccia_angolo', dir: 's', tx: area.x1 + 1 - SHOWER_W - 0.05, ty: area.y1 + 1 - SHOWER_H + 0.1, scale: k },
+  ];
 }

@@ -2,7 +2,7 @@
 // Central catalogue of furniture that comes in several orientations. DATA ONLY:
 // the logic that turns a map entry into a normal prop is js/core/furniture.js.
 //
-//   FURNITURE[type].group = 'kitchen' | 'rooms' | 'others'   (sub-folder of assets/furniture/)
+//   FURNITURE[type].group = 'kitchen' | 'rooms' | 'others' | 'bathroom'   (sub-folder of assets/furniture/)
 //   FURNITURE[type].label / .examine = name + lines shown when you press Space
 //                                       facing it (optional; placeholder texts, rewrite freely)
 //   FURNITURE[type].dirs[dir] = {
@@ -200,6 +200,52 @@ export const FURNITURE = {
         w: 1.12, h: 3.86,
         colliders: [{ x: 0.01, y: 2.7, w: 1.1, h: 1.15 }],
       },
+    },
+  },
+  // Bathroom fixtures (every room's bathroom; js/core/roomBuilder.js
+  // bathroomFixtures places them): shower in the top-right corner, sink and
+  // toilet next to it along the top wall. Kept small so the room breathes.
+  doccia: {
+    label: 'Doccia',
+    examine: ['La doccia. Il tappetino è ancora bagnato da stamattina.'],
+    group: 'bathroom',
+    dirs: {
+      n: { w: 2.1, h: 2.56, colliders: [{ x: 0.01, y: 0.01, w: 2.09, h: 2.55 }] },
+      // e: the user's side view MIRRORED (doccia_e_source.png is the original),
+      // used in the bathrooms' top-right corner so the opening faces the room.
+      e: { w: 1.68, h: 2.68, colliders: [{ x: 0.01, y: 0.01, w: 1.67, h: 2.67 }] },
+      s: { w: 2.01, h: 2.68, colliders: [{ x: 0.01, y: 0.01, w: 2, h: 2.67 }] },
+    },
+  },
+  lavandino: {
+    label: 'Lavandino',
+    examine: ['Un lavandino. Spazzolino, dentifricio e un tappo che non chiude mai.'],
+    group: 'bathroom',
+    dirs: {
+      n: { w: 0.92, h: 0.99, colliders: [{ x: 0.01, y: 0.54, w: 0.91, h: 0.44 }] },
+      e: { w: 0.9, h: 1.21, colliders: [{ x: 0.01, y: 0.67, w: 0.88, h: 0.54 }] },
+      s: { w: 1.01, h: 1.19, colliders: [{ x: 0.01, y: 0.66, w: 1, h: 0.53 }] },
+    },
+  },
+  wc: {
+    label: 'Water',
+    examine: ['Il water. Meglio non indagare oltre.'],
+    group: 'bathroom',
+    dirs: {
+      n: { w: 1.05, h: 1.64, colliders: [{ x: 0.01, y: 0.82, w: 1.02, h: 0.81 }] },
+      e: { w: 1.49, h: 1.72, colliders: [{ x: 0.01, y: 0.86, w: 1.48, h: 0.85 }] },
+      s: { w: 1.07, h: 1.76, colliders: [{ x: 0.01, y: 0.88, w: 1.05, h: 0.87 }] },
+    },
+  },
+  // Corner shower seen from above (the user's top view, MIRRORED so the shower
+  // head is on the right; original in doccia_angolo_s_source.png). Bathrooms'
+  // bottom-right corner.
+  doccia_angolo: {
+    label: 'Doccia',
+    examine: ['La doccia. Il tappetino è ancora bagnato da stamattina.'],
+    group: 'bathroom',
+    dirs: {
+      s: { w: 2.21, h: 2.33, colliders: [{ x: 0.01, y: 0.01, w: 2.2, h: 2.32 }] },
     },
   },
 };
