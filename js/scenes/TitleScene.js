@@ -86,7 +86,7 @@ export default class TitleScene extends Phaser.Scene {
     }
 
     text(W / 2, H * 0.24, 'OPSgame', { fontSize: '64px', color: '#ffd54a', fontStyle: 'bold' });
-    text(W / 2, H * 0.24 + 56, 'Zio Nick e i due meloni', { fontSize: '20px', color: '#9aa0a8' });
+    text(W / 2, H * 0.24 + 56, 'Le indagini di Zio Nick', { fontSize: '20px', color: '#9aa0a8' });
 
     // What the save holds (or the warning on the confirm screen).
     let info = '';
