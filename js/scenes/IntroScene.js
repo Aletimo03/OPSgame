@@ -9,7 +9,8 @@
 // Everything fills the whole screen ("cover": scaled to cover, centred, the
 // overflow cropped; never distorted). Browsers only allow sound after a
 // click/key, so a "press a key" screen comes first (its text dissolves when
-// you press). The intro can't be skipped (user's choice).
+// you press). Holding Space for SKIP_HOLD_MS skips it (a small bar fills
+// while you hold; a tap does nothing).
 // The Earth clip is shifted so the globe sits in the middle of the screen
 // (EARTH_CENTRE, measured on its first frame) and zoomed just enough that the
 // shift leaves no black edges.
@@ -18,6 +19,7 @@ const LOGO_AT = 20;
 const CLIP_START = 7;
 const CLIP_RATE = CLIP_SECONDS / (LOGO_AT - CLIP_START); // ≈0.48: the clip fills 7 → 20 s
 const END_AT = 25;
+const SKIP_HOLD_MS = 3000; // hold Space this long to skip the intro
 // Where the globe is in the clip's first frame (768×498 source px).
 const EARTH_CENTRE = { x: 328, y: 216 };
 const KEYS = { frame: 'intro-frame', clip: 'intro-clip', logo: 'intro-logo', music: 'intro-theme' };
@@ -50,6 +52,11 @@ export default class IntroScene extends Phaser.Scene {
       if (this.stage === 'gate') this.begin();
     };
     this.input.keyboard.on('keydown', onInput);
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.holdMs = 0;
+    this.skipBar = this.add.graphics().setDepth(20);
+    this.skipText = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '13px', color: '#c8ccd4' })
+      .setOrigin(1, 1).setDepth(20);
     this.input.on('pointerdown', onInput);
   }
 
@@ -134,6 +141,23 @@ export default class IntroScene extends Phaser.Scene {
 
     // END_AT: on to the title screen.
     this.time.delayedCall(END_AT * 1000, () => this.finish());
+  }
+
+  // Hold Space SKIP_HOLD_MS to skip: a bar bottom-right fills while held.
+  update(time, delta) {
+    if (this.stage !== 'playing' || !this.spaceKey) return;
+    const W = this.scale.width;
+    const H = this.scale.height;
+    this.holdMs = this.spaceKey.isDown ? this.holdMs + delta : 0;
+    this.skipBar.clear();
+    this.skipText.setText(this.holdMs > 0 ? 'Tieni premuto Spazio per saltare' : '');
+    if (this.holdMs > 0) {
+      const p = Math.min(1, this.holdMs / SKIP_HOLD_MS);
+      this.skipText.setPosition(W - 16, H - 26);
+      this.skipBar.fillStyle(0x000000, 0.6).fillRect(W - 216, H - 20, 200, 8);
+      this.skipBar.fillStyle(0xffd54a, 1).fillRect(W - 216, H - 20, 200 * p, 8);
+      if (p >= 1) this.finish();
+    }
   }
 
   finish() {
