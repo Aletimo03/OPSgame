@@ -10,6 +10,7 @@ import firstFloorKitchen from './first-floor-kitchen/first-floor-kitchen.js';
 import firstFloorBathroom from './first-floor-bathroom/first-floor-bathroom.js';
 import laundryRoom from './laundry-room/laundry-room.js';
 import trashbinRoom from './trashbin-room/trashbin-room.js';
+import alcatraz from './alcatraz/alcatraz.js';
 
 import { expandMapProps } from '../js/core/furniture.js';
 
@@ -53,6 +54,7 @@ export const MAPS = {
   'first-floor-bathroom': firstFloorBathroom,
   'laundry-room': laundryRoom,
   'trashbin-room': trashbinRoom,
+  alcatraz, // the Milan club (chapter 12), reached by a cutscene from the entrance
   'room-1': bRoom1, 'room-2': bRoom2, 'room-3': bRoom3, 'room-4': bRoom4,
   'room-5': bRoom5, 'room-6': bRoom6, 'room-7': bRoom7, 'room-8': bRoom8,
   'room-9': bRoom9, 'room-10': bRoom10, 'room-11': bRoom11, 'room-12': bRoom12,

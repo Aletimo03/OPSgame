@@ -18,6 +18,7 @@ const PLACE = {
   'first-floor-kitchen': 'Cucina del primo piano',
   'first-floor-bathroom': 'Shared Bathroom & Laundry',
   'laundry-room': 'Lavanderia',
+  alcatraz: 'Alcatraz (Milano)',
   'trashbin-room': 'Stanza dei bidoni',
   entrance: 'Ingresso',
 };

@@ -83,6 +83,19 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 5
+    },
+    "chapter-12": {
+      "map": "base-floor-living",
+      "facing": "down",
+      "alt": [
+        {
+          "flag": "alcatraz-arrived",
+          "map": "alcatraz",
+          "facing": "down",
+          "wander": true,
+          "wanderRadius": 4
+        }
+      ]
     }
   },
   "default": "O fra, non ho niente da dirti, sbirro, diahane",
@@ -94,7 +107,8 @@
       "Lascia stare"
     ],
     "reward": 8,
-    "after": "O fra, basta per oggi, diahane"
+    "after": "O fra, basta per oggi, diahane",
+    "until": "chapter-11"
   },
   "chapters": {
     "chapter-1": {
@@ -122,6 +136,23 @@
           "Provo a calmarlo"
         ]
       }
+    },
+    "chapter-12": {
+      "dialogue": [
+        "O fra, Alessio non c'è, è sempre con Gaia, diahane.",
+        "O fra, non si fa più trovare, diahane.",
+        "O fra, mi servi te per andare a pushare, diahane.",
+        "O fra, si esce dall'ingresso: Alcatraz, diahane!"
+      ],
+      "when": [
+        {
+          "flag": "alcatraz-arrived",
+          "dialogue": [
+            "O fra, siamo all'Alcatraz, diahane!",
+            "O fra, saliamo sul palco, diahane."
+          ]
+        }
+      ]
     }
   }
 }

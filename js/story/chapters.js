@@ -12,6 +12,7 @@ import chapter8 from './chapter-8/chapter-8.js';
 import chapter9 from './chapter-9/chapter-9.js';
 import chapter10 from './chapter-10/chapter-10.js';
 import chapter11 from './chapter-11/chapter-11.js';
+import chapter12 from './chapter-12/chapter-12.js';
 
 export const CHAPTERS = {
   'chapter-1': chapter1,
@@ -25,13 +26,14 @@ export const CHAPTERS = {
   'chapter-9': chapter9,
   'chapter-10': chapter10,
   'chapter-11': chapter11,
+  'chapter-12': chapter12,
 };
 
 // Play order. When the active chapter's quest is complete, the story advances
 // to the next chapter that actually has a quest defined.
 export const ORDER = [
   'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
-  'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
+  'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11', 'chapter-12',
 ];
 
 // The whole story is finished: the last chapter is active and its quest done.

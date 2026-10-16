@@ -32,6 +32,13 @@ export const THEMES = {
     wallRise: 1.5,
   },
 
+  // The Alcatraz club (chapter 12): dark floor and walls, purple doors.
+  alcatraz: {
+    void: 0x050508, wall: 0x1b1b24,
+    floor: 0x2c2c36, tileGrout: 0x24242c,
+    door: 0x8a4fff,
+  },
+
   // Entrance / lobby — warm wood tiles.
   entrance: {
     void: 0x140f0a, wall: 0x4a3725,

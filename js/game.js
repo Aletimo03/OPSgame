@@ -8,6 +8,7 @@ import WorldScene from './scenes/WorldScene.js';
 import BattleScene from './scenes/BattleScene.js';
 import EndingScene from './scenes/EndingScene.js';
 import FridgeScene from './scenes/FridgeScene.js';
+import CutsceneScene from './scenes/CutsceneScene.js';
 
 const config = {
   type: Phaser.AUTO,          // WebGL when available, falls back to Canvas
@@ -33,7 +34,7 @@ const config = {
   // IntroScene boots first (logo intro, skippable), then TitleScene (Continua / Nuova partita) and starts WorldScene,
   // which renders any map; BattleScene overlays it for fights; EndingScene
   // shows the credits once the last chapter is done.
-  scene: [IntroScene, TitleScene, WorldScene, BattleScene, FridgeScene, EndingScene],
+  scene: [IntroScene, TitleScene, WorldScene, BattleScene, FridgeScene, CutsceneScene, EndingScene],
 };
 
 // Kick off the game.

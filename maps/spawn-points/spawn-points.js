@@ -33,6 +33,8 @@ export const SPAWN_POINTS = {
   'base-floor-main':       { map: 'base-floor', ...centerTile(...HALL) },
   'base-floor-vertical-1': { map: 'base-floor', ...centerTile(...VERTICAL_ONE) },
   'base-floor-vertical-2': { map: 'base-floor', ...centerTile(...VERTICAL_TWO) },
+  // the living room ("hall principale"), beside the sofa (base-floor spawn `living` is on its seat side)
+  'base-floor-living':     { map: 'base-floor', tx: 26, ty: 23 },
   // first floor (same shape)
   'first-floor-main':       { map: 'first-floor', ...centerTile(...HALL) },
   'first-floor-vertical-1': { map: 'first-floor', ...centerTile(...VERTICAL_ONE) },

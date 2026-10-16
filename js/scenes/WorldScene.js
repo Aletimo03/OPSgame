@@ -40,6 +40,7 @@ import { Minimap } from '../ui/Minimap.js';
 import { loadAudio, attachAudio } from '../core/audio.js';
 import { writeSave, clearSave } from '../core/save.js';
 import { propColliders, propBaseY } from '../core/props.js';
+import { ALCATRAZ, exitState } from '../story/alcatraz.js';
 
 const AUTOSAVE_MS = 4000; // position autosave interval (progress saves immediately)
 let unloadHooked = false; // the tab-close save listener is registered once per page
@@ -158,6 +159,7 @@ export default class WorldScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setDepth(2);
     });
+    this.drawPaint(map);
     this.physics.world.setBounds(0, 0, worldW, worldH);
     this.walls = buildWallColliders(this, grid);
     this.setupStairsAccess(map); // restrict which side the stairs are mounted from
@@ -254,6 +256,7 @@ export default class WorldScene extends Phaser.Scene {
 
     // Warp pads: an overlap zone on each door tile.
     this.setupWarps(map);
+    this.exitArmed = false; // map `exits` (front door): armed once you step off them
     this.drawDoorPlates(map);
 
     // Camera.
@@ -541,6 +544,81 @@ export default class WorldScene extends Phaser.Scene {
     }
   }
 
+  // Coloured floor areas drawn in code (map `paint`: { x0, y0, x1, y1, color,
+  // label? } in tiles, inclusive), e.g. the Alcatraz stage and bar.
+  drawPaint(map) {
+    for (const p of map.paint || []) {
+      const x = p.x0 * TILE;
+      const y = p.y0 * TILE;
+      const w = (p.x1 - p.x0 + 1) * TILE;
+      const h = (p.y1 - p.y0 + 1) * TILE;
+      this.add.rectangle(x, y, w, h, p.color, 1).setOrigin(0, 0).setDepth(1.5)
+        .setStrokeStyle(4, 0x000000, 0.35);
+      if (p.label) {
+        this.add.text(x + w / 2, y + h / 2, p.label, {
+          fontFamily: 'monospace', fontSize: '28px', fontStyle: 'bold', color: '#ffffff',
+        }).setOrigin(0.5).setAlpha(0.3).setDepth(1.6);
+      }
+    }
+  }
+
+  // Map `exits` (not warps): the entrance's front door. Stepping on one asks
+  // js/story/alcatraz.js whether you can go out (chapter 12, after Gabbo);
+  // otherwise a short line. Re-armed once you step off it.
+  checkExits() {
+    const exits = MAPS[this.mapKey].exits;
+    if (!exits?.length) return;
+    const b = this.player.body;
+    const hit = exits.find((e) => b.right > e.tx * TILE && b.left < (e.tx + (e.w || DOOR_WIDTH)) * TILE
+      && b.bottom > e.ty * TILE && b.top < (e.ty + (e.h || 1)) * TILE);
+    if (!hit) { this.exitArmed = true; return; }
+    if (!this.exitArmed || this.warpLocked) return;
+    this.exitArmed = false;
+    const st = exitState(hit.id);
+    if (st === 'go') { this.startTrip(); return; }
+    this.holdPlayer();
+    this.dialogue.show('Porta d\'ingresso', st === 'needPartner' ? ALCATRAZ.needPartner : ALCATRAZ.locked);
+  }
+
+  // Out of the house: fade, the video cutscene (CutsceneScene) over the paused
+  // world, then onCutsceneDone() lands you in the Alcatraz.
+  startTrip() {
+    this.warpLocked = true;
+    this.holdPlayer();
+    this.saveGame();
+    if (this.audio?.music?.isPlaying) this.audio.music.pause();
+    this.cameras.main.fadeOut(400);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.pause();
+      this.scene.launch('CutsceneScene', { video: ALCATRAZ.video, title: ALCATRAZ.title, returnScene: 'WorldScene' });
+    });
+  }
+
+  // Called by CutsceneScene when the clip ends (or is skipped).
+  onCutsceneDone() {
+    questState.setFlag(ALCATRAZ.arrivedFlag);
+    this.scene.resume();
+    if (this.audio?.music?.isPaused) this.audio.music.resume();
+    this.scene.restart(ALCATRAZ.to);
+  }
+
+  // Map `flagZones`: stepping into the area (feet) sets a flag once, during
+  // `chapter` if given, then onProgress() (e.g. the Alcatraz stage, chapter 12).
+  checkFlagZones() {
+    const zones = MAPS[this.mapKey].flagZones;
+    if (!zones?.length) return;
+    const fx = this.player.body.center.x / TILE;
+    const fy = this.player.body.bottom / TILE;
+    for (const z of zones) {
+      if (questState.hasFlag(z.flag) || (z.chapter && questState.activeChapter !== z.chapter)) continue;
+      if (fx >= z.x0 && fx < z.x1 + 1 && fy >= z.y0 && fy < z.y1 + 1) {
+        questState.setFlag(z.flag);
+        if (z.banner) this.showBanner(z.banner, 0.22, '#ffd54a', 0xffd54a);
+        this.onProgress();
+      }
+    }
+  }
+
   doWarp(warp) {
     if (!this.canWarp || this.warpLocked) return;
     this.warpLocked = true;
@@ -633,6 +711,9 @@ export default class WorldScene extends Phaser.Scene {
     this.assistDoor(); // slide into a doorway you're slightly off-centre from
     this.player.setDepth(this.characterDepth(this.player)); // vs NPCs and props, by feet
     updateNpcs(this, this.npcs, time); // NPCs stroll around so they feel alive
+
+    this.checkExits();
+    this.checkFlagZones();
 
     if (this.spaceGuard && !this.cursors.space.isDown) this.spaceGuard = false;
     if (pressedSpace && !this.spaceGuard) this.tryInteract();
@@ -817,7 +898,8 @@ export default class WorldScene extends Phaser.Scene {
     const r = npc.data?.rematch;
     if (!r) return false;
     const order = Object.keys(CHAPTERS);
-    return order.indexOf(questState.activeChapter) >= order.indexOf(r.from);
+    const i = order.indexOf(questState.activeChapter);
+    return i >= order.indexOf(r.from) && (!r.until || i <= order.indexOf(r.until));
   }
 
   offerRematch(target) {
@@ -903,7 +985,7 @@ export default class WorldScene extends Phaser.Scene {
     if (min === this.lastClockMin) return;
     this.lastClockMin = min;
     this.clockText.setText(`${phaseIcon(min)} ${fmt(min)}`);
-    this.nightVeil.setAlpha(nightAlpha(min));
+    this.nightVeil.setAlpha(MAPS[this.mapKey].noNight ? 0 : nightAlpha(min)); // the club has its own lights
   }
 
   // One-off scenes for this map + chapter (js/story/events.js), e.g. Ana's
@@ -1241,6 +1323,7 @@ export default class WorldScene extends Phaser.Scene {
   // (PLAYER.SIT_KEY, one pose per facing) with a little squash, then loop the
   // seated frames slowly. Healing happens in restTick().
   sitOn(seat) {
+    const p = this.player;
     this.seated = seat;
     this.healAcc = 0;
     p.body.setVelocity(0);
@@ -1263,7 +1346,14 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   standUp() {
+    const p = this.player;
     this.seated = null;
+    this.tweens.killTweensOf(p);
+    p.anims.stop();
+    p.setTexture(PLAYER.SPRITE_KEY, idleFrame(p.facing));
+    p.setFlipX(p.facing === 'right');
+    p.setScale(PLAYER.SCALE);
+    this.tweens.add({ targets: p, scaleY: PLAYER.SCALE * 1.06, duration: 80, yoyo: true, ease: 'Quad.easeOut' });
     this.saveGame();
   }
 
