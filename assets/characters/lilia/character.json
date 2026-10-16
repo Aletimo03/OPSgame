@@ -1,0 +1,48 @@
+{
+  "name": "Lilia",
+  "guest": true,
+  "stats": {
+    "maxHp": 26,
+    "attack": 4,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-3": {
+      "map": "first-floor-main",
+      "facing": "down"
+    },
+    "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
+    "chapter-10": {
+      "map": "first-floor-vertical-1",
+      "facing": "down"
+    }
+  },
+  "default": "Compa, amo troppo Andrea Raineri.",
+  "chapters": {
+    "chapter-3": {
+      "dialogue": [
+        "Compa! Sono passata a trovare Gaia.",
+        "Meloni? Compa, io ho la mia IQOS e penso ad Andrea Raineri. Lo amo troppo.",
+        "Amunì Gaia, che si fa tardi!"
+      ]
+    },
+    "chapter-7": {
+      "dialogue": [
+        "Compa, il guacamole di Ana è troppo buono.",
+        "Dopo arriva Andrea Raineri. Lo amo!"
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        "Compa, una heets? NO.",
+        "Ma come ti permetti? Le heets non si chiedono, compa!",
+        "Vado da Andrea. Amunì!"
+      ]
+    }
+  }
+}

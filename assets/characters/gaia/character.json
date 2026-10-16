@@ -69,6 +69,18 @@
   },
   "default": "Alessio ti amo troppo puzo boca",
   "chapters": {
+    "chapter-3": {
+      "dialogue": [
+        "Lilia? Sì, è qui, è venuta a trovarmi.",
+        "Mi chiedi sempre di mia sorella, eh. Però non chiederle una heets."
+      ]
+    },
+    "chapter-4": {
+      "dialogue": [
+        "Lilia? Stasera è da Andrea, non c'è.",
+        "Ogni volta che mi vedi mi chiedi di lei!"
+      ]
+    },
     "chapter-9": {
       "dialogue": [
         "Meloni? Io mangio solo noodles ultimamente.",
@@ -77,6 +89,7 @@
     },
     "chapter-10": {
       "dialogue": [
+        "Lilia è qui con me, ma prima tocca a te.",
         "Non ti lascio passare finché non rispondi.",
         "Domanda facile facile..."
       ],

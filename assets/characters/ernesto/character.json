@@ -1,0 +1,115 @@
+{
+  "name": "Ernesto",
+  "stats": {
+    "maxHp": 28,
+    "attack": 5,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-1": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-2": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-3": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-4": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-5": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-6": {
+      "map": "base-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-7": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
+    },
+    "chapter-8": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-9": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-10": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    }
+  },
+  "default": "Ho portato salame e formaggi dal Piemonte, sono in cucina. Servitevi!",
+  "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "Meloni? No, io ho portato salame e formaggi dal Piemonte.",
+        "Se vuoi consolarti, un bicchiere di vino ci sta sempre."
+      ]
+    },
+    "chapter-3": {
+      "dialogue": [
+        "Scusa, sono concentrato: sto progettando un giochino per gli ovetti Kinder.",
+        "Un draghetto! Faccio design del prodotto, ricordi? I meloni non li ho visti."
+      ]
+    },
+    "chapter-4": {
+      "dialogue": [
+        "Il formaggio ammuffito nel frigo non è mio, giuro.",
+        "I miei formaggi sono piemontesi e finiscono subito."
+      ]
+    },
+    "chapter-6": {
+      "dialogue": [
+        "Sono sceso a lasciare un po' di salame anche nella cucina di sotto.",
+        "Meloni qui? Solo salame, mi spiace."
+      ]
+    },
+    "chapter-7": {
+      "dialogue": [
+        "Aperitivo? Io sono sempre down.",
+        "Ancora un goccio di vino e poi torno al mio draghetto."
+      ]
+    },
+    "chapter-9": {
+      "dialogue": [
+        "Il draghetto per il Kinder è quasi finito.",
+        "Se ritrovi i meloni, li mangiamo con il mio salame. Aperitivo!"
+      ]
+    }
+  }
+}

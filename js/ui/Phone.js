@@ -275,7 +275,7 @@ export class Phone {
     this.avatar(g, x + 52, hy + hh / 2, 19, id);
     this.text(this.nameOf(id), { fontSize: '16px', color: '#ffffff', fontStyle: 'bold' }).setPosition(x + 80, hy + 10);
     const sub = isGroup
-      ? [...CHARACTERS.map((c) => getCharData(this.scene, c).name || c), 'Tu'].join(', ')
+      ? [...CHARACTERS.filter((c) => !getCharData(this.scene, c).guest).map((c) => getCharData(this.scene, c).name || c), 'Tu'].join(', ')
       : `online · affinità ${heartsLabel(id)}`;
     this.fitText(sub, w - 80 - 34, { fontSize: '12px', color: '#d1f4ee' }).setPosition(x + 80, hy + 32);
     this.text('⋮', { fontSize: '20px', color: '#ffffff' }).setOrigin(1, 0).setPosition(x + w - 12, hy + 16);

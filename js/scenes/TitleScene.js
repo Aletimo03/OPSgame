@@ -18,7 +18,7 @@ const PANEL_ALPHA = 0.72; // dark panel behind the text: lets the photo show thr
 const PANEL_PAD = 28;
 // Bouncing heads, like an old screensaver: every character's head drifts
 // slowly and bounces off the screen edges and off the menu panel.
-const HEAD_IDS = ['zionick', 'ana', 'caue', 'ema', 'gabbo', 'gaia', 'gatta', 'mari', 'nima', 'sara', 'timo'];
+const HEAD_IDS = ['zionick', 'ana', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo'];
 const HEAD_SIZE = 96;              // px on screen
 const HEAD_SPEED = [45, 90];       // px/s, random per head
 

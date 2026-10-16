@@ -15,7 +15,8 @@ export default {
     { from: 'mari', text: "Birra fresca al primo piano 🌼🍺 mentre aspetto Fede 🥺" },
     { from: 'mari', sticker: "🍺" },
     { from: 'gatta', text: "Pota, la birra di Brescia è meglio" },
-    { from: 'ema', text: "O Sara, ma il supermercato più vicino qual è? Grszie" },
+    { from: 'ernesto', text: "Ho lasciato salame e formaggi piemontesi in cucina di su, servitevi 🍷" },
+    { from: 'ana', text: "Er Fresco you're the best bro 🧀" },
     // private chats (dm: true)
     { from: 'gatta', text: "Pota, sabato vieni a Brescia?", dm: true },
   ],

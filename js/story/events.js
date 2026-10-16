@@ -18,6 +18,8 @@ export const EVENTS = [
       { who: 'gatta', text: "Pota, a Brescia l'aperitivo è meglio. Però buono." },
       { who: 'sara', text: 'Finalmente una cosa bella in questa casa, porco d*o' },
       { who: 'mari', text: 'Fede arriva? 🥺🌸' },
+      { who: 'ernesto', text: 'Io ho portato vino e salame dal Piemonte. Sempre down per un aperitivo!' },
+      { who: 'lilia', text: 'Compa, guacamole e IQOS. Amunì!' },
       { who: 'ana', text: 'Zio Nick, take some guacamole for later bro! 🥑' },
     ],
     // given at the end, plus +hearts with everyone who was there
