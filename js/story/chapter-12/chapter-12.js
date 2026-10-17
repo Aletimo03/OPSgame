@@ -5,7 +5,9 @@
 //   1. find Gabbo in the base-floor living room ("hall principale");
 //   2. walk out of the entrance's front door → video cutscene → the Alcatraz
 //      (flag `alcatraz-arrived`, set by the trip);
-//   3. get on the stage (flag zone in the Alcatraz map → `alcatraz-stage`).
+//   3. help Gabbo get a girl's number (js/story/flirt.js → `alcatraz-number`);
+//   4. get on the stage (flag zone in the Alcatraz map → `alcatraz-stage`,
+//      open only once he has the number).
 // Objectives are unordered in the engine; the front door only lets you out
 // after talking to Gabbo in this chapter, so the order holds.
 export default {
@@ -26,7 +28,8 @@ export default {
     objectives: [
       { npc: 'gabbo', label: 'Trova Gabbo nella hall del piano terra' },
       { flag: 'alcatraz-arrived', place: 'entrance', label: "Esci dall'ingresso e vai all'Alcatraz" },
-      { flag: 'alcatraz-stage', place: 'alcatraz', label: 'Sali sul palco con Gabbo' },
+      { flag: 'alcatraz-number', place: 'alcatraz', label: 'Aiuta Gabbo a farsi dare un numero' },
+      { flag: 'alcatraz-stage', place: 'alcatraz', label: 'Poi sali sul palco con Gabbo' },
     ],
   },
 };

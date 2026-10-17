@@ -169,10 +169,28 @@ export function createNpcs(scene, map) {
       state: 'idle',
       target: null,
       nextTime: scene.time.now + Math.random() * 1500,
+      // Step bob (character JSON `walkBob`, a fraction of the frame height):
+      // for sheets whose walk frames barely change (Lilia), a hop per step.
+      bob: cdata.walkBob || 0,
+      baseOffsetY: spr.body.offset.y,
     });
   });
 
   return { group, list, blocked };
+}
+
+// Step bob: lift the drawn sprite by |sin| once per step and rock it a little.
+// The lift moves the ORIGIN and the body offset by the same amount, so the
+// physics body (and the feet line used for depth) stay where they are.
+const STEP_MS = 135; // one step = 2 walk frames at 15 fps
+function stepBob(npc, time, walking) {
+  if (!npc.bob) return;
+  const spr = npc.sprite;
+  const ph = walking ? (time / STEP_MS) * Math.PI : 0;
+  const lift = npc.bob * Math.abs(Math.sin(ph));
+  spr.setOrigin(0.5, 0.5 + lift);
+  spr.body.setOffset(spr.body.offset.x, npc.baseOffsetY + lift * spr.frame.height);
+  spr.setAngle(walking ? 2.5 * Math.sin(ph) : 0);
 }
 
 // Tile a sprite's feet currently sit on.
@@ -186,6 +204,7 @@ const tileOf = (s) => ({
 // frame for where it faces, and a short pause before it may stroll again.
 export function freezeNpc(npc, time = 0) {
   const spr = npc.sprite;
+  stepBob(npc, 0, false);
   spr.body.setVelocity(0);
   if (npc.state === 'walking' || spr.anims.isPlaying) {
     spr.anims.stop();
@@ -269,6 +288,7 @@ export function updateNpcs(scene, npcs, time, frozen = null) {
         }
       }
     }
+    stepBob(npc, time, npc.state === 'walking');
     // Depth-sort by feet vs the player and props (WorldScene.characterDepth also
     // keeps characters in front of props they merely walk beside).
     spr.setDepth(scene.characterDepth ? scene.characterDepth(spr) : feetY(spr));
@@ -280,6 +300,7 @@ export function updateNpcs(scene, npcs, time, frozen = null) {
 // a dialogue is open, so `time` only governs the post-chat pause).
 export function faceNpcToPlayer(npc, playerFacing, time) {
   const facing = OPP[playerFacing] || 'down';
+  stepBob(npc, 0, false);
   npc.facing = facing;
   npc.state = 'idle';
   npc.target = null;

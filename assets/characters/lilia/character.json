@@ -1,6 +1,7 @@
 {
   "name": "Lilia",
   "guest": true,
+  "walkBob": 0.035,
   "stats": {
     "maxHp": 26,
     "attack": 4,

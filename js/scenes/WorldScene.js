@@ -12,6 +12,7 @@ import {
   createPlayerAnims,
   movePlayer,
   idleFrame,
+  sliceSheet,
   prepareSitTexture,
   feetY,
   feetCenterY,
@@ -41,6 +42,9 @@ import { loadAudio, attachAudio } from '../core/audio.js';
 import { writeSave, clearSave } from '../core/save.js';
 import { propColliders, propBaseY } from '../core/props.js';
 import { ALCATRAZ, exitState } from '../story/alcatraz.js';
+import {
+  GIRLS, APPROACHES, GABBO, isGirl, flirtActive, girlState, girlTag, approach, snub, winNumber, loseNight,
+} from '../story/flirt.js';
 
 const AUTOSAVE_MS = 4000; // position autosave interval (progress saves immediately)
 let unloadHooked = false; // the tab-close save listener is registered once per page
@@ -251,6 +255,13 @@ export default class WorldScene extends Phaser.Scene {
       return { npc, t };
     });
     this.refreshQuestMarks();
+    // Chapter 12: mood + hearts over each girl at the Alcatraz (js/story/flirt.js).
+    this.girlTags = this.npcs.list.filter((n) => isGirl(n.id)).map((npc) => ({
+      npc,
+      t: this.add.text(npc.sprite.x, npc.sprite.y, '', {
+        fontFamily: 'monospace', fontSize: '24px', stroke: '#000000', strokeThickness: 5,
+      }).setOrigin(0.5, 1).setDepth(900000),
+    }));
     this.physics.add.collider(this.player, this.npcs.group);
     this.dialogue = new Dialogue(this);
 
@@ -304,6 +315,8 @@ export default class WorldScene extends Phaser.Scene {
       .setAlpha(0);
     this.lastClockMin = null;
     this.updateClock();
+    this.startDisco(map);
+    this.startCrowd(map);
 
     // Tiny HUD label so you always know which room you're in.
     this.roomLabel = this.add
@@ -371,7 +384,8 @@ export default class WorldScene extends Phaser.Scene {
     // Soundtrack — plays the WorldScene theme, adopting the already-playing
     // instance across map warps so it never restarts.
     attachAudio(this);
-    this.audio.playSceneMusic();
+    if (map.music) this.audio.playMusic(map.music); // a map's own track (the Alcatraz)
+    else this.audio.playSceneMusic();
   }
 
   // True once per tap of an arrow OR its WASD twin. Reads both keys, so a tap
@@ -562,6 +576,178 @@ export default class WorldScene extends Phaser.Scene {
     }
   }
 
+  // Disco lights (map `disco`): coloured light pools that wander at random
+  // over the dance floor, drawn ADDITIVELY just above the night veil, so with a
+  // dark `ambient` they light up the floor and whoever is dancing on it.
+  // disco: { area: { x0, y0, x1, y1 } (tiles), lights, radius (tiles), colors }
+  startDisco(map) {
+    const d = map.disco;
+    if (!d) return;
+    const KEY = 'disco-light';
+    if (!this.textures.exists(KEY)) { // soft round light, white centre → transparent
+      const S = 256;
+      const tex = this.textures.createCanvas(KEY, S, S);
+      const ctx = tex.getContext();
+      const g = ctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, S, S);
+      tex.refresh();
+    }
+    const a = d.area;
+    const rx = () => Phaser.Math.FloatBetween(a.x0, a.x1 + 1) * TILE;
+    const ry = () => Phaser.Math.FloatBetween(a.y0, a.y1 + 1) * TILE;
+    const colors = d.colors || [0xff2bd6, 0x2bd9ff, 0x7dff3b, 0xffe02b, 0x8a4fff, 0xff5a2b];
+    const size = (d.radius || 3.5) * 2 * TILE;
+    for (let i = 0; i < (d.lights || 8); i++) {
+      const light = this.add.image(rx(), ry(), KEY)
+        .setDisplaySize(size, size)
+        .setTint(Phaser.Utils.Array.GetRandom(colors))
+        .setBlendMode(Phaser.BlendModes.ADD)
+        .setAlpha(0.75)
+        .setDepth(880001);
+      const wander = () => {
+        if (!light.active) return;
+        this.tweens.add({
+          targets: light, x: rx(), y: ry(),
+          duration: Phaser.Math.Between(900, 2600), ease: 'Sine.easeInOut',
+          onComplete: () => {
+            if (Math.random() < 0.4) light.setTint(Phaser.Utils.Array.GetRandom(colors)); // new colour now and then
+            wander();
+          },
+        });
+      };
+      wander();
+      // Pulse with the beat-ish: size and brightness breathe out of sync.
+      this.tweens.add({
+        targets: light, alpha: { from: 0.45, to: 0.85 }, scale: light.scale * Phaser.Math.FloatBetween(0.75, 1.15),
+        duration: Phaser.Math.Between(350, 700), yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+        delay: Phaser.Math.Between(0, 500),
+      });
+    }
+  }
+
+  // Dancing crowd (map `crowd`): dark silhouettes made from the cast's own
+  // sheets (tinted almost black, so the disco lights colour them), scattered
+  // over `area` at least `spacing` tiles apart, not solid. They dance on the
+  // map's `beat` (danceCrowd), synced to the music when it's playing.
+  startCrowd(map) {
+    this.crowd = [];
+    const c = map.crowd;
+    if (!c) return;
+    const a = c.area;
+    const spots = [];
+    const free = (x, y) => map.grid[Math.floor(y)]?.[Math.floor(x)] === TILES.FLOOR
+      && spots.every((p) => Math.hypot(p.x - x, p.y - y) >= (c.spacing || 1.5));
+    for (let k = 0; k < (c.count || 20) * 30 && spots.length < (c.count || 20); k++) {
+      const x = Phaser.Math.FloatBetween(a.x0, a.x1 + 1);
+      const y = Phaser.Math.FloatBetween(a.y0, a.y1 + 1);
+      if (free(x, y)) spots.push({ x, y });
+    }
+    const kinds = (c.from || []).filter((k) => this.textures.exists(k));
+    if (!kinds.length) return;
+    for (const p of spots) {
+      const key = Phaser.Utils.Array.GetRandom(kinds);
+      sliceSheet(this, key);
+      const sp = this.add.sprite(p.x * TILE, p.y * TILE, key, idleFrame(Phaser.Utils.Array.GetRandom(['down', 'left', 'up'])))
+        .setScale(PLAYER.SCALE * Phaser.Math.FloatBetween(0.92, 1.05))
+        .setTint(0x1c1a26)
+        .setFlipX(Math.random() < 0.5);
+      sp.baseY = sp.y;
+      sp.phase = Math.floor(Math.random() * 4); // not everyone moves on the same beat
+      sp.setDepth(feetY(sp));
+      this.crowd.push(sp);
+    }
+    this.lastBeat = -1;
+  }
+
+  // Current beat number of the map's music (or of the scene clock as a fallback).
+  beatNow(time) {
+    const b = MAPS[this.mapKey].beat;
+    if (!b) return -1;
+    const m = this.audio?.music;
+    const sec = m?.isPlaying ? m.seek : time / 1000;
+    return Math.floor(((sec - (b.offset || 0)) * b.bpm) / 60);
+  }
+
+  // On every beat each dancer hops; every 2 beats it turns or changes pose.
+  danceCrowd(time) {
+    if (!this.crowd?.length) return;
+    const beat = this.beatNow(time);
+    if (beat === this.lastBeat) return;
+    this.lastBeat = beat;
+    const half = (60 / MAPS[this.mapKey].beat.bpm) * 500; // half a beat, ms
+    for (const sp of this.crowd) {
+      this.tweens.add({ targets: sp, y: sp.baseY - TILE * 0.18, duration: half * 0.8, yoyo: true, ease: 'Quad.easeOut' });
+      if ((beat + sp.phase) % 2 === 0) {
+        if (Math.random() < 0.5) sp.setFlipX(!sp.flipX);
+        else sp.setFrame(Phaser.Utils.Array.GetRandom([0, 1, 2, 3, 4, 6, 8, 10]));
+      }
+    }
+  }
+
+  // Chapter 12: talking to a girl at the Alcatraz (js/story/flirt.js).
+  flirt(target) {
+    const id = target.id;
+    const g = GIRLS[id];
+    const now = this.time.now;
+    const name = target.name;
+    const pk = target.portraitKey;
+    const gabbo = (lines, after) => this.dialogue.show('Gabbo', lines, 'gabbo-portrait', after);
+    if (g.trap) { // Chiara wants Gabbo: talk him out of leaving with her
+      this.dialogue.show(name, [g.hello, g.ask], pk, () =>
+        this.dialogue.ask('Gabbo', g.gabbo, g.options, 'gabbo-portrait', (i) => {
+          if (i === 0) this.gabboLeaves(target);
+          else gabbo(g.stay, () => this.dialogue.show(name, g.refused, pk));
+        }));
+      return;
+    }
+    const st = girlState(id, now);
+    if (now < st.cooldownUntil) { this.dialogue.show(name, g.busy, pk); return; }
+    if (st.mood === 'no') {
+      const r = snub(id, now);
+      this.dialogue.show(name, r === 'leave' ? [g.no, g.leave] : g.no, pk, r === 'leave' ? () => gabbo(GABBO.gone) : null);
+      return;
+    }
+    this.dialogue.show(name, g.hello, pk, () =>
+      this.dialogue.ask('Gabbo', GABBO.ask, APPROACHES.map((a) => a.label), 'gabbo-portrait', (i) => {
+        const r = approach(id, i, this.time.now);
+        gabbo(APPROACHES[i].gabbo, () => {
+          if (r.result === 'win') {
+            this.dialogue.show(name, [g.right, g.win], pk, () => gabbo(GABBO.win, () => this.onNumber(target)));
+          } else if (r.result === 'leave') {
+            this.dialogue.show(name, [r.delta > 0 ? g.right : g.wrong, g.leave], pk, () => gabbo(GABBO.gone));
+          } else {
+            this.dialogue.show(name, r.result === 'ok' ? g.right : g.wrong, pk);
+          }
+        });
+      }));
+  }
+
+  // Gabbo got the number: points, a heart with him, chapter progress.
+  onNumber(target) {
+    winNumber(target.id);
+    questState.points = (questState.points || 0) + 10;
+    this.bumpAffinity('gabbo', 1);
+    this.showBanner(`📱 Gabbo ha il numero di ${target.name}!\n+10 punti casa · ora tutti sul palco`, 0.26, '#ff8ad8', 0xff8ad8);
+    this.onProgress();
+  }
+
+  // Chiara's trap: you let Gabbo go home with her → the night is lost: back
+  // home, Gabbo in the hall again, the front door takes you to the club again.
+  gabboLeaves(target) {
+    loseNight();
+    this.warpLocked = true;
+    this.holdPlayer();
+    this.cameras.main.fadeOut(600);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.saveGame();
+      this.scene.restart({ mapKey: START_MAP, spawnName: 'default', notice: GIRLS[target.id].lose });
+    });
+  }
+
   // Map `exits` (not warps): the entrance's front door. Stepping on one asks
   // js/story/alcatraz.js whether you can go out (chapter 12, after Gabbo);
   // otherwise a short line. Re-armed once you step off it.
@@ -611,6 +797,7 @@ export default class WorldScene extends Phaser.Scene {
     const fy = this.player.body.bottom / TILE;
     for (const z of zones) {
       if (questState.hasFlag(z.flag) || (z.chapter && questState.activeChapter !== z.chapter)) continue;
+      if (z.requires && !questState.hasFlag(z.requires)) continue; // e.g. the stage after Gabbo's number
       if (fx >= z.x0 && fx < z.x1 + 1 && fy >= z.y0 && fy < z.y1 + 1) {
         questState.setFlag(z.flag);
         if (z.banner) this.showBanner(z.banner, 0.22, '#ffd54a', 0xffd54a);
@@ -637,6 +824,12 @@ export default class WorldScene extends Phaser.Scene {
     for (const { npc, t } of this.questMarks) {
       t.setPosition(npc.sprite.x, npc.sprite.y - npc.sprite.displayHeight * 0.5 + 6 + t.bob);
     }
+    const flirting = flirtActive(this.mapKey);
+    for (const { npc, t } of this.girlTags) {
+      t.setVisible(flirting);
+      if (flirting) t.setText(girlTag(npc.id, time)).setPosition(npc.sprite.x, npc.sprite.y - npc.sprite.displayHeight * 0.5 + 4);
+    }
+    this.danceCrowd(time);
     const maxHp = this.heroMaxHp();
 
     // Overlays. At most one is open; none opens during a dialogue or a warp.
@@ -764,6 +957,8 @@ export default class WorldScene extends Phaser.Scene {
     const firstToday = !questState.didIn('greeted', target.id); // first chat this chapter → +1 heart
     questState.greet(target.id); // mark NPC as spoken-to
     if (firstToday) this.bumpAffinity(target.id, 1);
+
+    if (isGirl(target.id) && flirtActive(this.mapKey)) { this.flirt(target); return; }
 
     // Resolve what this character says/does for the CURRENT chapter, live from
     // their JSON. battle/item only ever come from a chapter entry, so a fight
@@ -985,7 +1180,9 @@ export default class WorldScene extends Phaser.Scene {
     if (min === this.lastClockMin) return;
     this.lastClockMin = min;
     this.clockText.setText(`${phaseIcon(min)} ${fmt(min)}`);
-    this.nightVeil.setAlpha(MAPS[this.mapKey].noNight ? 0 : nightAlpha(min)); // the club has its own lights
+    const m = MAPS[this.mapKey];
+    // `ambient`: a fixed darkness (the club); `noNight`: never dark.
+    this.nightVeil.setAlpha(m.ambient ?? (m.noNight ? 0 : nightAlpha(min)));
   }
 
   // One-off scenes for this map + chapter (js/story/events.js), e.g. Ana's

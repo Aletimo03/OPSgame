@@ -146,10 +146,18 @@
       ],
       "when": [
         {
+          "flag": "alcatraz-number",
+          "dialogue": [
+            "O fra, ho il numero, diahane!",
+            "O fra, ora tutti sul palco, diahane!"
+          ]
+        },
+        {
           "flag": "alcatraz-arrived",
           "dialogue": [
             "O fra, siamo all'Alcatraz, diahane!",
-            "O fra, saliamo sul palco, diahane."
+            "O fra, aiutami con le ragazze: guarda le icone sopra di loro e dimmi cosa dire, diahane.",
+            "O fra, quella con gli stivali mi guarda... se mi dice di andare via con lei, fermami tu, diahane."
           ]
         }
       ]

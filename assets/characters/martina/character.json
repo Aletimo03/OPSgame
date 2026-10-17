@@ -1,0 +1,18 @@
+{
+  "name": "Martina",
+  "guest": true,
+  "stats": {
+    "maxHp": 26,
+    "attack": 4,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-12": {
+      "map": "alcatraz",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    }
+  },
+  "default": "Bella serata, eh? Si balla!"
+}

@@ -14,6 +14,8 @@
 export const SOUNDS = {
   // ── Music (looping soundtracks) ──────────────────────────────────────────
   'world-theme':  { path: 'assets/sounds/zionick.mp3', type: 'music', volume: 0.5, loop: true },
+  // The Alcatraz (map `music`): "Disco Party" by Aurec, Pixabay (free licence). ~121.35 BPM.
+  'alcatraz-theme': { path: 'assets/sounds/alcatraz.mp3', type: 'music', volume: 0.55, loop: true },
   // 'battle-theme': { path: 'assets/sounds/battle.mp3', type: 'music', volume: 0.5, loop: true },
 
   // ── SFX (one-shots) ──────────────────────────────────────────────────────
@@ -60,6 +62,11 @@ class AudioManager {
     }
 
     this.stopMusic();
+    // Another map's track may still be playing (each restart has a new
+    // manager): stop every other music track first.
+    for (const [k, d] of Object.entries(SOUNDS)) {
+      if (k !== key && d.type === 'music') this.scene.sound.get(k)?.stop();
+    }
     this.music = this.scene.sound.add(key, {
       loop: def.loop ?? true,
       volume: def.volume ?? 0.5,

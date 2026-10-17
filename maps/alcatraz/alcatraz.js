@@ -41,7 +41,23 @@ export default {
   key: 'alcatraz',
   name: 'Alcatraz — Milano',
   theme: 'alcatraz',
-  noNight: true, // no night veil in here (it's already dark)
+  ambient: 0.72, // always dark in here (fixed night veil), lit by the disco lights
+  // Coloured lights wandering at random over the dance floor (WorldScene.startDisco).
+  disco: { area: AREAS.hall, lights: 7, radius: 5 },
+  // Music for this map (js/core/audio.js) and its tempo: the crowd dances on it.
+  music: 'alcatraz-theme',
+  beat: { bpm: 121.35, offset: 0.093 }, // measured on the track (s of the first beat)
+  // Dark dancing silhouettes (WorldScene.startCrowd): the cast's sheets tinted
+  // almost black, not solid, bobbing / turning on the beat.
+  crowd: {
+    area: { x0: 21, y0: 9, x1: 43, y1: 27 }, count: 24, spacing: 1.6,
+    from: ['ana', 'caue', 'ema', 'ernesto', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo'],
+  },
+  // Where NPCs placed by map key start (girls + Gabbo spread over the floor).
+  npcSpots: [
+    { tx: 25, ty: 12 }, { tx: 40, ty: 12 }, { tx: 26, ty: 24 }, { tx: 39, ty: 24 },
+    { tx: 32, ty: 18 }, { tx: 22, ty: 28 },
+  ],
   grid,
   areas: AREAS,
   spawns: {
@@ -56,6 +72,6 @@ export default {
   ],
   // Stepping in sets a flag (WorldScene.checkFlagZones): chapter 12's last objective.
   flagZones: [
-    { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-12', banner: '🎤 Sul palco dell\'Alcatraz con Gabbo!' },
+    { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-12', requires: 'alcatraz-number', banner: '🎤 Sul palco dell\'Alcatraz con Gabbo!' },
   ],
 };

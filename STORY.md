@@ -161,8 +161,13 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - **Obiettivi:**
   - trovare **Gabbo** nella hall del piano terra (il salotto): «O fra, Alessio non c'è, è sempre con Gaia… mi servi te per andare a pushare, diahane»;
   - uscire dalla **porta d'ingresso** (prima di parlare con Gabbo non si esce): parte il video dell'uscita e ti ritrovi all'**Alcatraz**, la discoteca di Milano;
-  - **salire sul palco** con Gabbo, nella sala principale.
+  - **aiutare Gabbo a farsi dare un numero**: in pista, tra la folla di sagome che balla a tempo, ci sono 4 ragazze. Sopra ognuna c'è il suo umore (💃 ballare, 🍹 bere, 😂 ridere, 😒 non ora): parli con lei, Gabbo ti chiede cosa dire e scegli l'approccio. Quello giusto fa salire i ❤️, quello sbagliato li fa scendere; finiti i tentativi lei se ne va per un po'.
+    - **Martina** (gonna leopardata): la più facile, 2 ❤️, ama ballare.
+    - **Ludovica** (bionda) e **Vanessa** (rossa): alta autostima, 3 ❤️; Ludovica ama farsi offrire da bere, Vanessa ridere.
+    - **Chiara** (castana con gli stivali): vuole **Gabbo** e gli chiede di andare a casa con lei. Gabbo chiede a te cosa fare: devi **scoraggiarlo**. Se lo lasci andare, **la missione è persa**: ti risvegli in camera e devi tornare da Gabbo e all'Alcatraz.
+  - poi **salire sul palco** con Gabbo, nella sala principale.
 - **Dopo:** il gioco finisce qui (titoli di coda). Dall'Alcatraz si torna a casa dalla porta della lobby.
+- **Musica:** "Disco Party" di Aurec (Pixabay). Locale al buio con luci colorate che girano sulla pista.
 - **Da completare:** il video (`assets/cutscenes/alcatraz.mp4`) e la grafica del locale (per ora pavimento scuro, palco e bar colorati).
 
 ## Crescita di Zio Nick

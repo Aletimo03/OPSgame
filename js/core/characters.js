@@ -36,6 +36,8 @@ export const DEFAULT_STATS = { maxHp: 30, attack: 5, defense: 2 };
 // excluded here. Add a folder name here when you add a new character.
 export const CHARACTERS = [
   'ana', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo',
+  // chapter 12, the Alcatraz (guests)
+  'chiara', 'ludovica', 'martina', 'vanessa',
 ];
 
 // Phaser cache key for a character's parsed JSON.
