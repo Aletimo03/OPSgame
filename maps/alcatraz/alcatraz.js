@@ -37,25 +37,33 @@ carve(20, 30, 5, 2);   // lobby → main hall (bottom-left corner of the hall)
 
 const door = setDoor(grid, 18, ROWS - 1); // street door (back home)
 
+// Who the dancing silhouettes are made from (the cast's sheets, tinted dark).
+const CROWD_FROM = ['ana', 'caue', 'ema', 'ernesto', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo'];
+
 export default {
   key: 'alcatraz',
   name: 'Alcatraz — Milano',
   theme: 'alcatraz',
   ambient: 0.72, // always dark in here (fixed night veil), lit by the disco lights
   // Coloured lights wandering at random over the dance floor (WorldScene.startDisco).
-  disco: { area: AREAS.hall, lights: 7, radius: 5 },
+  disco: [
+    { area: AREAS.hall, lights: 7, radius: 5 },
+    { area: { x0: 2, y0: 7, x1: 16, y1: 20 }, lights: 4, radius: 4 }, // the second room
+  ],
   // Music for this map (js/core/audio.js) and its tempo: the crowd dances on it.
   music: 'alcatraz-theme',
   beat: { bpm: 121.35, offset: 0.093 }, // measured on the track (s of the first beat)
   // Dark dancing silhouettes (WorldScene.startCrowd): the cast's sheets tinted
   // almost black, not solid, bobbing / turning on the beat.
-  crowd: {
-    area: { x0: 21, y0: 9, x1: 43, y1: 27 }, count: 24, spacing: 1.6,
-    from: ['ana', 'caue', 'ema', 'ernesto', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo'],
-  },
+  crowd: [
+    { area: { x0: 21, y0: 9, x1: 39, y1: 27 }, count: 22, spacing: 1.6, from: CROWD_FROM }, // main hall
+    { area: { x0: 3, y0: 9, x1: 15, y1: 19 }, count: 11, spacing: 1.6, from: CROWD_FROM },  // second room
+  ],
+  // The bar (WorldScene.checkBar): walk in with a drink order to pick up the drinks.
+  bar: { x0: 41, y0: 20, x1: 48, y1: 28 }, // all round the island
   // Where NPCs placed by map key start (girls + Gabbo spread over the floor).
   npcSpots: [
-    { tx: 25, ty: 12 }, { tx: 40, ty: 12 }, { tx: 26, ty: 24 }, { tx: 39, ty: 24 },
+    { tx: 25, ty: 12 }, { tx: 40, ty: 12 }, { tx: 26, ty: 24 }, { tx: 36, ty: 24 },
     { tx: 32, ty: 18 }, { tx: 22, ty: 28 },
   ],
   grid,
@@ -64,12 +72,18 @@ export default {
     default: { tx: 19, ty: 36 },
   },
   warps: [{ tx: door.tx, ty: door.ty, to: 'entrance', toSpawn: 'fromAlcatraz' }],
-  // Coloured floor areas drawn in code (WorldScene.drawPaint): stage, bar.
-  paint: [
-    { ...AREAS.stage, color: 0x5a3a24, label: 'PALCO' },
-    { ...AREAS.stage2, color: 0x4a3020, label: 'PALCO 2' },
-    { x0: 44, y0: 24, x1: 49, y1: 29, color: 0x23324a, label: 'BAR' },
+  // The raised stage (WorldScene.drawStage): boards, a front face and two
+  // steps up in the middle; the front edge is solid except at the steps.
+  stage: [
+    { ...AREAS.stage, steps: { x0: 33, x1: 36 }, rise: 0.6 },
+    { ...AREAS.stage2, steps: { x0: 8, x1: 10 }, rise: 0.6 },
   ],
+  // A dancing bear on the main stage (WorldScene.startCrowd → dancers): the
+  // user's 12 dance poses, a new one on every beat, on the spot.
+  dancers: [{ key: 'orso-dance', path: 'assets/alcatraz/orso_dance.png', tx: 35, ty: 3.4, scale: 1.6 }],
+  // The bar (WorldScene.drawBarIsland): a closed square of counters in the
+  // bottom-right of the hall, solid, with a barman walking round inside.
+  barIsland: { x0: 42, y0: 21, x1: 47, y1: 26, barman: 'timo' },
   // Stepping in sets a flag (WorldScene.checkFlagZones): chapter 12's last objective.
   flagZones: [
     { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-12', requires: 'alcatraz-number', banner: '🎤 Sul palco dell\'Alcatraz con Gabbo!' },
