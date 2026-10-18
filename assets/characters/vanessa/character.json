@@ -8,7 +8,7 @@
   },
   "locations": {
     "chapter-12": {
-      "map": "alcatraz",
+      "map": "alcatraz-sala2-b",
       "facing": "down",
       "wander": true,
       "wanderRadius": 3

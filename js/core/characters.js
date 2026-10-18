@@ -37,7 +37,7 @@ export const DEFAULT_STATS = { maxHp: 30, attack: 5, defense: 2 };
 export const CHARACTERS = [
   'ana', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo',
   // chapter 12, the Alcatraz (guests)
-  'chiara', 'ludovica', 'martina', 'vanessa',
+  'chiara', 'ludovica', 'maranza', 'martina', 'vanessa',
 ];
 
 // Phaser cache key for a character's parsed JSON.
@@ -107,6 +107,14 @@ export function placementsForMap(scene, mapKey) {
     if (!loc) continue;
     const sp = resolveSpawn(loc.map);
     if (sp.map !== mapKey) continue;
+    // `copies: [{ tx, ty }, …]`: several NPCs from one character (the
+    // Alcatraz maranzas), one per tile, all with the same id and data.
+    if (loc.copies) {
+      for (const c of loc.copies) {
+        out.push({ character: folder, data, at: { tx: c.tx, ty: c.ty, facing: loc.facing, wander: loc.wander, wanderRadius: loc.wanderRadius } });
+      }
+      continue;
+    }
     out.push({
       character: folder,
       data,

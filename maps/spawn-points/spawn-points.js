@@ -33,6 +33,10 @@ export const SPAWN_POINTS = {
   'base-floor-main':       { map: 'base-floor', ...centerTile(...HALL) },
   'base-floor-vertical-1': { map: 'base-floor', ...centerTile(...VERTICAL_ONE) },
   'base-floor-vertical-2': { map: 'base-floor', ...centerTile(...VERTICAL_TWO) },
+  // the Alcatraz (chapter 12): the second room (left) and the main hall's right side
+  'alcatraz-sala2':   { map: 'alcatraz', tx: 7, ty: 13 },
+  'alcatraz-sala2-b': { map: 'alcatraz', tx: 11, ty: 13 },
+  'alcatraz-right':   { map: 'alcatraz', tx: 40, ty: 13 },
   // the living room ("hall principale"), beside the sofa (base-floor spawn `living` is on its seat side)
   'base-floor-living':     { map: 'base-floor', tx: 26, ty: 23 },
   // first floor (same shape)

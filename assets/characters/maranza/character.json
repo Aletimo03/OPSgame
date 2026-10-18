@@ -1,0 +1,38 @@
+{
+  "name": "Maranza",
+  "guest": true,
+  "stats": {
+    "maxHp": 28,
+    "attack": 5,
+    "defense": 2
+  },
+  "locations": {
+    "chapter-12": {
+      "map": "alcatraz",
+      "facing": "down",
+      "copies": [
+        {
+          "tx": 5,
+          "ty": 15
+        },
+        {
+          "tx": 12,
+          "ty": 12
+        },
+        {
+          "tx": 24,
+          "ty": 24
+        },
+        {
+          "tx": 40,
+          "ty": 11
+        },
+        {
+          "tx": 38,
+          "ty": 18
+        }
+      ]
+    }
+  },
+  "default": "Fra, tutto a posto?"
+}
