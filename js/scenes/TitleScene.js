@@ -22,6 +22,9 @@ const HEAD_IDS = ['zionick', 'ana', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', '
 const HEAD_SIZE = 96;              // px on screen
 const HEAD_SPEED = [45, 90];       // px/s, random per head
 
+// TEMPORARY test shortcut on the title menu (remove before release).
+const DEV_JUMP = '🛠 DEV · Vai al capitolo 12';
+
 export default class TitleScene extends Phaser.Scene {
   constructor() {
     super('TitleScene');
@@ -60,7 +63,8 @@ export default class TitleScene extends Phaser.Scene {
     if (this.mode === 'confirm') return ['No, torna indietro', 'Sì, cancella e ricomincia'];
     if (this.mode === 'chapters') return [...this.chapterList().map((id) => CHAPTERS[id].title), 'Indietro'];
     if (this.mode === 'rewind') return ['No, torna indietro', 'Sì, riparti da qui'];
-    return this.save ? ['Continua', 'Scegli capitolo', 'Nuova partita'] : ['Nuova partita'];
+    // DEV_JUMP: TEMPORARY test shortcut (remove before release).
+    return this.save ? ['Continua', 'Scegli capitolo', 'Nuova partita', DEV_JUMP] : ['Nuova partita', DEV_JUMP];
   }
 
   // Chapters you can restart from (1 … the furthest reached in this save).
@@ -243,7 +247,9 @@ export default class TitleScene extends Phaser.Scene {
       if (label === 'Sì, riparti da qui') return this.restartFrom(this.rewindId);
       return this.setMode('chapters', Math.max(0, this.chapterList().indexOf(this.rewindId)));
     }
-    if (label === 'Continua') {
+    if (label === DEV_JUMP) {
+      this.devJump('chapter-12');
+    } else if (label === 'Continua') {
       this.startWorld(applySave(this.save));
     } else if (label === 'Scegli capitolo') {
       const list = this.chapterList();
@@ -262,6 +268,17 @@ export default class TitleScene extends Phaser.Scene {
   restartFrom(id) {
     const data = Object.fromEntries(CHARACTERS.map((f) => [f, this.cache.json.get(`${f}-data`)]));
     applySave(this.save);
+    rewindTo(id, itemChaptersFrom(data));
+    this.startWorld({ mapKey: START_MAP, spawnName: 'default' });
+  }
+
+  // TEMPORARY (testing): jump straight to a chapter, keeping the save's
+  // progress if there is one (else from a fresh game). Remove with DEV_JUMP.
+  devJump(id) {
+    const data = Object.fromEntries(CHARACTERS.map((f) => [f, this.cache.json.get(`${f}-data`)]));
+    if (this.save) applySave(this.save);
+    else questState.reset();
+    questState.reached = id;
     rewindTo(id, itemChaptersFrom(data));
     this.startWorld({ mapKey: START_MAP, spawnName: 'default' });
   }

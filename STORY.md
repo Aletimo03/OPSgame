@@ -162,13 +162,19 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
   - trovare **Gabbo** nella hall del piano terra (il salotto): «O fra, Alessio non c'è, è sempre con Gaia… mi servi te per andare a pushare, diahane»;
   - uscire dalla **porta d'ingresso** (prima di parlare con Gabbo non si esce): parte il video dell'uscita e ti ritrovi all'**Alcatraz**, la discoteca di Milano;
   - **aiutare Gabbo a farsi dare un numero**: in pista, tra la folla di sagome che balla a tempo, ci sono 4 ragazze. Sopra ognuna c'è il suo umore (💃 ballare, 🍹 bere, 😂 ridere, 😒 non ora): parli con lei, Gabbo ti chiede cosa dire e scegli l'approccio. Quello giusto fa salire i ❤️, quello sbagliato li fa scendere; finiti i tentativi lei se ne va per un po'.
-    - **Martina** (gonna leopardata): la più facile, 2 ❤️, ama ballare.
-    - **Ludovica** (bionda) e **Vanessa** (rossa): alta autostima, 3 ❤️; Ludovica ama farsi offrire da bere, Vanessa ridere.
-    - **Chiara** (castana con gli stivali): vuole **Gabbo** e gli chiede di andare a casa con lei. Gabbo chiede a te cosa fare: devi **scoraggiarlo**. Se lo lasci andare, **la missione è persa**: ti risvegli in camera e devi tornare da Gabbo e all'Alcatraz.
-  - poi **salire sul palco** con Gabbo, nella sala principale.
+    - **Gabbo ti segue** ovunque nel locale, come il Pokémon dietro al protagonista.
+    - **🍹 Bar:** se lei vuole da bere, vai al **bar** (il bancone quadrato in fondo a destra, con il barista che gira dentro) e scegli il drink: 🍺 Birra (gratis), 🍹 Spritz (4 punti casa) o 🥃 Jäger bomb (8 punti casa): ogni drink vale +1 ❤️. Torni da lei entro 45 secondi. Lei beve… e **Gabbo beve lo stesso drink**: più è forte, più si ubriaca, e più è ubriaco più spesso dice la cosa sbagliata (e più rischia di cedere a Chiara).
+    - **💃 Sfida di ballo:** se lei vuole ballare ti sfida. Frecce a tempo di musica: se balli bene guadagni **+1 ❤️**.
+    - **😒** dura poco: qualche secondo, poi cambia umore.
+    - **5 maranza** sparsi nel locale (2 nella seconda sala, 3 nella principale), ognuno nella sua zona: se ti vede gli spunta un **!** in testa e ti viene dietro per rubarti il telefono, ma non esce mai dalla sua zona. Da sobrio non ci riesce mai; più avete bevuto, più è probabile che ce la faccia. Se te lo ruba perdi 5 punti casa e resti senza telefono finché non esci dal locale.
+    - Sul palco principale balla un **orso con gli occhiali da sole**, a tempo di musica.
+    - **Martina** (gonna leopardata): la più facile, 3 ❤️, ama ballare.
+    - **Ludovica** (bionda) e **Vanessa** (rossa), insieme nella seconda sala: alta autostima, 4 ❤️; Ludovica ama farsi offrire da bere, Vanessa ridere.
+    - **Chiara** (castana con gli stivali): vuole **Gabbo** e **vi segue piano** per tutto il locale. Se lo raggiunge gli chiede di andare a casa con lei e Gabbo chiede a te cosa fare: devi **scoraggiarlo** (il rifiuto è già selezionato; per lasciarlo andare devi confermare due volte). Ma se Gabbo è ubriaco può andarci lo stesso. Se lo lasci andare, **la missione è persa**: ti risvegli in camera e devi tornare da Gabbo e all'Alcatraz.
+  - poi **salire sul palco** con Gabbo: è rialzato, in fondo alla sala principale, e ci si sale dai **due gradini** al centro. Anche la seconda sala ha il suo palco rialzato, gente che balla e luci.
 - **Dopo:** il gioco finisce qui (titoli di coda). Dall'Alcatraz si torna a casa dalla porta della lobby.
 - **Musica:** "Disco Party" di Aurec (Pixabay). Locale al buio con luci colorate che girano sulla pista.
-- **Da completare:** il video (`assets/cutscenes/alcatraz.mp4`) e la grafica del locale (per ora pavimento scuro, palco e bar colorati).
+- **Da completare:** il video (`assets/cutscenes/alcatraz.mp4`) e la grafica del locale (per ora disegnata in codice: pavimento scuro, palchi in legno, bancone).
 
 ## Crescita di Zio Nick
 
