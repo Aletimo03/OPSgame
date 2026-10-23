@@ -366,7 +366,7 @@ The target is the NPC about one tile in front of the player. On every interactio
   - `{ item }` objectives count consumables as obtained even after they're used up.
 - **plain**: `onProgress()`, then show the dialogue.
 
-`onProgress()` advances the chapter if it's done, refreshes the HUD, **saves**, and shows the green "Capitolo completato — partita salvata" banner when the chapter changed. It also runs on map entry (explore objectives) and after a battle win.
+`onProgress()` advances the chapter if it's done, refreshes the HUD, **saves**, and, when the chapter changed, queues the green "Capitolo completato — partita salvata" banner + chapter card (and the ending after the last chapter): `flushProgress()`, called at the top of `update()`, shows them only once no dialogue, cutscene, overlay, warp or seat is active, so they never appear while the line that completed the chapter is still on screen (user's bug report, 2026-10-22). Until then the tracker keeps the finished chapter. It also runs on map entry (explore objectives) and after a battle win.
 
 ### Battle
 
