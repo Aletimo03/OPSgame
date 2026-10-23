@@ -85,6 +85,7 @@ For map-geometry questions, write a throwaway script in the scratchpad that prin
 | Where | Knob | Now | Meaning |
 |---|---|---|---|
 | `js/config.js` | `PROTAGONIST_SPEED` | 600 | player px/s (12.5 tiles/s). The user found 220 too slow; they asked for 500–700 |
+| `js/config.js` | `HUD_SCALE` (+ helpers `hud(n)` / `hudPx(n)`) | 1.7 | size of the screen HUD (quest tracker, phone icon, clock, room name, key hints, banners, chapter card) vs the original; raised on 2026-10-22 so it reads on a big TV from ~2 m. The tracker is at most 45% of the screen wide. Dialogue box and overlays are not affected |
 | `js/config.js` | `CAMERA_ZOOM` | 0.80 | world camera zoom (<1 = see more of the map). The HUD is unaffected (see Cameras) |
 | `js/config.js` | `CAMERA_MARGIN` | 3 | tiles of empty margin the camera may show around any map (also leaves room for the tall top walls, which rise 1.5 tiles above row 0) |
 | `js/config.js` | `SEAT_HEAL_PER_SEC` | 3 | HP regained per second while seated |
