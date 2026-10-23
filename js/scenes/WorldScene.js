@@ -1303,6 +1303,7 @@ export default class WorldScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.player) return;
+    this.flushProgress(); // a finished chapter is announced only after the talk that finished it
     questState.stats.playMs += delta; // play time, for the ending screen
     advanceClock(delta);
     this.updateClock();
@@ -1855,14 +1856,35 @@ export default class WorldScene extends Phaser.Scene {
     const before = questState.activeChapter;
     this.payRematch();
     advanceChapterIfDone();
-    this.questTracker?.refresh();
     this.refreshQuestMarks();
     this.saveGame();
-    if (questState.activeChapter !== before) this.announceChapter();
+    // A new chapter / the ending are shown only once whatever is going on is
+    // over (e.g. Nima's lines that completed chapter 1): flushProgress() in
+    // update() waits for no dialogue, cutscene, overlay or warp. Till then the
+    // tracker keeps showing the chapter you just finished.
+    if (questState.activeChapter !== before) this.pendingAnnounce = true;
+    else this.questTracker?.refresh();
     // Last chapter done → the ending, once (the flag is saved).
     if (isStoryComplete() && !questState.hasFlag('ending-seen')) {
       questState.setFlag('ending-seen');
       this.saveGame();
+      this.pendingEnding = true;
+    }
+  }
+
+  // Show a deferred chapter change / ending as soon as the screen is free.
+  flushProgress() {
+    if (!this.pendingAnnounce && !this.pendingEnding) return;
+    const busy = this.dialogue?.open || this.inCutscene || this.warpLocked || this.seated
+      || [this.inventory, this.phone, this.minimap, this.pauseMenu].some((o) => o?.open);
+    if (busy) return;
+    if (this.pendingAnnounce) {
+      this.pendingAnnounce = false;
+      this.questTracker?.refresh();
+      this.announceChapter();
+    }
+    if (this.pendingEnding) {
+      this.pendingEnding = false;
       this.time.delayedCall(900, () => this.showEnding());
     }
   }
