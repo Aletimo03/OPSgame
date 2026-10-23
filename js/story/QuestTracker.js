@@ -4,10 +4,11 @@
 // changes (call refresh()) and once per scene (it's recreated on every map).
 import { activeQuest } from './chapters.js';
 import { objectiveTargets } from './questGuide.js';
+import { hud, hudPx } from '../config.js';
 
 const DEPTH = 1000000;
-const W = 280; // panel width (px)
-const PAD = 12;
+const W = hud(280); // panel width (px, HUD_SCALE)
+const PAD = hud(12);
 
 export class QuestTracker {
   constructor(scene) {
@@ -20,7 +21,7 @@ export class QuestTracker {
     this.objs.forEach((o) => o.destroy());
     this.objs = [];
 
-    this.bottom = 12; // screen y just below the panel (PhoneHud sits there)
+    this.bottom = hud(12); // screen y just below the panel (PhoneHud sits there)
     const q = activeQuest();
     if (!q) return;
 
@@ -28,9 +29,10 @@ export class QuestTracker {
     // to the measured text, so long titles/objectives never run off the right
     // edge. Rebuilt on resize (WorldScene.layoutHud).
     const cam = this.scene.cameras.main;
-    const w = Math.min(W, cam.width - 24);
-    const x = cam.width - w - 12;
-    const y = 12;
+    const M = hud(12); // margin from the screen edges
+    const w = Math.min(W, cam.width * 0.45, cam.width - 2 * M);
+    const x = cam.width - w - M;
+    const y = M;
     const wrap = { width: w - PAD * 2 };
 
     const add = (o) => {
@@ -42,37 +44,37 @@ export class QuestTracker {
       add(this.scene.add.text(x + PAD, ty, str, { fontFamily: 'monospace', wordWrap: wrap, ...style }));
 
     // Chapter + quest heading (turns green once complete).
-    let ty = y + 8;
-    ty += text(ty, q.chapterTitle.toUpperCase(), { fontSize: '11px', color: '#7a8190' }).height + 4;
+    let ty = y + hud(8);
+    ty += text(ty, q.chapterTitle.toUpperCase(), { fontSize: hudPx(11), color: '#7a8190' }).height + hud(4);
     ty += text(ty, q.title, {
-      fontSize: '14px',
+      fontSize: hudPx(14),
       color: q.complete ? '#7CFC8A' : '#ffd54a',
       fontStyle: 'bold',
-    }).height + 10;
+    }).height + hud(10);
 
     // Each open objective gets a small "→ who, where" line under it (questGuide).
     const where = objectiveTargets(this.scene);
     q.objectives.forEach((o, i) => {
       ty += text(ty, `${o.done ? '☑' : '☐'} ${o.label}`, {
-        fontSize: '13px',
+        fontSize: hudPx(13),
         color: o.done ? '#8f97a3' : '#ffffff',
-      }).height + 6;
+      }).height + hud(6);
       const t = where[i];
       if (!o.done && t && t.where && t.where !== '—') {
-        ty += text(ty - 4, `   → ${t.who ? `${t.who}, ` : ''}${t.where}`, {
-          fontSize: '11px',
+        ty += text(ty - hud(4), `   → ${t.who ? `${t.who}, ` : ''}${t.where}`, {
+          fontSize: hudPx(11),
           color: '#8fb3d9',
-        }).height + 4;
+        }).height + hud(4);
       }
     });
     // Background last (now that the height is known), one depth step below.
     add(
       this.scene.add
-        .rectangle(x, y, w, ty - y + PAD - 6, 0x0d0f17, 0.82)
+        .rectangle(x, y, w, ty - y + PAD - hud(6), 0x0d0f17, 0.82)
         .setOrigin(0, 0)
         .setStrokeStyle(2, 0xffffff, 0.55)
     ).setDepth(DEPTH - 1);
-    this.bottom = ty + PAD - 6;
+    this.bottom = ty + PAD - hud(6);
   }
 
   refresh() {

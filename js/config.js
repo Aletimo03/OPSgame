@@ -67,3 +67,10 @@ export const SHEET = {
 
 // Walk-grid row order (after any preview band is skipped).
 export const ROW = { DOWN: 0, SIDE: 1, UP: 2 };
+
+// Screen HUD size (quest tracker, phone icon, clock, room name, key hints,
+// banners, chapter card): readable on a big TV from ~2 m. 1 = the old sizes.
+export const HUD_SCALE = 1.7;
+// A HUD font size / distance scaled by HUD_SCALE: hud(14) → 24 (px number), hudPx(14) → '24px'.
+export const hud = (n) => Math.round(n * HUD_SCALE);
+export const hudPx = (n) => `${hud(n)}px`;

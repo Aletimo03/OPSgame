@@ -3,7 +3,7 @@
 // Switching maps = restart this scene with new { mapKey, spawnName } data.
 
 import {
-  TILE, TILES, PLAYER, DOOR_WIDTH, BATTLE_BG_KEY, BATTLE_BG_PATH, CAMERA_ZOOM, CAMERA_MARGIN,
+  TILE, TILES, PLAYER, hud, hudPx, DOOR_WIDTH, BATTLE_BG_KEY, BATTLE_BG_PATH, CAMERA_ZOOM, CAMERA_MARGIN,
   SEAT_HEAL_PER_SEC, DEFEAT_RESPAWN,
 } from '../config.js';
 import { drawMap, drawStairs, buildWallColliders } from '../core/MapRenderer.js';
@@ -307,13 +307,13 @@ export default class WorldScene extends Phaser.Scene {
 
     // Clock (top-left): in-game time + day/night icon (js/story/clock.js).
     this.clockText = this.add
-      .text(10, 10, '', {
+      .text(hud(10), hud(10), '', {
         fontFamily: 'monospace',
-        fontSize: '18px',
+        fontSize: hudPx(18),
         color: '#ffffff',
         fontStyle: 'bold',
         backgroundColor: 'rgba(0,0,0,0.55)',
-        padding: { x: 8, y: 4 },
+        padding: { x: hud(8), y: hud(4) },
       })
       .setScrollFactor(0)
       .setDepth(1000000);
@@ -331,12 +331,12 @@ export default class WorldScene extends Phaser.Scene {
 
     // Tiny HUD label so you always know which room you're in.
     this.roomLabel = this.add
-      .text(10, 48, map.name, {
+      .text(hud(10), hud(48), map.name, {
         fontFamily: 'monospace',
-        fontSize: '16px',
+        fontSize: hudPx(16),
         color: '#ffffff',
         backgroundColor: 'rgba(0,0,0,0.45)',
-        padding: { x: 6, y: 3 },
+        padding: { x: hud(6), y: hud(3) },
       })
       .setScrollFactor(0)
       .setDepth(1000000);
@@ -345,10 +345,10 @@ export default class WorldScene extends Phaser.Scene {
     this.keyHints = this.add
       .text(0, 0, 'WASD/frecce muovi · Spazio parla/siedi · I zaino · P telefono · M mappa · Esc menu', {
         fontFamily: 'monospace',
-        fontSize: '12px',
+        fontSize: hudPx(12),
         color: '#e8eaee',
         backgroundColor: 'rgba(0,0,0,0.45)',
-        padding: { x: 6, y: 3 },
+        padding: { x: hud(6), y: hud(3) },
         wordWrap: { width: 10000 },
       })
       .setOrigin(0, 1)
@@ -412,8 +412,9 @@ export default class WorldScene extends Phaser.Scene {
   // Screen-size-dependent HUD: key hints (wrap on narrow windows) + tracker.
   layoutHud() {
     const cam = this.cameras.main;
-    this.keyHints.setWordWrapWidth(Math.max(120, cam.width - 20));
-    this.keyHints.setPosition(10, cam.height - 10);
+    this.keyHints.setWordWrapWidth(Math.max(120, cam.width - hud(20)));
+    this.keyHints.setPosition(hud(10), cam.height - hud(10));
+    this.roomLabel.setPosition(hud(10), this.clockText.y + this.clockText.height + hud(6)); // under the clock
     this.questTracker.refresh();
     this.phoneHud.refresh();
   }
@@ -1923,16 +1924,16 @@ export default class WorldScene extends Phaser.Scene {
     const num = /(\d+)$/.exec(id)?.[1];
     const quest = activeQuest();
     const objs = [
-      this.add.rectangle(W / 2, H * 0.42, W, 150, 0x05060a, 0.88).setStrokeStyle(2, 0xffd54a, 0.6),
-      this.add.text(W / 2, H * 0.42 - 46, num ? `CAPITOLO ${num}` : 'CAPITOLO', {
-        fontFamily: 'monospace', fontSize: '16px', color: '#9aa0a8', letterSpacing: 6,
+      this.add.rectangle(W / 2, H * 0.42, W, hud(150), 0x05060a, 0.88).setStrokeStyle(2, 0xffd54a, 0.6),
+      this.add.text(W / 2, H * 0.42 - hud(46), num ? `CAPITOLO ${num}` : 'CAPITOLO', {
+        fontFamily: 'monospace', fontSize: hudPx(16), color: '#9aa0a8', letterSpacing: 6,
       }).setOrigin(0.5),
-      this.add.text(W / 2, H * 0.42 - 6, ch.title, {
-        fontFamily: 'monospace', fontSize: '30px', color: '#ffd54a', fontStyle: 'bold',
+      this.add.text(W / 2, H * 0.42 - hud(6), ch.title, {
+        fontFamily: 'monospace', fontSize: hudPx(30), color: '#ffd54a', fontStyle: 'bold',
         align: 'center', wordWrap: { width: W - 60 },
       }).setOrigin(0.5),
-      this.add.text(W / 2, H * 0.42 + 40, quest ? quest.title : '', {
-        fontFamily: 'monospace', fontSize: '15px', color: '#ffffff',
+      this.add.text(W / 2, H * 0.42 + hud(40), quest ? quest.title : '', {
+        fontFamily: 'monospace', fontSize: hudPx(15), color: '#ffffff',
         align: 'center', wordWrap: { width: W - 60 },
       }).setOrigin(0.5),
     ];
@@ -2148,15 +2149,16 @@ export default class WorldScene extends Phaser.Scene {
     const txt = this.add
       .text(W / 2, H * yFrac, msg, {
         fontFamily: 'monospace',
-        fontSize: '19px',
+        fontSize: hudPx(19),
         color,
         align: 'center',
+        wordWrap: { width: Math.min(hud(520), W - 48) - hud(24) },
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(2500001);
     const bg = this.add
-      .rectangle(W / 2, H * yFrac, Math.min(520, W - 48), txt.height + 26, 0x0d0f17, 0.95)
+      .rectangle(W / 2, H * yFrac, Math.min(hud(520), W - 48), txt.height + hud(26), 0x0d0f17, 0.95)
       .setScrollFactor(0)
       .setDepth(2500000)
       .setStrokeStyle(2, stroke, 0.9);
