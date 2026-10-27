@@ -14,11 +14,16 @@
 //      placed that chapter, visit target is a real map), and it must complete;
 //   3. save → load round-trip and the corrupt / incompatible save fallbacks;
 //   4. hero HP rules (persisting, +maxHp items heal) and the defeat respawn
-//      point; every seat (`props[].seats`) in every map is reachable on foot.
+//      point; every seat (`props[].seats`) in every map is reachable on foot;
+//   5. every flag objective has something in the game that sets it (a find,
+//      an event, a character's `setFlag`, a scripted loss, a map flag zone or
+//      one of the minigames' flags), and every story find can be examined.
 // Exits with code 1 on any failure.
 //
 // `talk()` mirrors WorldScene.tryInteract's branch order (battle → quiz → item →
-// plain) and assumes every fight is won. Keep it in sync if that flow changes.
+// plain), with the same `when` / `setFlag` resolution (resolveInteraction), and
+// assumes every fight is won (a `mustLose` one sets its loss flag instead).
+// Keep it in sync if that flow changes.
 import fs from 'node:fs';
 
 const ROOT = new URL('../../', import.meta.url);
@@ -43,8 +48,11 @@ const { FURNITURE } = await imp('js/core/furniture-catalog.js');
 const { FURNITURE_ERRORS, checkFurnitureEntry } = await imp('js/core/furniture.js');
 const { HIDDEN, KINDS: COLLECTIBLE_KINDS } = await imp('js/story/collectibles.js');
 const { SIDE_QUESTS, SHOP } = await imp('js/story/sideQuests.js');
-const { CLUES, INVESTIGATION } = await imp('js/story/investigation.js');
-const { rewindTo, rewindChoices, itemChaptersFrom } = await imp('js/story/rewind.js');
+const { FINDS, findFlag } = await imp('js/story/finds.js');
+const { resolveInteraction } = await imp('js/core/characters.js');
+const { ALCATRAZ } = await imp('js/story/alcatraz.js');
+const { DREAM } = await imp('js/story/dream.js');
+const { rewindTo, rewindChoices, itemChaptersFrom, devPrime } = await imp('js/story/rewind.js');
 const { AFFINITY_DMS } = await imp('js/story/affinity.js');
 const { EVENTS } = await imp('js/story/events.js');
 const { FRIDGE } = await imp('js/story/fridge.js');
@@ -67,23 +75,49 @@ const check = (cond, msg) => {
 };
 
 function talk(id) {
-  const entry = DATA[id].chapters?.[questState.activeChapter];
+  const act = resolveInteraction(DATA[id]);
   questState.greet(id);
-  if (entry?.battle) {
+  if (act.battle) {
     const ch = questState.activeChapter;
     advanceChapterIfDone();
-    if (!questState.didIn('defeated', id, ch)) questState.defeat(id, ch); // assume a win
-  } else if (entry?.quiz) {
-    if (!questState.didIn('solved', id)) questState.solve(id); // assume the right answer
-  } else if (entry?.item) {
-    if (entry.item.consumable) {
-      if (!questState.gotGiftFrom(id)) questState.addSupply(entry.item, id);
-    } else {
-      questState.addItem(entry.item);
+    if (act.battle.mustLose) questState.setFlag(act.battle.lossFlag); // lost by the script
+    else if (!questState.didIn('defeated', id, ch)) {
+      questState.defeat(id, ch); // assume a win
+      if (act.battle.reward) questState.addItem(act.battle.reward);
     }
+  } else if (act.quiz) {
+    if (!questState.didIn('solved', id)) questState.solve(id); // assume the right answer
+  } else if (act.item) {
+    if (act.item.consumable) {
+      if (!questState.gotGiftFrom(id)) questState.addSupply(act.item, id);
+    } else {
+      questState.addItem(act.item);
+    }
+    if (act.setFlag) questState.setFlag(act.setFlag);
+  } else if (act.setFlag) {
+    questState.setFlag(act.setFlag);
   }
   advanceChapterIfDone();
 }
+
+// Flags something in the game can set, per chapter (null = any chapter).
+const PRODUCERS = [];
+const produce = (flag, chapter = null) => PRODUCERS.push({ flag, chapter });
+for (const f of FINDS) produce(findFlag(f.id), f.chapter);
+for (const n of NPCS) {
+  for (const [ch, e] of Object.entries(DATA[n].chapters || {})) {
+    for (const v of [e, ...(e.when || [])]) if (v.setFlag) produce(v.setFlag, ch);
+    if (e.battle?.lossFlag) produce(e.battle.lossFlag, ch);
+  }
+}
+for (const m of Object.values(MAPS)) for (const z of m.flagZones || []) produce(z.flag, z.chapter || null);
+produce(ALCATRAZ.arrivedFlag, ALCATRAZ.chapter);
+produce('alcatraz-number', ALCATRAZ.chapter); // js/story/flirt.js winNumber
+produce(DREAM.enteredFlag, DREAM.chapter);
+produce(DREAM.trashFlag, DREAM.chapter);
+produce(DREAM.wokeLinesFlag, DREAM.chapter); // his waking lines in the dream house
+produce(FRIDGE.flags.clean, FRIDGE.chapter);
+produce(FRIDGE.flags.thrown, FRIDGE.chapter);
 const enter = (mapKey) => {
   questState.visit(mapKey);
   advanceChapterIfDone();
@@ -111,7 +145,7 @@ for (const ch of order) {
   check(pre.length === 0, `${ch} starts with objectives already done: ${pre.map((o) => o.label).join(', ')}`);
 
   const objectives = CHAPTERS[ch].quest.objectives;
-  const targets = new Set(objectives.flatMap((o) => [o.npc, o.defeat, o.quiz, o.visit]).filter(Boolean));
+  const targets = new Set(objectives.flatMap((o) => [o.npc, o.defeat, o.quiz, o.visit, o.at]).filter(Boolean));
   for (const n of NPCS) {
     const placed = DATA[n].locations?.[ch];
     if (placed && !targets.has(n) && !DATA[n].chapters?.[ch]?.item && questState.activeChapter === ch) talk(n);
@@ -127,8 +161,14 @@ for (const ch of order) {
       const giver = NPCS.find((n) => DATA[n].chapters?.[ch]?.item?.name === o.item && DATA[n].locations?.[ch]);
       if (check(giver, `${ch}: nobody placed in ${ch} gives "${o.item}" (soft-lock)`)) talk(giver);
     } else if (o.flag) {
-      console.log(`note  ${ch}: flag objective "${o.flag}" can't be simulated — setting it`);
-      questState.setFlag(o.flag);
+      if (o.at && check(DATA[o.at]?.locations?.[ch], `${ch}: "${o.at}" (flag "${o.flag}") isn't placed in ${ch} (soft-lock)`)) talk(o.at);
+      if (questState.activeChapter !== ch || questState.hasFlag(o.flag)) continue;
+      const evt = o.flag.startsWith('event:') && EVENTS.find((e) => `event:${e.id}` === o.flag);
+      check(evt ? evt.chapter === ch : PRODUCERS.some((p) => p.flag === o.flag && (!p.chapter || p.chapter === ch)),
+        `${ch}: nothing in the game sets the flag objective "${o.flag}" in ${ch} (soft-lock)`);
+      if (o.after) check(objectives.some((x) => x.flag === o.after) || PRODUCERS.some((p) => p.flag === o.after) || o.after.startsWith('event:'),
+        `${ch}: objective "${o.label}" waits for an unknown flag "${o.after}"`);
+      questState.setFlag(o.flag); // a find / event / minigame: done by hand in the game
       advanceChapterIfDone();
     } else {
       const id = o.npc || o.defeat || o.quiz;
@@ -210,6 +250,21 @@ check(loadSave() === null, 'clearSave did not clear');
   check(!activeQuest().complete, `rewind: ${mid} starts already complete`);
 }
 
+// ── 3c. DEV chapter select (devPrime) ───────────────────────────────────────
+// Every chapter can be started fresh: active, not already complete, earlier
+// chapters' items in the bag.
+{
+  const itemCh = itemChaptersFrom(DATA);
+  for (const id of order) {
+    devPrime(id, DATA);
+    check(questState.activeChapter === id && !activeQuest().complete, `devPrime: ${id} is not a fresh start`);
+    const early = Object.entries(itemCh).filter(([, ch]) => order.indexOf(ch) < order.indexOf(id)).map(([n]) => n);
+    check(early.every((n) => questState.hasItem(n)), `devPrime: ${id} misses earlier items`);
+    const start = CHAPTERS[id].devStart;
+    check(!start || MAPS[start.mapKey]?.spawns[start.spawnName], `${id}: devStart ${start?.mapKey}/${start?.spawnName} is not a spawn`);
+  }
+}
+
 // ── 4. hero HP, defeat respawn, seats ────────────────────────────────────────
 questState.reset();
 check(questState.currentHp(30) === 30, 'a new game does not start at full HP');
@@ -273,7 +328,8 @@ for (const [key, map] of Object.entries(MAPS)) {
     check(COLLECTIBLE_KINDS[h.kind], `collectible '${h.id}' has unknown kind '${h.kind}'`);
   }
   for (const [key, map] of Object.entries(MAPS)) {
-    const hiddenProps = (map.props || []).filter((p) => p.hidden || p.side || p.clue);
+    const hiddenProps = (map.props || []).filter((p) => p.hidden || p.side
+      || FINDS.some((f) => f.map === key && f.furniture === p.furniture));
     if (!hiddenProps.length) continue;
     const g = map.grid, R = g.length, C = g[0].length;
     const boxes = (map.props || []).filter((p) => p.solid).flatMap((p) => propColliders(p));
@@ -301,7 +357,7 @@ for (const [key, map] of Object.entries(MAPS)) {
         const x = i * STEP + dx, y = j * STEP + (FY0 + FY1) / 2 + dy;
         return cols.some((c) => x >= c.tx - M && x <= c.tx + c.w + M && y >= c.ty - M && y <= c.ty + c.h + M);
       }));
-      check(findable, `${key}: '${p.hidden?.id || p.side || p.clue}' in ${p.key} can't be examined from anywhere reachable`);
+      check(findable, `${key}: '${p.hidden?.id || p.side || p.furniture}' in ${p.key} can't be examined from anywhere reachable`);
     }
   }
 }
@@ -320,19 +376,26 @@ for (const [key, map] of Object.entries(MAPS)) {
     check(props.length === 1, `side quest '${q.id}': ${props.length} props carry its thing (need exactly 1)`);
     check(q.points > 0 && q.ask?.length && q.thanks?.length && q.remind, `side quest '${q.id}': missing points/texts`);
   }
-  // Investigation: each clue on exactly one prop, at least one key clue, valid chapters.
-  for (const c of CLUES) {
-    const n = Object.values(MAPS).flatMap((m) => (m.props || []).filter((p) => p.clue === c.id)).length;
-    check(n === 1, `clue '${c.id}': ${n} props carry it (need exactly 1)`);
+  // Story finds: known chapter and map, exactly one such furniture there (or a
+  // zone), unique ids; zones are checked for reachability further down.
+  {
+    const ids = new Set();
+    for (const f of FINDS) {
+      check(!ids.has(f.id), `find '${f.id}' is used twice`);
+      ids.add(f.id);
+      check(order.includes(f.chapter) && MAPS[f.map], `find '${f.id}': unknown chapter or map`);
+      if (f.furniture) {
+        const n = (MAPS[f.map]?.props || []).filter((p) => p.furniture === f.furniture).length;
+        check(n === 1, `find '${f.id}': ${n} '${f.furniture}' in ${f.map} (need exactly 1)`);
+      } else check(f.zone, `find '${f.id}': neither furniture nor zone`);
+      check(f.lines?.length && (!f.needsItem || f.locked?.length), `find '${f.id}': missing lines`);
+    }
   }
-  check(CLUES.some((c) => c.key), 'investigation: no key clue');
-  check(order.includes(INVESTIGATION.opensAt) && order.includes(INVESTIGATION.finalChapter), 'investigation: unknown chapter');
-  check(DATA[INVESTIGATION.accused]?.chapters?.[INVESTIGATION.finalChapter]?.battle, 'investigation: the accused has no final battle');
   // Events: known map/chapter, speakers are characters, at least one of them is
   // placed in that map in that chapter (else the scene would be empty).
   for (const e of EVENTS) {
     check(MAPS[e.map] && order.includes(e.chapter), `event '${e.id}': unknown map or chapter`);
-    check(e.lines.every((l) => NPCS.includes(l.who) && l.text), `event '${e.id}': bad line`);
+    check(e.lines.every((l) => (NPCS.includes(l.who) || l.who === 'zionick') && l.text), `event '${e.id}': bad line`);
     const placed = e.lines.filter((l) => resolveSpawn(DATA[l.who]?.locations?.[e.chapter]?.map || '')?.map === e.map);
     check(placed.length > 0, `event '${e.id}': nobody who speaks is in ${e.map} in ${e.chapter}`);
     if (e.gift) check(e.gift.consumable ? e.gift.heal > 0 : e.gift.buff, `event '${e.id}': bad gift`);
@@ -397,8 +460,19 @@ for (const [key, map] of Object.entries(MAPS)) {
   }
 }
 
-// The fridge task: its zone can be reached and faced on foot (point one tile
-// ahead of the feet, within 0.4 tile of the zone, like WorldScene.tryExamine).
+// Zones you examine (the fridge, the story finds' zones): reachable and
+// faceable on foot (point one tile ahead of the feet, within 0.4 tile of the
+// zone, like WorldScene.tryExamine).
+for (const f of FINDS.filter((x) => x.zone)) {
+  const map = MAPS[f.map];
+  if (!map) continue;
+  const { pts } = floodFill(map);
+  const z = f.zone, M = 0.4;
+  check(pts.some(([i, j]) => [[0, -1], [0, 1], [-1, 0], [1, 0]].some(([dx, dy]) => {
+    const x = i * STEP + dx, y = j * STEP + (FY0 + FY1) / 2 + dy;
+    return x >= z.tx - M && x <= z.tx + z.w + M && y >= z.ty - M && y <= z.ty + z.h + M;
+  })), `find '${f.id}': its zone can't be faced from anywhere reachable`);
+}
 {
   const map = MAPS[FRIDGE.map];
   check(map && order.includes(FRIDGE.chapter), 'fridge: unknown map or chapter');
@@ -444,5 +518,5 @@ for (const [key, map] of Object.entries(MAPS)) {
   }
 }
 
-console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${CLUES.length} clues.`);
+console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${FINDS.length} story finds.`);
 process.exit(fails ? 1 : 0);

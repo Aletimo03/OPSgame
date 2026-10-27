@@ -1,5 +1,5 @@
 // js/scenes/DanceScene.js
-// Dance challenge at the Alcatraz (chapter 12, js/story/flirt.js): launched
+// Dance challenge at the Alcatraz (chapter 8, js/story/flirt.js): launched
 // over the PAUSED WorldScene when a girl wants to dance. Arrows rise from the
 // bottom in 4 lanes, ON THE BEAT of the club track (the music keeps playing;
 // its tempo comes from the map's `beat`). Press the matching arrow (or WASD)

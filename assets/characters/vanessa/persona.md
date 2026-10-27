@@ -3,7 +3,7 @@
 Come **parla e si comporta** Vanessa in OPSgame. Le informazioni vengono dall'utente: non inventarne altre.
 
 ## Chi è
-- Una ragazza all'**Alcatraz** (capitolo 12): la ragazza con i capelli rossi e i tatuaggi. Il nome l'ho scelto io a caso, su richiesta dell'utente.
+- Una ragazza all'**Alcatraz** (capitolo 8): la ragazza con i capelli rossi e i tatuaggi. Il nome l'ho scelto io a caso, su richiesta dell'utente.
 - **alta autostima**, difficile (3 ❤️); le piace soprattutto ridere.
 
 ## Come parla

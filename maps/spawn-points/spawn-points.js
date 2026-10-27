@@ -33,7 +33,7 @@ export const SPAWN_POINTS = {
   'base-floor-main':       { map: 'base-floor', ...centerTile(...HALL) },
   'base-floor-vertical-1': { map: 'base-floor', ...centerTile(...VERTICAL_ONE) },
   'base-floor-vertical-2': { map: 'base-floor', ...centerTile(...VERTICAL_TWO) },
-  // the Alcatraz (chapter 12): the second room (left) and the main hall's right side
+  // the Alcatraz (chapter 8): the second room (left) and the main hall's right side
   'alcatraz-sala2':   { map: 'alcatraz', tx: 7, ty: 13 },
   'alcatraz-sala2-b': { map: 'alcatraz', tx: 11, ty: 13 },
   'alcatraz-right':   { map: 'alcatraz', tx: 40, ty: 13 },

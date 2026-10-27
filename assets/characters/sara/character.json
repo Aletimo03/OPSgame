@@ -7,8 +7,10 @@
   },
   "locations": {
     "chapter-1": {
-      "map": "base-kitchen",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-2": {
       "map": "first-floor-kitchen",
@@ -18,7 +20,9 @@
     },
     "chapter-3": {
       "map": "first-floor-kitchen",
-      "facing": "down"
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-4": {
       "map": "first-floor-kitchen",
@@ -42,16 +46,6 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
-    },
-    "chapter-8": {
-      "map": "base-kitchen",
-      "facing": "down"
-    },
-    "chapter-9": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
       "wanderRadius": 3
     },
     "chapter-10": {
@@ -71,8 +65,8 @@
   "chapters": {
     "chapter-1": {
       "dialogue": [
-        "Ciao! Stavo preparando il caffè.",
-        "I meloni? Prima il caffè. Ne vuoi un po'?"
+        "Ho appena fatto il caffè.",
+        "Gabbo? Lascia perdere, è più grosso di te. Prendi almeno un caffè."
       ],
       "dialogueAfter": "La moka è finita! Ne faccio un'altra più tardi.",
       "item": {
@@ -83,33 +77,21 @@
         "qty": 2
       }
     },
-    "chapter-3": {
+    "chapter-2": {
       "dialogue": [
-        "Ehi! Ho qualcosa per te.",
-        "Una bella sessione di lamentele da ascoltare, porco d*o, visto che non ho niente da fare"
-      ],
-      "dialogueAfter": "Ti ho già parlato troppo, basta!",
-      "item": {
-        "name": "Palle a terra",
-        "description": "Pesanti e pericolose.",
-        "buff": {
-          "maxHp": 10
-        }
-      }
+        "Peperoni? Io ho visto solo il tuo ginocchio gonfio.",
+        "Chiedi a Nima, il frigo lo controlla più di tutti."
+      ]
     },
-    "chapter-8": {
+    "chapter-5": {
       "dialogue": [
-        "Provviste? Ho appena fatto il caffè.",
-        "Tieni, portane un po' in giro."
-      ],
-      "dialogueAfter": "Il caffè te l'ho già dato!",
-      "item": {
-        "name": "Caffè",
-        "description": "Carburante della casa.",
-        "buff": {
-          "attack": 2
-        }
-      }
+        "Gaia? Camera 18, con Alessio. Come sempre."
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        "Stavolta tocca a te. Fallo per il ginocchio."
+      ]
     }
   }
 }

@@ -33,7 +33,8 @@ import { addAffinity } from '../story/affinity.js';
 import { EVENTS } from '../story/events.js';
 import { FRIDGE, fridgeOpen, holdingCheese, fridgeCleaned, throwCheese } from '../story/fridge.js';
 import { advanceClock, clockNow, fmt, nightAlpha, phaseIcon } from '../story/clock.js';
-import { INVESTIGATION, investigationOpen, clueFound, cluesFound, findClue } from '../story/investigation.js';
+import { FINDS, findFlag, findOpen } from '../story/finds.js';
+import { PREMISE } from '../story/premise.js';
 import {
   SHOP_KEEPER, sideStepFor, startSide, completeSide, findSideThing, sideState, sideFound, shopStock, buy,
 } from '../story/sideQuests.js';
@@ -43,6 +44,7 @@ import { loadAudio, attachAudio } from '../core/audio.js';
 import { writeSave, clearSave } from '../core/save.js';
 import { propColliders, propBaseY } from '../core/props.js';
 import { ALCATRAZ, exitState } from '../story/alcatraz.js';
+import { DREAM, dreamActive, dreamHouse } from '../story/dream.js';
 import {
   GIRLS, APPROACHES, GABBO, CHAPTER as FLIRT_CHAPTER, MAP as FLIRT_MAP, CHIARA_SPEED, CHIARA_WAIT_MS,
   isGirl, flirtActive, girlState, girlTag, approach, snub, winNumber, loseNight,
@@ -121,6 +123,7 @@ export default class WorldScene extends Phaser.Scene {
     (map?.props || []).forEach((p) => {
       if (!this.textures.exists(p.key)) this.load.image(p.key, p.path);
     });
+    if (map?.jumpscare && !this.textures.exists('jumpscare')) this.load.image('jumpscare', map.jumpscare); // the dream's jumpscare
     for (const d of map?.dancers || []) { // static dancers (the bear on the Alcatraz stage)
       if (!this.textures.exists(d.key)) this.load.image(d.key, d.path);
     }
@@ -155,7 +158,8 @@ export default class WorldScene extends Phaser.Scene {
     const worldH = rows * TILE;
 
     // Map visuals + colliders.
-    drawMap(this, grid, map.theme);
+    this.inDreamHouse = dreamHouse() && map.key !== DREAM.map; // ch13: the house, but dark and strange
+    drawMap(this, grid, this.inDreamHouse ? 'dream' : map.theme);
     if (map.stairs) drawStairs(this, map.stairs);
 
     // Room labels (for floor-plan maps).
@@ -328,6 +332,7 @@ export default class WorldScene extends Phaser.Scene {
     this.updateClock();
     this.startDisco(map);
     this.startCrowd(map);
+    this.startDream(map);
 
     // Tiny HUD label so you always know which room you're in.
     this.roomLabel = this.add
@@ -395,7 +400,9 @@ export default class WorldScene extends Phaser.Scene {
     // Soundtrack — plays the WorldScene theme, adopting the already-playing
     // instance across map warps so it never restarts.
     attachAudio(this);
-    if (map.music) this.audio.playMusic(map.music); // a map's own track (the Alcatraz)
+    const track = this.inDreamHouse ? 'dream-house-theme' : map.music; // the dream house has its own track
+    if (track && this.cache.audio.exists(track)) this.audio.playMusic(track); // a map's own track
+    else if (track) this.audio.silence(); // its track isn't there yet (the dream): no house theme either
     else this.audio.playSceneMusic();
   }
 
@@ -596,9 +603,11 @@ export default class WorldScene extends Phaser.Scene {
     for (const d of [].concat(map.disco || [])) this.discoLights(d); // one or several areas
   }
 
-  discoLights(d) {
+  // The soft round light texture (white centre → transparent) used by the
+  // disco lights and the dream lantern.
+  ensureLightTexture() {
     const KEY = 'disco-light';
-    if (!this.textures.exists(KEY)) { // soft round light, white centre → transparent
+    if (!this.textures.exists(KEY)) {
       const S = 256;
       const tex = this.textures.createCanvas(KEY, S, S);
       const ctx = tex.getContext();
@@ -610,6 +619,11 @@ export default class WorldScene extends Phaser.Scene {
       ctx.fillRect(0, 0, S, S);
       tex.refresh();
     }
+    return KEY;
+  }
+
+  discoLights(d) {
+    const KEY = this.ensureLightTexture();
     const a = d.area;
     const rx = () => Phaser.Math.FloatBetween(a.x0, a.x1 + 1) * TILE;
     const ry = () => Phaser.Math.FloatBetween(a.y0, a.y1 + 1) * TILE;
@@ -1236,7 +1250,7 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   // Map `exits` (not warps): the entrance's front door. Stepping on one asks
-  // js/story/alcatraz.js whether you can go out (chapter 12, after Gabbo);
+  // js/story/alcatraz.js whether you can go out (chapter 8, after Gabbo);
   // otherwise a short line. Re-armed once you step off it.
   checkExits() {
     const exits = MAPS[this.mapKey].exits;
@@ -1276,7 +1290,7 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   // Map `flagZones`: stepping into the area (feet) sets a flag once, during
-  // `chapter` if given, then onProgress() (e.g. the Alcatraz stage, chapter 12).
+  // `chapter` if given, then onProgress() (e.g. the Alcatraz stage, chapter 8).
   checkFlagZones() {
     const zones = MAPS[this.mapKey].flagZones;
     if (!zones?.length) return;
@@ -1288,7 +1302,9 @@ export default class WorldScene extends Phaser.Scene {
       if (fx >= z.x0 && fx < z.x1 + 1 && fy >= z.y0 && fy < z.y1 + 1) {
         questState.setFlag(z.flag);
         if (z.banner) this.showBanner(z.banner, 0.22, '#ffd54a', 0xffd54a);
+        if (z.say) { this.holdPlayer(); this.say(null, z.say); } // e.g. Gabbo's slip on the stage
         this.onProgress();
+        if (z.flag === DREAM.escapedFlag) this.wakeUp(); // out of the maze: back in bed
       }
     }
   }
@@ -1308,7 +1324,8 @@ export default class WorldScene extends Phaser.Scene {
     questState.stats.playMs += delta; // play time, for the ending screen
     advanceClock(delta);
     this.updateClock();
-    if (!this.inCutscene) this.phoneHud.update(); // badge follows new chapters / reading the phone
+    if (!this.inCutscene && !this.hudHidden) this.phoneHud.update(); // badge follows new chapters / reading the phone
+    if (this.hudHidden) this.setHudVisible(false); // the dream: no interface at all
     for (const { npc, t } of this.questMarks) {
       t.setPosition(npc.sprite.x, npc.sprite.y - npc.sprite.displayHeight * 0.5 + 6 + t.bob);
     }
@@ -1334,8 +1351,12 @@ export default class WorldScene extends Phaser.Scene {
     // Overlays. At most one is open; none opens during a dialogue or a warp.
     // The Esc menu can only open when no other overlay owns the screen, so Esc
     // still closes those first (each overlay reads Esc only while open).
-    const overlays = [this.inventory, this.phone, this.minimap];
+    const overlays = this.hudHidden ? [] : [this.inventory, this.phone, this.minimap];
     const busy = this.dialogue.open || this.warpLocked;
+    if (this.hudHidden) { // the dream: bag / phone / map keys do nothing
+      const J = Phaser.Input.Keyboard.JustDown;
+      [this.inventory.iKey, this.phone.key, this.minimap.key].forEach((k) => J(k));
+    }
     if (busy) {
       // Drop overlay key presses made during a dialogue/warp: Phaser keeps a
       // press "just down" until it's read, so it would pop the overlay open
@@ -1364,7 +1385,7 @@ export default class WorldScene extends Phaser.Scene {
     }
 
     const pressedSpace = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    this.keyHints.setVisible(!this.dialogue.open && !this.inCutscene);
+    this.keyHints.setVisible(!this.dialogue.open && !this.inCutscene && !this.hudHidden);
 
     // While a dialogue is open, freeze movement; space closes it.
     // Normal chat: only Zio Nick and the person he talks to stand still; the
@@ -1404,7 +1425,7 @@ export default class WorldScene extends Phaser.Scene {
       return;
     }
 
-    movePlayer(this.player, this.cursors);
+    movePlayer(this.player, this.cursors, MAPS[this.mapKey].playerSpeed || PLAYER.SPEED);
     this.assistDoor(); // slide into a doorway you're slightly off-centre from
     this.player.setDepth(this.characterDepth(this.player)); // vs NPCs and props, by feet
     updateNpcs(this, this.npcs, time); // NPCs stroll around so they feel alive
@@ -1412,6 +1433,7 @@ export default class WorldScene extends Phaser.Scene {
     this.checkExits();
     this.checkFlagZones();
     this.followTick(this.time.now, delta);
+    this.dreamTick(this.time.now, delta);
     this.checkBar();
 
     if (this.spaceGuard && !this.cursors.space.isDown) this.spaceGuard = false;
@@ -1483,39 +1505,13 @@ export default class WorldScene extends Phaser.Scene {
       this.onProgress();
       if (questState.didIn('defeated', target.id, ch)) {
         // Already beaten in this chapter — no rematch.
-        this.dialogue.show(
-          target.name,
-          act.dialogueAfter || 'Mi hai già battuto, lasciami in pace...',
-          target.portraitKey
-        );
+        this.say(target, act.dialogueAfter || 'Mi hai già battuto, lasciami in pace...');
         return;
       }
       // Lines first, then a branching prompt; either choice leads to the fight.
-      this.dialogue.show(target.name, act.dialogue, target.portraitKey, () => {
+      this.say(target, act.dialogue, () => {
         const b = act.battle;
-        const fight = (opts) => this.dialogue.ask(target.name, b.prompt, b.options, target.portraitKey, () =>
-          this.startBattle(target, ch, opts)
-        );
-        // The melon investigation's accusation (final only): present a clue first.
-        const inv = INVESTIGATION;
-        const clues = cluesFound();
-        if (target.id === inv.accused && ch === inv.finalChapter && clues.length) {
-          this.dialogue.ask('🔍 Indagine', 'Presenta una prova', [...clues.map((c) => c.name), 'Nessuna prova'], null, (i) => {
-            const c = clues[i];
-            if (!c) return fight();
-            if (c.key) {
-              this.dialogue.show('🔍 Indagine', [c.text, `${target.name} impallidisce. La prova lo inchioda!`], null,
-                () => fight({ enemyHpFrac: inv.bonusFrac }));
-            } else {
-              const max = this.heroMaxHp();
-              questState.setHp(Math.max(1, questState.currentHp(max) - inv.penaltyHp), max);
-              this.dialogue.show('🔍 Indagine', [c.text, `Non prova niente. ${target.name} sorride. (−${inv.penaltyHp} HP)`], null,
-                () => fight());
-            }
-          });
-          return;
-        }
-        fight();
+        this.dialogue.ask(target.name, b.prompt, b.options, target.portraitKey, () => this.startBattle(target, ch, b));
       });
     } else if (act.quiz) {
       // Quiz-based objective — the chapter advances only on a CORRECT answer.
@@ -1523,14 +1519,10 @@ export default class WorldScene extends Phaser.Scene {
       const already = questState.didIn('solved', target.id);
       if (already) {
         // Already passed — just replay a closing line, no re-quiz.
-        this.dialogue.show(
-          target.name,
-          act.dialogueAfter || 'Hai già superato la prova!',
-          target.portraitKey
-        );
+        this.say(target, act.dialogueAfter || 'Hai già superato la prova!');
       } else {
         // Intro lines → branching question → grade the chosen option.
-        this.dialogue.show(target.name, act.dialogue, target.portraitKey, () => {
+        this.say(target, act.dialogue, () => {
           this.dialogue.ask(target.name, q.prompt, q.options, target.portraitKey, (idx) => {
             if (idx === q.answer) {
               questState.solve(target.id);
@@ -1552,11 +1544,12 @@ export default class WorldScene extends Phaser.Scene {
       const lines = already
         ? (act.dialogueAfter || `Hai già ${it.name} con te!`)
         : act.dialogue;
-      this.dialogue.show(target.name, lines, target.portraitKey, () => {
+      this.say(target, lines, () => {
         if (already) this.afterTalk(target);
         if (!already) {
           if (it.consumable) questState.addSupply(it, target.id);
           else questState.addItem(it);
+          this.setTalkFlag(act);
           this.onProgress();
           this.inventory.refresh();
           this.showItemReceived(it.consumable ? `${it.name} x${it.qty ?? 1}` : it.name);
@@ -1564,8 +1557,48 @@ export default class WorldScene extends Phaser.Scene {
       });
     } else {
       this.onProgress();
-      this.dialogue.show(target.name, act.dialogue, target.portraitKey, () => this.afterTalk(target));
+      this.say(target, act.dialogue, () => {
+        this.setTalkFlag(act);
+        this.afterTalk(target);
+      });
     }
+  }
+
+  // A chapter entry's `setFlag` (character JSON): set once its lines are read.
+  setTalkFlag(act) {
+    if (!act.setFlag || questState.hasFlag(act.setFlag)) return;
+    questState.setFlag(act.setFlag);
+    this.onProgress();
+  }
+
+  // Show lines that may mix speakers: a string is said by `npc` (the one you
+  // talk to; null = narration), { who, text } by that character ('zionick' =
+  // Zio Nick himself). Consecutive lines of one speaker share a box.
+  say(npc, lines, onDone = null, opts = {}) {
+    const runs = [];
+    for (const l of Array.isArray(lines) ? lines : [lines]) {
+      const who = typeof l === 'string' ? null : l.who;
+      const text = typeof l === 'string' ? l : l.text;
+      const last = runs[runs.length - 1];
+      if (last && last.who === who) last.lines.push(text);
+      else runs.push({ who, lines: [text] });
+    }
+    const step = (i) => {
+      if (i >= runs.length) { onDone?.(); return; }
+      const sp = this.speaker(runs[i].who, npc);
+      this.dialogue.show(sp.name, runs[i].lines, sp.portrait, () => step(i + 1), opts);
+    };
+    step(0);
+  }
+
+  // Name + portrait for a line's speaker (see say()).
+  speaker(who, npc) {
+    if (!who) return { name: npc?.name || '...', portrait: npc?.portraitKey || null };
+    if (who === PLAYER.SPRITE_KEY) return { name: PLAYER.NAME, portrait: PLAYER.PORTRAIT_KEY };
+    const here = this.npcs?.list.find((n) => n.id === who);
+    if (here) return { name: here.name, portrait: here.portraitKey };
+    const key = `${who}-portrait`;
+    return { name: this.cache.json.get(`${who}-data`)?.name || who, portrait: this.textures.exists(key) ? key : null };
   }
 
   // After a plain chat (or an item already given): favours (side quests) and
@@ -1671,6 +1704,7 @@ export default class WorldScene extends Phaser.Scene {
 
   // Zio Nick's own bed (prop `sleep: true`): a short nap, full HP.
   sleepInBed() {
+    if (dreamActive()) { this.enterDream(); return; } // chapter 9: the nightmare
     this.warpLocked = true; // freeze input during the fade
     const cam = this.cameras.main;
     cam.fadeOut(500, 0, 0, 0);
@@ -1685,6 +1719,328 @@ export default class WorldScene extends Phaser.Scene {
     });
   }
 
+  // ── Chapter 13: the dream (js/story/dream.js) ──────────────────────────────
+  // Bed → a slow fade, two lines, then the maze.
+  enterDream() {
+    this.warpLocked = true;
+    this.holdPlayer();
+    this.showBanner(DREAM.enter[0], 0.3, '#c8a0ff', 0x8a5cff);
+    const cam = this.cameras.main;
+    cam.fadeOut(1600, 0, 0, 0);
+    cam.once('camerafadeoutcomplete', () => {
+      questState.setFlag(DREAM.enteredFlag);
+      questState.heroHp = null;
+      this.onProgress();
+      // "Wake up" in the same room… which is now the dream house. If you had
+      // already fallen into the maze (a save reloaded mid-dream), straight back there.
+      if (questState.hasFlag(DREAM.trashFlag)) this.scene.restart({ mapKey: DREAM.map, spawnName: 'default', notice: DREAM.mazeEnter });
+      else this.scene.restart({ mapKey: 'room-20', spawnName: 'bedside' }); // standing in front of the bed
+    });
+  }
+
+  // Dream house, first time: Zio Nick's lines (he speaks only in the dream),
+  // then the new objective appears.
+  dreamWakeLines() {
+    if (!this.inDreamHouse || questState.hasFlag(DREAM.wokeLinesFlag)) return;
+    if (this.dialogue.open || this.warpLocked) { this.time.delayedCall(500, () => this.dreamWakeLines()); return; }
+    this.holdPlayer();
+    this.dialogue.show(PLAYER.NAME, DREAM.wokeLines, PLAYER.PORTRAIT_KEY, () => {
+      questState.setFlag(DREAM.wokeLinesFlag);
+      this.questTracker?.refresh();
+      this.saveGame();
+      this.showBanner(DREAM.newGoal, 0.3, '#ffd54a', 0xffd54a);
+    });
+  }
+
+  // Dream house, the trash room: the floor opens and you fall into the maze.
+  dreamTrashScene() {
+    if (!this.inDreamHouse || this.mapKey !== DREAM.trashMap || !questState.hasFlag(DREAM.wokeLinesFlag)) return;
+    if (this.dialogue.open || this.warpLocked) { this.time.delayedCall(500, () => this.dreamTrashScene()); return; }
+    this.holdPlayer();
+    this.warpLocked = true;
+    this.cameras.main.shake(600, 0.006);
+    this.dialogue.show('...', DREAM.trashScene, null, () => {
+      questState.setFlag(DREAM.trashFlag);
+      this.onProgress();
+      const cam = this.cameras.main;
+      cam.shake(700, 0.012);
+      cam.fadeOut(1200, 0, 0, 0);
+      cam.once('camerafadeoutcomplete', () =>
+        this.scene.restart({ mapKey: DREAM.map, spawnName: 'default', notice: DREAM.mazeEnter }));
+    });
+  }
+
+  // Only a bubble of light around Zio Nick: everything else is pitch black.
+  // A soft-edged hole (canvas texture, black outside a radial gradient) that
+  // follows him, plus four huge black rectangles around it. Above the night
+  // veil, the lights and the shadow (so the shadow is unseen in the dark).
+  startVision(radiusTiles) {
+    const KEY = 'vision-hole';
+    if (!this.textures.exists(KEY)) {
+      const S = 512;
+      const tex = this.textures.createCanvas(KEY, S, S);
+      const ctx = tex.getContext();
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, S, S);
+      ctx.globalCompositeOperation = 'destination-out';
+      const g = ctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+      g.addColorStop(0, 'rgba(0,0,0,1)');
+      g.addColorStop(0.55, 'rgba(0,0,0,1)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, S, S);
+      tex.refresh();
+    }
+    const D = radiusTiles * 2 * TILE;
+    const BIG = 40000;
+    const depth = 890000; // over veil (880000), lights (880001), shadow (880002); under the "!" marks
+    this.vision = {
+      D,
+      hole: this.add.image(0, 0, KEY).setDisplaySize(D, D).setDepth(depth),
+      rects: [0, 1, 2, 3].map(() => this.add.rectangle(0, 0, BIG, BIG, 0x000000, 1).setOrigin(0, 0).setDepth(depth)),
+    };
+    this.visionTick();
+  }
+
+  visionTick() {
+    const v = this.vision;
+    if (!v) return;
+    const x = this.player.x;
+    const y = this.player.y + TILE * 0.3; // centred a bit low: on the body, not the hair
+    const h = v.D / 2;
+    v.hole.setPosition(x, y);
+    const [top, bottom, left, right] = v.rects;
+    top.setPosition(x - 20000, y - h - 40000).setSize(40000, 40000);
+    bottom.setPosition(x - 20000, y + h).setSize(40000, 40000);
+    left.setPosition(x - h - 40000, y - h).setSize(40000, v.D);
+    right.setPosition(x + h, y - h).setSize(40000, v.D);
+  }
+
+  // A strange, dim colour grade on the world camera in the dream (WebGL only).
+  dreamColours() {
+    const fx = this.cameras.main.postFX;
+    if (!fx?.addColorMatrix) return;
+    const cm = fx.addColorMatrix();
+    cm.saturate(-0.55);
+    cm.hue(-25, true);
+    cm.brightness(0.8, true);
+  }
+
+  // In the maze: a dim lantern light on Zio Nick, a red vignette that grows as
+  // the shadow gets closer, and the shadow itself (shadowReveal, after a few steps).
+  startDream(map) {
+    this.shadowSpr = null;
+    this.lantern = null;
+    this.dreadVeil = null;
+    this.vision = null;
+    this.cameras.main.postFX?.clear?.(); // no dream colours left over from a previous map
+    // In the dream there's no interface: no tracker, phone, clock, room name or
+    // key hints (update() keeps them hidden), and I / P / M don't open.
+    this.hudHidden = this.inDreamHouse || !!map.shadow;
+    const radius = this.inDreamHouse ? DREAM.houseVision : map.vision;
+    if (radius) { this.startVision(radius); this.dreamColours(); }
+    if (this.inDreamHouse) {
+      this.time.delayedCall(900, () => this.dreamWakeLines());
+      this.time.delayedCall(700, () => this.dreamTrashScene());
+    }
+    if (!map.shadow && !map.lantern) return;
+    this.ensureLightTexture();
+    if (map.lantern) {
+      this.lantern = this.add.image(this.player.x, this.player.y, 'disco-light')
+        .setDisplaySize(TILE * 7, TILE * 7).setTint(0xb8a6d9).setBlendMode(Phaser.BlendModes.ADD)
+        .setAlpha(0.45).setDepth(880001);
+    }
+    if (!map.shadow || !dreamActive()) return;
+    const cam = this.cameras.main;
+    this.dreadVeil = this.add.rectangle(0, 0, cam.width, cam.height, 0x5a0000, 1)
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(1400).setAlpha(0);
+    // The shadow rises behind you, at the entrance, once you've walked
+    // DREAM.revealTiles away from it (dreamTick → shadowReveal).
+    const spawn = map.spawns.default;
+    this.shadowStart = this.tileOf({ x: spawn.tx * TILE + TILE / 2, y: spawn.ty * TILE + TILE / 2 + TILE * 1.2 }); // ≈ where the player's feet start
+    this.shadowPending = true;
+    if (!questState.hasFlag(DREAM.lineFlag('maze'))) {
+      this.time.delayedCall(700, () => this.dreamSay('maze'));
+    }
+  }
+
+  // Zio Nick thinks aloud in the dream, once per line set (DREAM.lines[id]).
+  dreamSay(id, after = null) {
+    const flag = DREAM.lineFlag(id);
+    if (questState.hasFlag(flag)) { after?.(); return; }
+    if (this.dialogue.open) { this.time.delayedCall(400, () => this.dreamSay(id, after)); return; }
+    questState.setFlag(flag);
+    this.holdPlayer();
+    this.dialogue.show(PLAYER.NAME, DREAM.lines[id], PLAYER.PORTRAIT_KEY, () => { this.saveGame(); after?.(); });
+  }
+
+  // Dream house triggers: leaving the bedroom (into the anteroom) and the
+  // corridor outside the room.
+  dreamHouseTick() {
+    if (!this.inDreamHouse || this.dialogue.open || this.warpLocked) return;
+    if (!questState.hasFlag(DREAM.wokeLinesFlag)) return; // first the waking lines
+    for (const t of DREAM.houseTriggers) {
+      if (t.map !== this.mapKey || questState.hasFlag(DREAM.lineFlag(t.id))) continue;
+      const a = t.area && this.map.areas?.[t.area];
+      if (a) {
+        const f = this.player.body.center;
+        const tx = Math.floor(f.x / TILE);
+        const ty = Math.floor(f.y / TILE);
+        if (tx < a.x0 || tx > a.x1 || ty < a.y0 || ty > a.y1) continue;
+      }
+      this.dreamSay(t.id);
+      return;
+    }
+  }
+
+  // The scare: everything stops, the screen shakes, the shadow rises behind
+  // Zio Nick, he jumps ("!"), then the chase begins.
+  shadowReveal() {
+    this.shadowPending = false;
+    this.warpLocked = true;
+    this.holdPlayer();
+    const sh = DREAM.shadow;
+    const cam = this.cameras.main;
+    cam.shake(900, 0.008);
+    this.audio?.playSfx('shadow-near');
+    sliceSheet(this, sh.key);
+    const st = this.shadowStart;
+    const s = this.add.sprite(st.tx * TILE + TILE / 2, st.ty * TILE + TILE / 2, sh.key, idleFrame('down'))
+      .setOrigin(0.5, 0.96).setScale(PLAYER.SCALE * sh.scale).setTint(0x000000).setAlpha(0);
+    s.setDepth(880002); // above the dark (the vision mask still hides it outside your light)
+    this.tweens.add({ targets: s, alpha: 0.92, duration: 900 });
+    this.time.delayedCall(1000, () => {
+      // Zio Nick jumps: a "!" over his head and a hop.
+      const p = this.player;
+      const mark = this.add.text(p.x, p.y - p.displayHeight * 0.5, '!', {
+        fontFamily: 'monospace', fontSize: '40px', fontStyle: 'bold', color: '#ffffff', stroke: '#000000', strokeThickness: 7,
+      }).setOrigin(0.5, 1).setDepth(900001);
+      this.tweens.add({ targets: mark, y: mark.y - 14, duration: 140, yoyo: true, repeat: 1 });
+      this.tweens.add({ targets: p, scaleY: PLAYER.SCALE * 1.12, duration: 110, yoyo: true });
+      this.time.delayedCall(700, () => {
+        mark.destroy();
+        this.dreamSay('scared', () => {
+          this.shadowSpr = { sprite: s, anims: createWalkAnims(this, sh.key), facing: 'down', next: null, speed: sh.speed, nextSfx: 0 };
+          this.warpLocked = false; // run!
+        });
+      });
+    });
+  }
+
+  tileOf(o) {
+    return { tx: Math.round((o.x - TILE / 2) / TILE), ty: Math.round((o.y - TILE / 2) / TILE) };
+  }
+
+  dreamTick(time, delta) {
+    this.visionTick();
+    if (this.lantern) this.lantern.setPosition(this.player.x, this.player.y + TILE * 0.4);
+    this.dreamHouseTick();
+    if (this.shadowPending && !this.dialogue.open && dreamActive()) {
+      const f = this.player.body.center;
+      const st = this.shadowStart;
+      if (Math.hypot(Math.floor(f.x / TILE) - st.tx, Math.floor(f.y / TILE) - st.ty) >= DREAM.revealTiles) this.shadowReveal();
+    }
+    const sh = this.shadowSpr;
+    if (!sh || this.warpLocked) return;
+    const s = sh.sprite; // origin at its feet: (s.x, s.y) is where it stands
+    const cfg = DREAM.shadow;
+    sh.speed = Math.min(cfg.maxSpeed, sh.speed + (cfg.speedUp * delta) / 1000); // it gets faster
+    const feet = this.player.body.center; // Zio Nick's feet
+    const d = Math.hypot(feet.x - s.x, feet.y - s.y) / TILE;
+    if (d < cfg.catchTiles) { this.caughtByShadow(); return; }
+    // Dread: red vignette and a tremor when it's close; its sound each time it closes in.
+    this.dreadVeil?.setAlpha(Phaser.Math.Clamp((6 - d) / 6, 0, 1) * 0.35);
+    if (d < 3 && Math.random() < 0.04) this.cameras.main.shake(120, 0.003);
+    // Its sound, again and again while it's near: faster the closer it gets.
+    if (d < cfg.nearTiles && time >= sh.nextSfx) {
+      this.audio?.playSfx('shadow-near');
+      sh.nextSfx = time + 350 + 160 * d;
+    }
+    // Grid walk: from tile centre to tile centre along the corridors (never
+    // through a wall). At each centre it picks the next tile of a shortest
+    // path to the tile you stand on.
+    let step = (sh.speed * delta) / 1000;
+    while (step > 0) {
+      if (!sh.next) {
+        const here = { tx: Math.floor(s.x / TILE), ty: Math.floor(s.y / TILE) };
+        const goal = { tx: Math.floor(feet.x / TILE), ty: Math.floor(feet.y / TILE) };
+        sh.next = (here.tx === goal.tx && here.ty === goal.ty) ? null : this.bfsStep(here, goal);
+        if (!sh.next) { // same tile as you (or no path): straight at you, inside this tile
+          const dx = feet.x - s.x;
+          const dy = feet.y - s.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const k = Math.min(1, step / len);
+          s.setPosition(s.x + dx * k, s.y + dy * k);
+          this.animateMove(sh, dx * k, dy * k);
+          return;
+        }
+      }
+      const wx = sh.next.tx * TILE + TILE / 2;
+      const wy = sh.next.ty * TILE + TILE / 2;
+      const dx = wx - s.x;
+      const dy = wy - s.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= step) { // reached the tile centre: on to the next one
+        s.setPosition(wx, wy);
+        step -= dist;
+        sh.next = null;
+        this.animateMove(sh, dx, dy);
+      } else {
+        s.setPosition(s.x + (dx / dist) * step, s.y + (dy / dist) * step);
+        this.animateMove(sh, dx, dy);
+        step = 0;
+      }
+    }
+  }
+
+  // Caught: a red flash and the dream starts over.
+  caughtByShadow() {
+    // One try only: caught = the dream (and the chapter) is over. First the
+    // jumpscare: the user's image full screen for DREAM.jumpscareMs with the
+    // screen shaking hard and the scream, then Zio Nick wakes up.
+    this.warpLocked = true;
+    this.holdPlayer();
+    questState.setFlag(DREAM.caughtFlag);
+    questState.setFlag(DREAM.escapedFlag); // the maze is done either way
+    this.onProgress(); // queues the ending (shown after the wake-up)
+    this.audio?.silence();
+    const W = this.scale.width;
+    const H = this.scale.height;
+    const objs = [this.add.rectangle(0, 0, W, H, 0x000000, 1).setOrigin(0, 0)];
+    if (this.textures.exists('jumpscare')) {
+      const img = this.add.image(W / 2, H / 2, 'jumpscare');
+      const k = Math.max(W / img.width, H / img.height) * 1.12; // cover, with margin for the shake
+      img.setScale(k);
+      this.tweens.add({ targets: img, scale: k * 1.06, duration: 90, yoyo: true, repeat: -1 }); // a throbbing face
+      objs.push(img);
+    }
+    objs.forEach((o) => o.setScrollFactor(0).setDepth(3000000));
+    let scream = null;
+    if (this.cache.audio.exists('jumpscare')) {
+      scream = this.sound.add('jumpscare', { volume: 1 });
+      scream.play();
+    }
+    const ms = DREAM.jumpscareMs;
+    this.cameras.getCamera('ui')?.shake(ms, 0.03);
+    this.cameras.main.shake(ms, 0.02);
+    this.time.delayedCall(ms, () => {
+      if (scream) this.tweens.add({ targets: scream, volume: 0, duration: 400, onComplete: () => scream.stop() });
+      this.cameras.main.fadeOut(600, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () =>
+        this.scene.restart({ mapKey: 'room-20', spawnName: 'bedside', notice: DREAM.caughtWake }));
+    });
+  }
+
+  // Out of the maze: wake up in bed (room-20).
+  wakeUp() {
+    this.warpLocked = true;
+    this.holdPlayer();
+    const cam = this.cameras.main;
+    cam.fadeOut(1000, 255, 255, 255);
+    cam.once('camerafadeoutcomplete', () =>
+      this.scene.restart({ mapKey: 'room-20', spawnName: 'bedside', notice: DREAM.wake }));
+  }
+
   // Clock HUD + night veil, redrawn once per in-game minute.
   updateClock() {
     const min = Math.floor(clockNow());
@@ -1693,7 +2049,7 @@ export default class WorldScene extends Phaser.Scene {
     this.clockText.setText(`${phaseIcon(min)} ${fmt(min)}`);
     const m = MAPS[this.mapKey];
     // `ambient`: a fixed darkness (the club); `noNight`: never dark.
-    this.nightVeil.setAlpha(m.ambient ?? (m.noNight ? 0 : nightAlpha(min)));
+    this.nightVeil.setAlpha(this.inDreamHouse ? 0.5 : m.ambient ?? (m.noNight ? 0 : nightAlpha(min)));
   }
 
   // One-off scenes for this map + chapter (js/story/events.js), e.g. Ana's
@@ -1703,11 +2059,14 @@ export default class WorldScene extends Phaser.Scene {
     const ev = EVENTS.find((e) => e.map === this.mapKey && e.chapter === questState.activeChapter
       && !questState.hasFlag(`event:${e.id}`));
     if (!ev) return;
-    const busy = this.dialogue.open || this.warpLocked || this.seated
+    const busy = this.dialogue.open || this.warpLocked || this.seated || this.inCutscene
+      || this.time.now < (this.cardUntil || 0) // let the chapter card fade first
       || [this.inventory, this.phone, this.minimap, this.pauseMenu].some((o) => o?.open);
     if (busy) { this.time.delayedCall(1500, () => this.playEvents()); return; }
     questState.setFlag(`event:${ev.id}`);
     const here = new Map(this.npcs.list.map((n) => [n.id, n]));
+    // Zio Nick speaks in scenes too (`who: 'zionick'`): the camera turns to him.
+    here.set(PLAYER.SPRITE_KEY, { sprite: this.player, name: PLAYER.NAME, portraitKey: PLAYER.PORTRAIT_KEY });
     const lines = ev.lines.filter((l) => here.has(l.who));
     this.showBanner(ev.title, 0.2, '#ffd54a', 0xffd54a);
     this.cutsceneStart();
@@ -1719,7 +2078,11 @@ export default class WorldScene extends Phaser.Scene {
           this.inventory.refresh();
           this.showItemReceived(`${ev.gift.name} x${ev.gift.qty ?? 1}`);
         }
-        if (ev.hearts) [...new Set(lines.map((l) => l.who))].forEach((id) => this.bumpAffinity(id, ev.hearts));
+        if (ev.hearts) {
+          [...new Set(lines.map((l) => l.who))].filter((id) => id !== PLAYER.SPRITE_KEY)
+            .forEach((id) => this.bumpAffinity(id, ev.hearts));
+        }
+        this.player.facing = 'down'; // he turned to the camera for his lines
         this.onProgress(); // an event can be a chapter's objective (flag event:<id>)
         return;
       }
@@ -1787,23 +2150,16 @@ export default class WorldScene extends Phaser.Scene {
     this.cutBars = null;
   }
 
-  // One-off story explanations: the premise at the very start, the
-  // investigation when it opens (chapter 3). Waits if something is on screen.
+  // The premise, once, at the very start (js/story/premise.js). Waits if
+  // something is on screen.
   storyIntros() {
     if (!this.player?.active) return;
+    if (questState.hasFlag('premise-seen') || questState.activeChapter !== 'chapter-1') return;
     const busy = this.dialogue.open || this.warpLocked || this.seated
       || [this.inventory, this.phone, this.minimap, this.pauseMenu].some((o) => o?.open);
-    const want = !questState.hasFlag('premise-seen') && questState.activeChapter === 'chapter-1' ? 'premise'
-      : !questState.hasFlag('investigation-intro') && investigationOpen() ? 'investigation' : null;
-    if (!want) return;
     if (busy) { this.time.delayedCall(1500, () => this.storyIntros()); return; }
-    if (want === 'premise') {
-      questState.setFlag('premise-seen');
-      this.dialogue.show('🍈 Il caso dei due meloni', INVESTIGATION.premise);
-    } else {
-      questState.setFlag('investigation-intro');
-      this.dialogue.show('🔍 Indagine aperta', INVESTIGATION.intro);
-    }
+    questState.setFlag('premise-seen');
+    this.dialogue.show(PREMISE.title, PREMISE.lines);
     this.saveGame();
   }
 
@@ -1819,7 +2175,8 @@ export default class WorldScene extends Phaser.Scene {
     fridgeCleaned();
     this.inventory.refresh();
     this.onProgress();
-    this.showBanner('🧀 Formaggio ammuffito in mano:\nbuttalo nei bidoni', 0.28, '#ffd54a', 0xffd54a);
+    this.say({ name: 'Frigorifero', portraitKey: null }, FRIDGE.found, () =>
+      this.showBanner('🧀 Formaggio ammuffito in mano:\nbuttalo nei bidoni', 0.28, '#ffd54a', 0xffd54a));
   }
 
   // A collectible hidden in a piece of furniture was found (tryExamine).
@@ -1918,6 +2275,7 @@ export default class WorldScene extends Phaser.Scene {
     if (!ch || questState.hasFlag(`card:${id}`) || isStoryComplete()) return;
     questState.setFlag(`card:${id}`);
     this.saveGame();
+    this.cardUntil = this.time.now + 3400; // events wait for it (playEvents)
     const cam = this.cameras.main;
     const W = cam.width;
     const H = cam.height;
@@ -1995,7 +2353,7 @@ export default class WorldScene extends Phaser.Scene {
   // if it falls within ~0.4 tile of one of the prop's colliders.
   tryExamine(px, py) {
     const m = 0.4 * TILE;
-    // The fridge task (chapter 4): the right end of the cabinets is the fridge.
+    // The fridge task (chapter 7): the right end of the cabinets is the fridge.
     if (fridgeOpen() && this.mapKey === FRIDGE.map) {
       const z = FRIDGE.zone;
       if (px >= z.tx * TILE - m && px <= (z.tx + z.w) * TILE + m && py >= z.ty * TILE - m && py <= (z.ty + z.h) * TILE + m) {
@@ -2003,14 +2361,29 @@ export default class WorldScene extends Phaser.Scene {
         return true;
       }
     }
+    const near = (c) => px >= c.tx * TILE - m && px <= (c.tx + c.w) * TILE + m
+      && py >= c.ty * TILE - m && py <= (c.ty + c.h) * TILE + m;
+    const facingProp = (p) => this.propShown.has(p) && propColliders(p).some(near);
+    // Story finds (js/story/finds.js): furniture or a zone, this chapter only.
+    for (const f of FINDS) {
+      if (f.map !== this.mapKey || !findOpen(f)) continue;
+      const hit = f.zone ? near(f.zone) : (this.map.props || []).some((p) => p.furniture === f.furniture && facingProp(p));
+      if (!hit) continue;
+      const box = { name: f.label, portraitKey: null };
+      if (f.needsItem && !questState.hasItem(f.needsItem)) { this.say(box, f.locked); return true; }
+      this.say(box, f.lines, () => {
+        questState.setFlag(findFlag(f.id));
+        if (f.banner) this.showBanner(f.banner, 0.3, '#ffd54a', 0xffd54a);
+        this.inventory.refresh();
+        this.onProgress();
+      });
+      return true;
+    }
     for (const p of this.map.props || []) {
       if (!p.examine?.length && !p.hidden && !p.side) continue;
-      if (!this.propShown.has(p)) continue; // not in the room this chapter
-      const hit = propColliders(p).some((c) =>
-        px >= c.tx * TILE - m && px <= (c.tx + c.w) * TILE + m
-        && py >= c.ty * TILE - m && py <= (c.ty + c.h) * TILE + m);
+      const hit = facingProp(p); // (not in the room this chapter: never)
       if (hit && p.furniture === 'trashbins' && holdingCheese()) {
-        // Throw the mouldy cheese away (fridge task, chapter 4).
+        // Throw the mouldy cheese away (fridge task, chapter 7).
         this.dialogue.show(p.label || 'Bidoni', FRIDGE.throwLines, null, () => {
           throwCheese();
           this.inventory.refresh();
@@ -2021,18 +2394,9 @@ export default class WorldScene extends Phaser.Scene {
       if (hit) {
         const h = p.hidden && !isFound(p.hidden.id) ? p.hidden : null;
         const sideHere = p.side && sideState(p.side) === 'active' && !sideFound(p.side);
-        const clueHere = p.clue && investigationOpen() && !clueFound(p.clue);
         const lines = p.examine?.length ? p.examine : ['Frughi un po\'...'];
-        this.dialogue.show(p.label || 'Mobile', h || sideHere || clueHere ? [...lines, 'Aspetta... c\'è qualcosa qui!'] : lines, null, () => {
+        this.dialogue.show(p.label || 'Mobile', h || sideHere ? [...lines, 'Aspetta... c\'è qualcosa qui!'] : lines, null, () => {
           if (h) this.findCollectible(h);
-          if (clueHere) {
-            const c = findClue(p.clue);
-            if (c) {
-              const n = cluesFound().length;
-              this.time.delayedCall(10, () => this.dialogue.show('🔍 Indizio', [c.text, `Indizi trovati: ${n}. Sono nello zaino (I).`]));
-              this.saveGame();
-            }
-          }
           if (sideHere) {
             const q = findSideThing(p.side);
             if (q) {
@@ -2097,11 +2461,46 @@ export default class WorldScene extends Phaser.Scene {
     questState.setHp(hp + whole, maxHp);
   }
 
+  // A fight lost by the script (chapter 1, Gabbo): the loss IS the story. Set
+  // its flag (the chapter's objective), roll the story on and wake up where
+  // the battle says (the first-floor kitchen), at full HP.
+  onScriptedLoss() {
+    const b = this.battleInfo?.b || {};
+    this.battleInfo = null;
+    questState.heroHp = null;
+    if (b.lossFlag) questState.setFlag(b.lossFlag);
+    advanceChapterIfDone();
+    this.warpLocked = true;
+    this.cameras.main.fadeOut(600);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.restart({ ...(b.wakeAt || DEFEAT_RESPAWN), notice: b.wakeNotice || null });
+    });
+  }
+
+  // Called by BattleScene after a win (the world is running again): the
+  // battle's `won` lines, and its `reward` item.
+  afterBattleWin() {
+    const info = this.battleInfo;
+    this.battleInfo = null;
+    if (!info) return;
+    const { npc, b } = info;
+    const give = () => {
+      if (!b.reward || questState.hasItem(b.reward.name)) return;
+      questState.addItem(b.reward);
+      this.inventory.refresh();
+      this.showItemReceived(b.reward.name);
+      this.saveGame();
+    };
+    if (b.won) this.say(npc, b.won, give);
+    else give();
+  }
+
   // Lost a battle (called by BattleScene): wake up in the living room at full HP.
   // No other penalty — talk to the enemy again to retry.
   onDefeat() {
     questState.heroHp = null;
     this.pendingRematch = null; // a lost rematch pays nothing
+    this.battleInfo = null;
     this.warpLocked = true;
     this.cameras.main.fadeOut(400);
     this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -2172,10 +2571,14 @@ export default class WorldScene extends Phaser.Scene {
   // Pause the overworld and overlay the battle; we resume here afterwards so the
   // player is exactly where they were.
   // `chapter` = the chapter this fight belongs to (a win is credited to it).
-  startBattle(npc, chapter, opts = {}) {
+  // `b` = the JSON battle block: `mustLose` (+ `lossLine`, `lossFlag`, `wakeAt`,
+  // `wakeNotice`: onScriptedLoss), `won` lines and a `reward` item (afterBattleWin).
+  startBattle(npc, chapter, b = {}) {
+    this.battleInfo = { npc, chapter, b };
     this.scene.pause();
     this.scene.launch('BattleScene', {
-      enemyHpFrac: opts.enemyHpFrac || 0, // enemy starts this fraction below full (investigation bonus)
+      mustLose: !!b.mustLose,
+      lossLine: b.lossLine || null,
       enemyKey: npc.spriteKey,    // texture for the enemy sprite
       enemyChar: npc.character,   // character.json folder (enemy stats)
       enemyName: npc.name,

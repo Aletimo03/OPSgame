@@ -35,12 +35,16 @@
       "wanderRadius": 3
     },
     "chapter-3": {
-      "map": "first-floor-vertical-1",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-4": {
-      "map": "base-floor-main",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-5": {
       "map": "first-floor-kitchen",
@@ -55,18 +59,6 @@
       "wanderRadius": 3
     },
     "chapter-7": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 2
-    },
-    "chapter-8": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
-    "chapter-9": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
@@ -87,19 +79,20 @@
   },
   "default": "Pota figa bro, vado a Brescia ",
   "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "Pota, vuoi fare a botte con Gabbo? Auguri bro."
+      ]
+    },
     "chapter-4": {
       "dialogue": [
-        "Pota, cerchi i meloni bro?",
-        "Li porto a Brescia, vai a piangere!"
-      ],
-      "dialogueAfter": "Ok ok, hai vinto pota. I meloni non ce li ho, giuro su Brescia.",
-      "battle": {
-        "prompt": "Gatta dice di avere i tuoi meloni. Che fai?",
-        "options": [
-          "Lo affronto",
-          "Gli offro un aperitivo"
-        ]
-      }
+        "Pota, la pasta al salmone a Brescia la fanno meglio."
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        "Pota, se vinci ti porto a Brescia a festeggiare."
+      ]
     }
   }
 }

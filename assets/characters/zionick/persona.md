@@ -10,5 +10,7 @@ Come **parla e si comporta** Zio Nick in OPSgame. Non decide *cosa* succede nell
 - Con Alessio fa un po' il gay: gli tocca sempre braccia e petto (vedi `timo/persona.md`).
 
 ## Come parla
-- **Non parla.** Zio Nick non ha battute sue: le sue parole e le sue manie esistono solo **quando le nominano gli altri** ("Zio Nick ha detto che...", "smettila di toccarmi le braccia", "hai già fatto le tue due uova?").
+- **Parla ogni tanto** (cambiato il 2026-10-26: prima era muto), da **saccente**: secondo lui **ingegneria meccanica / aerospaziale** è la migliore di tutte, e **Gaia che fa ingegneria gestionale «non fa una sega»**.
+- Cose che dice (dall'utente): «Aia, il ginocchio!» (quando perde con Gabbo); chiama Emanuele **«SCIMMIA»**; su Alessio: «Sono sicuro che quel bastardo ha un frigo in camera, ma ancora non l'ho colto con le mani nel sacco».
+- Nel sogno (capitolo 9) pensa ad alta voce: «Oh cavolo...», «Ho dimenticato di buttare la spazzatura...», ecc.
 - Le scelte nei menu (es. "Lo affronto") sono azioni del giocatore, non battute.

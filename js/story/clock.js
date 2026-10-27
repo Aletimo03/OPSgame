@@ -1,7 +1,6 @@
 // js/story/clock.js
 // In-game clock. Each chapter has a start time (`time: 'HH:MM'` in its file),
-// picked so its phone messages make sense (e.g. chapter 4 at 23:00: "sono le
-// 11 e siete ancora in corridoio"). The clock starts there when the chapter
+// picked so its phone messages make sense (e.g. chapter 3 at 12:30: lunch). The clock starts there when the chapter
 // starts and runs at RATE game minutes per real second while you play
 // (questState.clock = { chapter, min }, saved). Phone message times are
 // derived from it: a chapter's messages arrive in the minutes BEFORE its start

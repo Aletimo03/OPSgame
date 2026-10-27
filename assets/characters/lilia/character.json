@@ -8,41 +8,49 @@
     "defense": 2
   },
   "locations": {
-    "chapter-3": {
+    "chapter-5": {
       "map": "first-floor-main",
       "facing": "down"
     },
-    "chapter-7": {
+    "chapter-6": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
       "wanderRadius": 2
     },
-    "chapter-10": {
-      "map": "first-floor-vertical-1",
-      "facing": "down"
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
     }
   },
   "default": "Compa, amo troppo Andrea Raineri.",
   "chapters": {
-    "chapter-3": {
+    "chapter-5": {
       "dialogue": [
-        "Compa! Sono passata a trovare Gaia.",
-        "Meloni? Compa, io ho la mia IQOS e penso ad Andrea Raineri. Lo amo troppo.",
-        "Amunì Gaia, che si fa tardi!"
+        "Compa, hai visto mia sorella? Da stamattina è sparita."
+      ],
+      "when": [
+        {
+          "flag": "gaia-found",
+          "dialogue": [
+            "Compa, è in camera di Alessio? Amunì, la lascio stare.",
+            "Torno da Andrea Raineri. Lo amo troppo."
+          ]
+        }
       ]
     },
-    "chapter-7": {
+    "chapter-6": {
       "dialogue": [
         "Compa, il guacamole di Ana è troppo buono.",
         "Dopo arriva Andrea Raineri. Lo amo!"
       ]
     },
-    "chapter-10": {
+    "chapter-11": {
       "dialogue": [
         "Compa, una heets? NO.",
-        "Ma come ti permetti? Le heets non si chiedono, compa!",
-        "Vado da Andrea. Amunì!"
+        "Il chili sì, però. Amunì!"
       ]
     }
   }

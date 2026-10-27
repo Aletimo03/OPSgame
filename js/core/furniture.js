@@ -99,7 +99,6 @@ export function expandProp(p, mapKey = '?') {
     prop.examine = examine.slice();
   }
   if (p.onlyIn) prop.onlyIn = [...p.onlyIn]; // shown only in these chapters (WorldScene)
-  if (p.clue) prop.clue = p.clue; // melon-investigation clue (js/story/investigation.js)
   if (p.side) prop.side = p.side; // side-quest thing hidden here (js/story/sideQuests.js)
   if (p.sleep) prop.sleep = true; // examining it = a nap, full HP (WorldScene.sleepInBed)
   const ysort = p.ysort ?? d.ysort;

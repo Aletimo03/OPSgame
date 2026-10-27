@@ -40,8 +40,8 @@ export default class EndingScene extends Phaser.Scene {
     this.add.rectangle(0, 0, W, H, 0x05060a, 0.97).setOrigin(0, 0);
     const lines = [
       ['FINE', { fontSize: '56px', color: '#ffd54a', fontStyle: 'bold' }, 70],
-      ['OPSgame — Zio Nick e i due meloni', { fontSize: '20px', color: '#c8ccd4' }, 50],
-      ['🍈🍈  I due meloni sono tornati a casa', { fontSize: '18px', color: '#ffd54a' }, 26],
+      ['OPSgame — Zio Nick e i due peperoni', { fontSize: '20px', color: '#c8ccd4' }, 50],
+      ['🌶️🌶️  Il chili è servito, i peperoni sono tornati a casa', { fontSize: '18px', color: '#ffd54a' }, 26],
       [`${Object.keys(CHAPTERS).length} capitoli completati`, { fontSize: '18px', color: '#7CFC8A' }, 40],
       [`Tempo di gioco   ${formatTime(st.playMs)}`, { fontSize: '16px', color: '#ffffff' }, 26],
       [`Scontri vinti    ${st.wins}`, { fontSize: '16px', color: '#ffffff' }, 26],

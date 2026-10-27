@@ -11,6 +11,7 @@ import firstFloorBathroom from './first-floor-bathroom/first-floor-bathroom.js';
 import laundryRoom from './laundry-room/laundry-room.js';
 import trashbinRoom from './trashbin-room/trashbin-room.js';
 import alcatraz from './alcatraz/alcatraz.js';
+import dreamMaze from './dream-maze/dream-maze.js';
 
 import { expandMapProps } from '../js/core/furniture.js';
 
@@ -54,7 +55,8 @@ export const MAPS = {
   'first-floor-bathroom': firstFloorBathroom,
   'laundry-room': laundryRoom,
   'trashbin-room': trashbinRoom,
-  alcatraz, // the Milan club (chapter 12), reached by a cutscene from the entrance
+  alcatraz, // the Milan club (chapter 8), reached by a cutscene from the entrance
+  'dream-maze': dreamMaze, // Zio Nick's nightmare (chapter 9), reached by sleeping in his bed
   'room-1': bRoom1, 'room-2': bRoom2, 'room-3': bRoom3, 'room-4': bRoom4,
   'room-5': bRoom5, 'room-6': bRoom6, 'room-7': bRoom7, 'room-8': bRoom8,
   'room-9': bRoom9, 'room-10': bRoom10, 'room-11': bRoom11, 'room-12': bRoom12,
@@ -69,5 +71,5 @@ export const MAPS = {
 for (const [key, map] of Object.entries(MAPS)) expandMapProps(map, key);
 
 // Where a new game begins: Zio Nick wakes up in his own room (room-20, first
-// floor) and his two melons are gone (see STORY.md).
+// floor) and goes to confront Gabbo (see STORY.md).
 export const START_MAP = 'room-20';

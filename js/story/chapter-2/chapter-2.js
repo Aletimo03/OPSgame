@@ -1,24 +1,28 @@
 // js/story/chapter-2/chapter-2.js
-// Chapter 2 — track down Gabbo (base-floor main corridor) and BEAT him. Talking
-// to him only starts the fight: the chapter completes on the win (`defeat`),
-// not on the greeting. A win in chapter 1 (the optional room-7 fight) doesn't
-// count here: objectives are chapter-scoped (questState.didIn).
+// Chapter 2 — "I piselli surgelati". Zio Nick wakes up in the first-floor
+// kitchen after the loss: Mari is holding frozen peas on his knee (event
+// `piselli`, js/story/events.js). To get back on his feet he wants his chili,
+// but his two peppers are gone. Then he asks around (objectives hidden until
+// the scene has played: `after`).
 export default {
   id: 'chapter-2',
-  title: "Capitolo 2 — Alcatraz",
-  // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
-  time: '22:30',
-  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  title: 'Capitolo 2 — I piselli surgelati',
+  time: '09:00',
+  devStart: { mapKey: 'first-floor-kitchen', spawnName: 'sofa' },
   phone: [
-    { from: 'ana', text: "Bro, Gabbo is in the main corridor on the ground floor with a HUGE backpack 👀 going to Alcatraz..." },
-    { from: 'gabbo', text: "O fra, stasera Alcatraz, chi viene? diahane" },
-    { from: 'sara', text: "Qualcuno lo fermi prima che svegli tutto il palazzo, porco d*o" },
+    { from: 'mari', text: 'Zio Nick è in cucina di su con i piselli sul ginocchio 🧊🌸' },
+    { from: 'gabbo', text: "O fra, chi cerca guai li trova, diahane" },
+    { from: 'ana', text: 'Bro, are you ok?? 😂' },
     // private chats (dm: true)
-    { from: 'timo', text: "O fra. Palestra domani?", dm: true },
+    { from: 'mari', text: 'Come va il ginocchio? 🥺🌷', dm: true },
   ],
   quest: {
-    id: 'find-gabbo',
-    title: "Ferma Gabbo prima che esca con lo zaino pieno",
-    objectives: [{ defeat: 'gabbo', label: "Batti Gabbo in combattimento" }],
+    id: 'frozen-peas',
+    title: 'Riprenditi e cucina il tuo chili',
+    objectives: [
+      { flag: 'event:piselli', place: 'first-floor-kitchen', label: 'Riprenditi in cucina di su' },
+      { npc: 'sara', after: 'event:piselli', label: 'Chiedi a Sara dei peperoni' },
+      { npc: 'nima', after: 'event:piselli', label: 'Chiedi a Nima dei peperoni' },
+    ],
   },
 };

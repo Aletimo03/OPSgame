@@ -22,7 +22,7 @@ export default {
     { furniture: 'armadio', dir: 'e', tx: 0.99, ty: suite.areas.anteroom.y0 - 0.5 }, // anteroom, against its left wall
     { furniture: 'bed', dir: 's', tx: -2.40, ty: -3.00 },
     { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67 },
-    { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17, clue: 'santino' },
+    { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17 },
   ],
   // Caue is placed here by his JSON `locations.chapter-3` (assets/characters/caue).
 };

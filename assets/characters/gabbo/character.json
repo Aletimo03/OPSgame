@@ -23,68 +23,46 @@
   ],
   "locations": {
     "chapter-1": {
-      "map": "room-7",
-      "facing": "right"
-    },
-    "chapter-2": {
-      "map": "base-floor-main",
+      "map": "first-floor-main",
       "facing": "down"
     },
+    "chapter-2": {
+      "map": "base-floor-vertical-1",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
     "chapter-3": {
-      "map": "first-floor-vertical-2",
+      "map": "base-floor-vertical-2",
       "facing": "down",
       "wander": true,
       "wanderRadius": 5
     },
     "chapter-4": {
-      "map": "base-floor-vertical-1",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
-    "chapter-5": {
-      "map": "base-floor-vertical-2",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
-    "chapter-6": {
-      "map": "first-floor-vertical-1",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
-    "chapter-7": {
-      "map": "base-floor-vertical-2",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
-    "chapter-8": {
       "map": "base-floor-main",
       "facing": "down",
       "wander": true,
       "wanderRadius": 5
     },
-    "chapter-9": {
-      "map": "first-floor-vertical-2",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
-    "chapter-10": {
-      "map": "base-floor-vertical-1",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
-    "chapter-11": {
+    "chapter-5": {
       "map": "first-floor-vertical-1",
       "facing": "down",
       "wander": true,
       "wanderRadius": 5
     },
-    "chapter-12": {
+    "chapter-6": {
+      "map": "base-floor-vertical-2",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-7": {
+      "map": "base-floor-main",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
+    "chapter-8": {
       "map": "base-floor-living",
       "facing": "down",
       "alt": [
@@ -96,53 +74,65 @@
           "wanderRadius": 4
         }
       ]
+    },
+    "chapter-10": {
+      "map": "base-floor-main",
+      "facing": "down"
+    },
+    "chapter-11": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "O fra, non ho niente da dirti, sbirro, diahane",
-  "rematch": {
-    "from": "chapter-3",
-    "prompt": "O fra, rivincita? Se vinci ti do punti casa, diahane",
-    "options": [
-      "Accetto la sfida",
-      "Lascia stare"
-    ],
-    "reward": 8,
-    "after": "O fra, basta per oggi, diahane",
-    "until": "chapter-11"
-  },
   "chapters": {
     "chapter-1": {
       "dialogue": [
-        "O fra, meloni? Chiama Marius, diahane",
-        "O fra, tutti al Plein, diahane!"
+        {
+          "who": "zionick",
+          "text": "Gabbo! Basta con le mani lunghe."
+        },
+        "O fra, era una pacca amichevole, diahane",
+        {
+          "who": "zionick",
+          "text": "Le pacche amichevoli si danno sulla spalla. Fisica di base."
+        },
+        "O fra, vuoi fare a botte? Diahane!"
       ],
       "battle": {
         "prompt": "Che cosa fai?",
         "options": [
           "Lo affronto",
-          "Gli do dello jeager"
-        ]
+          "Gli faccio la predica"
+        ],
+        "mustLose": true,
+        "lossLine": "Aia, il ginocchio!",
+        "lossFlag": "gabbo-ko",
+        "wakeAt": {
+          "mapKey": "first-floor-kitchen",
+          "spawnName": "sofa"
+        },
+        "wakeNotice": "Zio Nick si risveglia in cucina di su..."
       }
     },
     "chapter-2": {
       "dialogue": [
-        "O fra, andiamo all'Alcatraz, diahane",
-        "O fra, nello zaino c'è solo Jäger, non meloni, sbirro, diahane!"
-      ],
-      "battle": {
-        "prompt": "Che cosa fai?",
-        "options": [
-          "Lo affronto",
-          "Provo a calmarlo"
-        ]
-      }
+        "O fra, come va il ginocchio? Diahane",
+        "O fra, la prossima volta fatti gli affari tuoi, diahane"
+      ]
     },
-    "chapter-12": {
+    "chapter-8": {
       "dialogue": [
         "O fra, Alessio non c'è, è sempre con Gaia, diahane.",
-        "O fra, non si fa più trovare, diahane.",
+        "O fra, niente rancore per l'altro giorno, diahane.",
         "O fra, mi servi te per andare a pushare, diahane.",
-        "O fra, si esce dall'ingresso: Alcatraz, diahane!"
+        "O fra, si esce dall'ingresso: Alcatraz, diahane!",
+        {
+          "who": "zionick",
+          "text": "(Il braccialetto dell'Alcatraz... All'Alcatraz scopro la verità.)"
+        }
       ],
       "when": [
         {
@@ -160,6 +150,50 @@
             "O fra, quella con gli stivali mi guarda... se mi dice di andare via con lei, fermami tu, diahane."
           ]
         }
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        {
+          "who": "zionick",
+          "text": "Gabbo. I miei peperoni."
+        },
+        "O fra, quali peperoni? Diahane",
+        {
+          "who": "zionick",
+          "text": "La bilancia: 480 grammi alle 03:12. Il braccialetto dell'Alcatraz in frigo."
+        },
+        {
+          "who": "zionick",
+          "text": "E sul palco hai parlato di chili. Ingegneria forense."
+        },
+        "O fra... va bene, li ho presi io, diahane.",
+        "O fra, ma se li rivuoi devi battermi, diahane!"
+      ],
+      "dialogueAfter": "O fra, basta, i peperoni ce li hai, diahane",
+      "battle": {
+        "prompt": "Che cosa fai?",
+        "options": [
+          "Lo affronto",
+          "Stavolta niente predica"
+        ],
+        "won": [
+          "O fra, hai vinto, diahane.",
+          "O fra, i peperoni sono nel mio zaino, tieni, diahane.",
+          {
+            "who": "zionick",
+            "text": "E le mani a posto. Sempre."
+          }
+        ],
+        "reward": {
+          "name": "Due peperoni",
+          "description": "I peperoni di Zio Nick, finalmente a casa. Per il chili."
+        }
+      }
+    },
+    "chapter-11": {
+      "dialogue": [
+        "O fra, sento odore di chili, diahane"
       ]
     }
   }

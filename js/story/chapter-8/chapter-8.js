@@ -1,31 +1,38 @@
 // js/story/chapter-8/chapter-8.js
-// Chapter 8 — SEARCH / FETCH QUEST. Gather supplies scattered across the house.
-// `{ item: 'Name' }` completes when questState.hasItem('Name') is true. The
-// items are handed over by NPCs whose character.json defines an `item` in their
-// `chapters.chapter-7` entry (Sara → Caffè in the base kitchen, Mari → Birra in
-// a first-floor corridor). Multiple item objectives = a multi-stop fetch run.
+// Chapter 8 — a night out. The Alcatraz wristband from the fridge is the lead,
+// and Alessio is always with Gaia now, so Gabbo needs Zio Nick to go
+// "pushare" at the Alcatraz (the Milan club): Zio Nick goes along to find out
+// the truth. On the stage Gabbo lets slip he ate a chili (flag zone `say`).
+// Flow (js/story/alcatraz.js):
+//   1. find Gabbo in the base-floor living room ("hall principale");
+//   2. walk out of the entrance's front door → video cutscene → the Alcatraz
+//      (flag `alcatraz-arrived`, set by the trip);
+//   3. help Gabbo get a girl's number (js/story/flirt.js → `alcatraz-number`);
+//   4. get on the stage (flag zone in the Alcatraz map → `alcatraz-stage`,
+//      open only once he has the number).
+// Objectives are unordered in the engine; the front door only lets you out
+// after talking to Gabbo in this chapter, so the order holds.
 export default {
   id: 'chapter-8',
-  title: "Capitolo 8 — La Spesa",
+  title: "Capitolo 8 — Notte all'Alcatraz",
   // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
-  time: '17:30',
-  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  time: '23:30',
+  devStart: { mapKey: 'base-floor', spawnName: 'living' },
   phone: [
-    { from: 'sara', text: "Servono provviste: io ho il caffè nella cucina di sotto, Mari ha la birra al primo piano." },
-    { from: 'mari', text: "Birra fresca al primo piano 🌼🍺 mentre aspetto Fede 🥺" },
-    { from: 'mari', sticker: "🍺" },
-    { from: 'gatta', text: "Pota, la birra di Brescia è meglio" },
-    { from: 'ernesto', text: "Ho lasciato salame e formaggi piemontesi in cucina di su, servitevi 🍷" },
-    { from: 'ana', text: "Er Fresco you're the best bro 🧀" },
+    { from: 'gabbo', text: "O fra, stasera Alcatraz, chi viene? Diahane" },
+    { from: 'timo', text: "O fra. Stasera no." },
+    { from: 'gaia', text: "Alessio stasera sta con me 💕" },
     // private chats (dm: true)
-    { from: 'gatta', text: "Pota, sabato vieni a Brescia?", dm: true },
+    { from: 'gabbo', text: "O fra, Alessio non si fa più trovare, vieni tu. Ti aspetto giù nella hall, diahane", dm: true },
   ],
   quest: {
-    id: 'gather-supplies',
-    title: "Senza meloni servono provviste",
+    id: 'alcatraz-night',
+    title: "Si va a pushare all'Alcatraz",
     objectives: [
-      { item: 'Caffè', label: 'Prendi il Caffè da Sara' },
-      { item: 'Birra', label: 'Prendi la Birra da Mari' },
+      { npc: 'gabbo', label: 'Trova Gabbo nella hall del piano terra' },
+      { flag: 'alcatraz-arrived', place: 'entrance', label: "Esci dall'ingresso e vai all'Alcatraz" },
+      { flag: 'alcatraz-number', place: 'alcatraz', label: 'Aiuta Gabbo a farsi dare un numero' },
+      { flag: 'alcatraz-stage', place: 'alcatraz', label: 'Poi sali sul palco con Gabbo' },
     ],
   },
 };

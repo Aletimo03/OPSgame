@@ -69,7 +69,7 @@ export class Minimap {
     const grid = MAPS[hub].grid;
 
     const targets = objectiveTargets(s)
-      .filter((tg) => !tg.done)
+      .filter((tg) => !tg.done && !tg.hidden)
       .map((tg, i) => ({ ...tg, n: i + 1, pos: tg.mapKey ? hubPosition(tg.mapKey, tg.tx, tg.ty) : null }));
     const legendH = 24 + targets.length * 20;
 

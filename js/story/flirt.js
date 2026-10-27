@@ -6,7 +6,7 @@
 // Talk to her → Gabbo asks what to say → pick an approach. Matching her mood
 // = +1 ❤️ (never more: user's rule); a wrong one = −1 ❤️; talking
 // to her on 😒 just costs a try. `need` hearts = her number (flag
-// `alcatraz-number`, chapter 12's objective); out of tries, she walks off for
+// `alcatraz-number`, chapter 8's objective); out of tries, she walks off for
 // a while (COOLDOWN_MS) and you start over with her.
 // 🍹 = an ORDER: go to the bar (map `bar`), pick a drink (DRINKS: stronger =
 // more ❤️, more alcohol for Gabbo too, more punti casa) and bring it back within
@@ -21,7 +21,7 @@
 // Texts follow persona.md (the user only gave each girl's difficulty).
 import { questState } from './questState.js';
 
-export const CHAPTER = 'chapter-12';
+export const CHAPTER = 'chapter-8';
 export const MAP = 'alcatraz';
 export const NUMBER_FLAG = 'alcatraz-number';
 export const MOOD_MS = [8000, 15000];
@@ -157,7 +157,7 @@ export function tryToSteal() {
 }
 
 export const isGirl = (id) => !!GIRLS[id];
-// The flirting game is on: chapter 12, at the Alcatraz, number not got yet.
+// The flirting game is on: chapter 8, at the Alcatraz, number not got yet.
 export const flirtActive = (mapKey) =>
   questState.activeChapter === CHAPTER && mapKey === MAP && !questState.hasFlag(NUMBER_FLAG);
 

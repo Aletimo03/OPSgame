@@ -7,12 +7,16 @@
   },
   "locations": {
     "chapter-1": {
-      "map": "base-floor-vertical-2",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-2": {
-      "map": "base-floor-vertical-2",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-3": {
       "map": "first-floor-kitchen",
@@ -42,17 +46,7 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
-    },
-    "chapter-8": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
       "wanderRadius": 3
-    },
-    "chapter-9": {
-      "map": "base-floor-vertical-2",
-      "facing": "down"
     },
     "chapter-10": {
       "map": "first-floor-kitchen",
@@ -69,10 +63,26 @@
   },
   "default": "Hi I'm gumba bro ",
   "chapters": {
-    "chapter-9": {
+    "chapter-1": {
       "dialogue": [
-        "Yo bro! Melons? Last night I saw Caue with a big bag going upstairs 👀",
-        "Anyway, aperitivo at mine tonight, I'm making guacamole 🥑"
+        "Bro, Gabbo again? 🙄",
+        "Be careful, he's bigger than you bro"
+      ]
+    },
+    "chapter-2": {
+      "dialogue": [
+        "Bro, frozen peas on the knee? Classic 😂",
+        "Peppers? Sorry bro, I only buy avocados 🥑"
+      ]
+    },
+    "chapter-4": {
+      "dialogue": [
+        "Bro, pasta al salmone tonight? I'm in 🍝"
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        "Bro, go get your peppers! 💪"
       ]
     }
   }

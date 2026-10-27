@@ -7,7 +7,7 @@
     "defense": 2
   },
   "locations": {
-    "chapter-12": {
+    "chapter-8": {
       "map": "alcatraz-sala2-b",
       "facing": "down",
       "wander": true,

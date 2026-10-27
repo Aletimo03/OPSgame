@@ -55,6 +55,7 @@ export class QuestTracker {
     // Each open objective gets a small "→ who, where" line under it (questGuide).
     const where = objectiveTargets(this.scene);
     q.objectives.forEach((o, i) => {
+      if (o.hidden) return; // not revealed yet (`after`)
       ty += text(ty, `${o.done ? '☑' : '☐'} ${o.label}`, {
         fontSize: hudPx(13),
         color: o.done ? '#8f97a3' : '#ffffff',

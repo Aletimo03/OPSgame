@@ -26,7 +26,7 @@ export default {
     { furniture: 'kitchen_shelfs', dir: 's', tx: 0.89, ty: -2.89, side: 'noodles', hidden: { kind: 'sock', id: 'cucina-terra-pensili' } },
     // 4 recycling bins in a column against the left wall, upper part, just below
     // the shelves. Collider = all of them.
-    { furniture: 'trashbins', dir: 's', tx: -0.41, ty: 2.91, clue: 'buccia' },
+    { furniture: 'trashbins', dir: 's', tx: -0.41, ty: 2.91 },
     // island in the middle (new art, 3 stools). Collider = the band from 1 tile below
     // the slab's top edge to 1 tile below its bottom edge: you can step 1 tile
     // "behind" the slab (it then hides your legs) and still reach every stool.
@@ -44,5 +44,5 @@ export default {
     { furniture: 'sofa', dir: 'w', tx: 24, ty: 6.22 },
     { furniture: 'sofa', dir: 's', tx: 17.72, ty: 5.82 },
   ],
-  // Chapter 1: ema/sara/nima are placed here by their JSON `locations.chapter-1`.
+  // Chapter 4: the cherry tomatoes are under the island (js/story/finds.js).
 };

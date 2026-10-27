@@ -17,13 +17,14 @@ export default {
   spawns: {
     default: { ...suite.spawn },
     fromFirstFloor: { ...suite.spawn },
+    bedside: { tx: 3, ty: 3 }, // standing in front of the bed (chapter 9: waking in / from the dream)
   },
   warps: [{ ...suite.door, to: 'first-floor', toSpawn: 'fromRoom20' }],
   props: [
     ...bathroomFixtures(suite.areas.bathroom), // shower, sink, toilet
     { furniture: 'armadio', dir: 'e', tx: 0.99, ty: suite.areas.anteroom.y0 - 0.5 }, // anteroom, against its left wall
     { furniture: 'bed', dir: 's', tx: -2.40, ty: -3.00, sleep: true,
-      label: 'Letto di Zio Nick', examine: ['Il letto di Zio Nick. Stamattina, appena sveglio, i due meloni non c\'erano più.', 'Un pisolino qui e torni come nuovo.'] },
+      label: 'Letto di Zio Nick', examine: ['Il letto di Zio Nick. Rifatto al millimetro: precisione da ingegnere.', 'Un pisolino qui e torni come nuovo.'] },
     { furniture: 'fruit_table', dir: 's', tx: 6.41, ty: 0.67,
       label: 'Tavolino', examine: ['Un portauova vuoto: due uova a colazione, ogni giorno. Nemmeno una di più.'] },
     { furniture: 'phone_little_table', dir: 's', tx: -0.80, ty: 5.17,

@@ -1,15 +1,16 @@
 // js/story/fridge.js
-// The fridge task (chapter 4). In the first-floor kitchen, Space facing the
+// The fridge task (chapter 7). In the first-floor kitchen, Space facing the
 // right end of the wall cabinets (ZONE, where the fridge is) starts a
 // first-person minigame (js/scenes/FridgeScene.js): shoot the flies with
 // white detergent, then the fridge is clean and you hold the mouldy cheese,
-// which you throw away by pressing Space at the kitchen bins.
+// which you throw away by pressing Space at the kitchen bins. Behind it: an
+// Alcatraz wristband (`found`), the lead to chapter 8.
 // Flags: fridge-clean (minigame won), cheese-held, cheese-thrown — the first and
-// last are chapter-4 objectives. Node-importable.
+// last are chapter-7 objectives. Node-importable.
 import { questState } from './questState.js';
 
 export const FRIDGE = {
-  chapter: 'chapter-4',
+  chapter: 'chapter-7',
   map: 'first-floor-kitchen',
   // Right end of the cabinets' bottom edge (tiles); you stand below, facing up.
   zone: { tx: 18, ty: 2.6, w: 5, h: 0.7 },
@@ -20,6 +21,11 @@ export const FRIDGE = {
   flags: { clean: 'fridge-clean', held: 'cheese-held', thrown: 'cheese-thrown' },
   intro: ['Che puzza... in fondo al frigo c\'è un formaggio ammuffito, pieno di mosche!', 'Zio Nick impugna lo spruzzino del detersivo.'],
   done: 'Frigo pulito! Hai preso il formaggio ammuffito 🧀\nOra buttalo nei bidoni.',
+  // What was behind the cheese: the lead to the Alcatraz (chapter 8). WorldScene.say.
+  found: [
+    "Dietro il formaggio c'è qualcos'altro: un braccialetto dell'Alcatraz.",
+    { who: 'zionick', text: "Un braccialetto dell'Alcatraz in frigo. Chi va all'Alcatraz in questa casa?" },
+  ],
   throwLines: ['Zio Nick butta il formaggio ammuffito nei bidoni.', 'Addio formaggio, addio mosche.'],
 };
 

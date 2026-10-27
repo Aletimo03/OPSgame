@@ -6,7 +6,6 @@
 import { questState } from '../story/questState.js';
 import { collectionStatus } from '../story/collectibles.js';
 import { activeSides, sideFound } from '../story/sideQuests.js';
-import { CLUES, cluesFound, investigationOpen } from '../story/investigation.js';
 import { holdingCheese } from '../story/fridge.js';
 
 const DEPTH  = 3000000;
@@ -71,8 +70,7 @@ export class Inventory {
       + (coll.length ? SEC_H + coll.length * 26 : 0)
       + SEC_H + Math.max(1, activeSides().length) * 22
       + (!items.length && !supplies.length ? LINE_H : 0)
-      + (holdingCheese() ? LINE_H : 0)
-      + (investigationOpen() ? SEC_H + Math.max(1, cluesFound().length) * 22 : 0);
+      + (holdingCheese() ? LINE_H : 0);
 
     const panelW = Math.min(480, W - PAD * 4);
     const panelH = Math.max(MIN_H, HEAD_H + HP_H + Math.max(listH, LINE_H) + PAD * 2);
@@ -160,19 +158,6 @@ export class Inventory {
         }).setOrigin(1, 0);
         y += 26;
       });
-    }
-
-    // Melon investigation clues (js/story/investigation.js).
-    if (investigationOpen()) {
-      const found = cluesFound();
-      text(px + PAD, y + 4, `🔍 Indagine — indizi ${found.length}/${CLUES.length}`, { fontSize: '12px', color: '#ffd54a' });
-      y += SEC_H;
-      if (!found.length) text(px + PAD, y, 'Esamina i mobili con Spazio.', { fontSize: '13px', color: '#9aa0a8' });
-      found.forEach((c) => {
-        text(px + PAD, y, `•  ${c.name}`, { fontSize: '13px', color: '#ffffff' });
-        y += 22;
-      });
-      if (!found.length) y += 22;
     }
 
     // Favours (side quests) and house points (js/story/sideQuests.js).

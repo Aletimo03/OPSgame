@@ -1,25 +1,28 @@
 // js/story/chapter-7/chapter-7.js
-// Chapter 7 — Ana's aperitivo. A story beat, not an optional extra: the
-// chapter completes when the aperitivo scene has played (flag
-// `event:aperitivo`, set by WorldScene.playEvents, js/story/events.js), which
-// happens the first time you enter the first-floor kitchen in this chapter.
-// The invitation arrives in chapter 6's group chat.
+// Chapter 7 — "Il frigo con le mosche". Nima asks in the group chat. In the
+// first-floor kitchen, Space facing the right end of the cabinets starts the
+// fridge minigame (js/story/fridge.js, js/scenes/FridgeScene.js). Behind the
+// mouldy cheese there's an Alcatraz wristband: the next lead. Flags
+// fridge-clean / cheese-thrown (and cheese-held, reset with the chapter).
 export default {
   id: 'chapter-7',
-  title: "Capitolo 7 — L'aperitivo",
-  // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
-  time: '19:00',
+  title: 'Capitolo 7 — Il frigo con le mosche',
+  time: '10:00',
+  devStart: { mapKey: 'first-floor-kitchen', spawnName: 'default' },
   phone: [
-    { from: 'ana', text: "Guacamole ready 🥑 cucina di su, come bros!" },
-    { from: 'nima', text: "Buonaseras! Please, dopo piatti nel lavandino 🙏" },
-    { from: 'ema', text: "O Ana, ma a che ora? Grszie" },
+    { from: 'nima', text: 'Buongiorns?? Chi ha lasciato il formaggio ammuffito nel frigo di su?? Pieno di mosche 🤢 somebody pulisca please! من فضلك' },
+    { from: 'mari', sticker: '🤢' },
+    { from: 'ernesto', text: 'Il formaggio ammuffito non è mio, giuro. I miei sono piemontesi e finiscono subito.' },
+    // private chats (dm: true)
+    { from: 'mari', text: 'Hai visto Fede? 🥺🌸', dm: true },
   ],
+  resetFlags: ['cheese-held'], // chapter select: also cleared when restarting from here
   quest: {
-    id: 'aperitivo',
-    title: "Vai all'aperitivo di Ana",
+    id: 'fridge-flies',
+    title: 'Pulisci il frigo di su',
     objectives: [
-      // `place` tells questGuide (tracker, phone, minimap) where it happens.
-      { flag: 'event:aperitivo', place: 'first-floor-kitchen', label: "Raggiungi l'aperitivo in cucina di su" },
+      { flag: 'fridge-clean', place: 'first-floor-kitchen', label: 'Pulisci il frigo di su dalle mosche' },
+      { flag: 'cheese-thrown', place: 'first-floor-kitchen', label: 'Butta il formaggio ammuffito nei bidoni' },
     ],
   },
 };

@@ -1,5 +1,5 @@
 // maps/alcatraz/alcatraz.js
-// The Alcatraz, the Milan club (chapter 12). A SKELETON from the user's plan
+// The Alcatraz, the Milan club (chapter 8). A SKELETON from the user's plan
 // (isometric drawing, to be refined with more images): you come in from the
 // street into the lobby at the bottom, which opens into the big main hall
 // with the stage across its far (top) end; a smaller second room with its own
@@ -84,8 +84,15 @@ export default {
   // The bar (WorldScene.drawBarIsland): a closed square of counters in the
   // bottom-right of the hall, solid, with a barman walking round inside.
   barIsland: { x0: 42, y0: 21, x1: 47, y1: 26, barman: 'timo' },
-  // Stepping in sets a flag (WorldScene.checkFlagZones): chapter 12's last objective.
+  // Stepping in sets a flag (WorldScene.checkFlagZones): chapter 8's last objective.
   flagZones: [
-    { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-12', requires: 'alcatraz-number', banner: '🎤 Sul palco dell\'Alcatraz con Gabbo!' },
+    { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-8', requires: 'alcatraz-number', banner: '🎤 Sul palco dell\'Alcatraz con Gabbo!',
+      // Gabbo lets slip the chili (the lead to chapter 10): WorldScene.say.
+      say: [
+        { who: 'gabbo', text: 'O fra, stasera mi sento un leone, diahane!' },
+        { who: 'gabbo', text: 'O fra, sarà il chili che ho mangiato, diahane.' },
+        { who: 'zionick', text: '...Chili? Con quali peperoni?!' },
+        { who: 'gabbo', text: 'O fra, niente, non ho detto niente, diahane!' },
+      ] },
   ],
 };

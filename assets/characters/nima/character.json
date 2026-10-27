@@ -7,8 +7,10 @@
   },
   "locations": {
     "chapter-1": {
-      "map": "base-kitchen",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-2": {
       "map": "first-floor-kitchen",
@@ -17,8 +19,10 @@
       "wanderRadius": 3
     },
     "chapter-3": {
-      "map": "first-floor-vertical-2",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-4": {
       "map": "first-floor-kitchen",
@@ -42,17 +46,7 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
-    },
-    "chapter-8": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
       "wanderRadius": 3
-    },
-    "chapter-9": {
-      "map": "base-floor-vertical-1",
-      "facing": "down"
     },
     "chapter-10": {
       "map": "first-floor-kitchen",
@@ -71,15 +65,35 @@
   "chapters": {
     "chapter-1": {
       "dialogue": [
-        "Buongiorns! Your melons? Ieri erano in frigo, due.",
-        "Now frigo vuoto... but at least in ordine 😅"
+        "Buongiorns! If you fight, please not in cucina 🙏"
       ]
     },
-    "chapter-9": {
+    "chapter-2": {
       "dialogue": [
-        "Finally la cucina è pulita... الحمد لله",
-        "Thank you for messo ordine! Every thing al suo posto, please.",
-        "Tonight viene Elisa, so please cucina in ordine 🙏"
+        "Buongiorns! Peperoni? Ieri sera in frigo c'erano, two.",
+        "Now spariti 😤 but frigo in ordine at least.",
+        "Ask Antonella, the new girl. Sempre in cucina, cooking her... riso 😅"
+      ]
+    },
+    "chapter-3": {
+      "dialogue": [
+        "This riso... الحمد لله I already ate 😅"
+      ]
+    },
+    "chapter-6": {
+      "dialogue": [
+        "Finally qualcuno aggiusta la bilancia? 🙏"
+      ]
+    },
+    "chapter-7": {
+      "dialogue": [
+        "Buongiorns! Frigo di su = disaster 🤢",
+        "Please pulisci, you are the only one 🙏 من فضلك"
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        "Good luck! But please, fight not in cucina 🙏"
       ]
     }
   }

@@ -1,5 +1,5 @@
 // js/scenes/FridgeScene.js
-// First-person minigame (chapter 4, js/story/fridge.js), launched over a
+// First-person minigame (chapter 7, js/story/fridge.js), launched over a
 // PAUSED WorldScene like BattleScene. The open, dirty fridge fills the screen;
 // FRIDGE.flies flies buzz around (at most FRIDGE.onScreen at once). Move the
 // crosshair with the arrows / WASD and press Space to squirt white detergent:

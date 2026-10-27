@@ -32,11 +32,18 @@ export const THEMES = {
     wallRise: 1.5,
   },
 
-  // The Alcatraz club (chapter 12): dark floor and walls, purple doors.
+  // The Alcatraz club (chapter 8): dark floor and walls, purple doors.
   alcatraz: {
     void: 0x050508, wall: 0x1b1b24,
     floor: 0x2c2c36, tileGrout: 0x24242c,
     door: 0x8a4fff,
+  },
+
+  // Zio Nick's nightmare (chapter 9): near-black violet walls, a dull floor.
+  dream: {
+    void: 0x020205, wall: 0x120d1a,
+    floor: 0x2a2233, tileGrout: 0x221b2a,
+    door: 0x3a2f4a,
   },
 
   // Entrance / lobby — warm wood tiles.

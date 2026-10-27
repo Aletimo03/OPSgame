@@ -1,13 +1,13 @@
 // js/story/alcatraz.js
-// The night out of chapter 12. Leaving the house through the entrance's front
+// The night out of chapter 8. Leaving the house through the entrance's front
 // door (map `exits`, id 'alcatraz') plays a video cutscene (CutsceneScene) and
-// lands you inside the Alcatraz. The door only opens in chapter 12, after
+// lands you inside the Alcatraz. The door only opens in chapter 8, after
 // you've talked to Gabbo; otherwise it just says it's not the moment.
 // Node-importable.
 import { questState } from './questState.js';
 
 export const ALCATRAZ = {
-  chapter: 'chapter-12',
+  chapter: 'chapter-8',
   partner: 'gabbo',                       // talk to him first (this chapter)
   arrivedFlag: 'alcatraz-arrived',
   video: 'assets/cutscenes/alcatraz.mp4', // the user's clip; without it a title card plays

@@ -17,6 +17,8 @@ const DEFAULT_MOVES = [
 // below this fraction of max HP (override per move with `arrestBelow`).
 // Above it the arrest fails and the turn is wasted.
 const ARREST_BELOW = 0.4;
+// A scripted loss (`mustLose`): the enemy never drops below this fraction of max HP.
+const MUST_LOSE_FLOOR = 0.6;
 
 // Status effects. Any move (hero's or enemy's) may carry
 // `"status": "imbarazzato" | "assonnato"` and `"chance": 0..1` (default 1).
@@ -44,7 +46,12 @@ export default class BattleScene extends Phaser.Scene {
         this.returnScene = data.returnScene || 'WorldScene';
         // Chapter this fight belongs to — a win is credited to it.
         this.chapter = data.chapter || questState.activeChapter;
-        this.enemyHpFrac = data.enemyHpFrac || 0; // start the enemy this far below full (investigation)
+        // A fight lost by the script (chapter 1, Gabbo): he can't be brought
+        // below MUST_LOSE_FLOOR of his HP, no arrest works, his hits take a
+        // third of your HP, and you say `lossLine` as you go down. The world
+        // then calls onScriptedLoss instead of the usual defeat.
+        this.mustLose = !!data.mustLose;
+        this.lossLine = data.lossLine || null;
     }
 
     preload() {
@@ -125,7 +132,6 @@ export default class BattleScene extends Phaser.Scene {
         this.enemyStatus = {};
 
         this.enemyHp = this.enemyMax = this.enemyStats.maxHp;
-        if (this.enemyHpFrac) this.enemyHp = Math.max(1, Math.round(this.enemyMax * (1 - this.enemyHpFrac)));
         // Hero HP persists between battles (questState.heroHp); enemies start full.
         this.heroMax = this.heroStats.maxHp;
         this.heroHp = questState.currentHp(this.heroMax);
@@ -350,6 +356,10 @@ export default class BattleScene extends Phaser.Scene {
             this.tickSleep(this.heroStatus, this.heroName);
         }
 
+        if (this.mustLose && this.enemyHp < this.enemyMax * MUST_LOSE_FLOOR) {
+            this.enemyHp = Math.ceil(this.enemyMax * MUST_LOSE_FLOOR);
+            this.queue.push(`${this.enemyName} non sente niente!`);
+        }
         if (this.enemyHp <= 0) {
             this.queue.push(`${this.enemyName} è KO!`);
             this.pendingEnd = 'win';
@@ -402,12 +412,14 @@ export default class BattleScene extends Phaser.Scene {
         const em = this.enemyMoves.length ? Phaser.Utils.Array.GetRandom(this.enemyMoves) : null;
         const base = em ? (em.dmg || 0) : Phaser.Math.Between(3, 6);
         this.queue.push(em ? `${this.enemyName} usa ${em.name}!` : `${this.enemyName} contrattacca!`);
-        const dmg = this.sleepy(this.enemyStatus, this.enemyName,
+        let dmg = this.sleepy(this.enemyStatus, this.enemyName,
             Math.max(1, base + this.enemyStats.attack - this.heroStats.defense));
+        if (this.mustLose) dmg = Math.max(dmg, Math.ceil(this.heroMax / 3));
         this.heroHp = Math.max(0, this.heroHp - dmg);
         this.tickSleep(this.enemyStatus, this.enemyName);
 
         if (this.heroHp <= 0) {
+            if (this.lossLine) this.queue.push(`${this.heroName}: «${this.lossLine}»`);
             this.queue.push(`${this.heroName} è esausto...`);
             this.pendingEnd = 'lose';
         } else if (em) {
@@ -439,6 +451,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Whether an arrest move would succeed against the enemy's current HP.
     canArrest(m) {
+        if (this.mustLose) return false;
         return this.enemyHp <= this.enemyMax * (m.arrestBelow ?? ARREST_BELOW);
     }
 
@@ -469,7 +482,7 @@ export default class BattleScene extends Phaser.Scene {
         }
 
         if (this.pendingEnd === 'win') questState.stats.wins++;
-        else questState.stats.losses++;
+        else if (!this.mustLose) questState.stats.losses++; // a scripted loss isn't one
 
         // Fight quests: record the win against the fight's own chapter, then let
         // the world roll the story forward, refresh its HUD and save.
@@ -489,7 +502,13 @@ export default class BattleScene extends Phaser.Scene {
         this.scene.resume(this.returnScene);
         this.scene.stop();
 
-        // Lost: the world wakes the hero up in the living room at full HP.
-        if (this.pendingEnd === 'lose') world?.onDefeat?.();
+        // Lost: the world wakes the hero up in the living room at full HP (or,
+        // for a scripted loss, wherever the story goes on). Won: the battle's
+        // closing lines and reward.
+        if (this.pendingEnd === 'lose') {
+            if (this.mustLose) world?.onScriptedLoss?.();
+            else world?.onDefeat?.();
+        }
+        if (this.pendingEnd === 'win') world?.afterBattleWin?.();
     }
 }

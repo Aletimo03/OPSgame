@@ -1,5 +1,6 @@
 {
   "name": "Alessio",
+  "room": "room-18",
   "stats": {
     "maxHp": 30,
     "attack": 6,
@@ -20,7 +21,9 @@
     },
     "chapter-3": {
       "map": "first-floor-kitchen",
-      "facing": "down"
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-4": {
       "map": "first-floor-kitchen",
@@ -29,10 +32,10 @@
       "wanderRadius": 3
     },
     "chapter-5": {
-      "map": "first-floor-kitchen",
+      "map": "room-18",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 3
+      "wanderRadius": 2
     },
     "chapter-6": {
       "map": "first-floor-kitchen",
@@ -44,72 +47,75 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
-    },
-    "chapter-8": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
-    "chapter-9": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
       "wanderRadius": 3
     },
     "chapter-10": {
       "map": "first-floor-kitchen",
-      "facing": "down"
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-11": {
       "map": "first-floor-kitchen",
-      "facing": "down"
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "O fra... ...",
   "chapters": {
+    "chapter-1": {
+      "dialogue": [
+        "O fra. Gabbo. Lascia stare."
+      ]
+    },
     "chapter-3": {
       "dialogue": [
-        "O fra. Meloni no.",
-        "Tieni. Ti servirà."
+        "O fra. Il riso... no."
+      ]
+    },
+    "chapter-5": {
+      "dialogue": [
+        "O fra. Fuori dalla mia camera."
       ],
-      "dialogueAfter": "O fra, già dato. E smettila di toccarmi le braccia.",
-      "item": {
-        "name": "Trenbolone",
-        "description": "Una sostanza misteriosa.",
-        "buff": {
-          "attack": 5
+      "when": [
+        {
+          "flag": "alessio-bilancia",
+          "dialogue": [
+            "O fra. Le pile. Ernesto."
+          ]
+        },
+        {
+          "flag": "find:frigo",
+          "dialogue": [
+            "O fra. Niente frigo.",
+            "E smettila di toccarmi le braccia.",
+            "La bilancia di su è morta. Pile scariche.",
+            {
+              "who": "zionick",
+              "text": "Le bilance digitali tengono in memoria l'ultima pesata. Ingegneria, ragazzi."
+            },
+            {
+              "who": "zionick",
+              "text": "Se qualcuno ha pesato i miei peperoni, la bilancia lo sa."
+            },
+            "O fra. Pile nuove: Ernesto."
+          ],
+          "setFlag": "alessio-bilancia"
         }
-      }
+      ]
     },
     "chapter-10": {
       "dialogue": [
-        "O fra, il verbale.",
-        "Meloni scomparsi. Tutto scritto."
+        "O fra. Guanti.",
+        "Spacca."
       ],
-      "dialogueAfter": "O fra, ce l'hai già.",
+      "dialogueAfter": "O fra, già dati. E smettila di toccarmi le braccia.",
       "item": {
-        "name": "Verbale",
-        "description": "Documenti ufficiali del caso.",
+        "name": "Guanti da palestra",
+        "description": "Quelli di Alessio. Enormi. +3 ATK.",
         "buff": {
-          "defense": 3
-        }
-      }
-    },
-    "chapter-11": {
-      "dialogue": [
-        "O fra, è il momento.",
-        "Il Distintivo d'Oro. Te lo sei guadagnato."
-      ],
-      "dialogueAfter": "O fra, è tuo. Vai.",
-      "item": {
-        "name": "Distintivo d'Oro",
-        "description": "Il simbolo del vero sbirro di casa.",
-        "buff": {
-          "attack": 5,
-          "maxHp": 15,
-          "defense": 3
+          "attack": 3
         }
       }
     }

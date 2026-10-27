@@ -1,25 +1,27 @@
 // js/story/chapter-5/chapter-5.js
-// Chapter 5 — QUIZ QUEST. Caue won't let you pass until you answer his question
-// correctly. `{ quiz: 'caue' }` completes when questState.isSolved('caue') is
-// true, which WorldScene.tryInteract sets only on the right answer. The actual
-// question/options/answer live in caue's character.json `chapters.chapter-5.quiz`.
+// Chapter 5 — "La camera 18". Gaia has vanished: she's in room 18 with
+// Alessio (his room, `room` in his character.json). There Zio Nick suspects
+// Alessio's secret fridge: a FALSE lead (the wardrobe, js/story/finds.js).
+// Alessio then mentions the dead kitchen scale, and Zio Nick has an idea.
 export default {
   id: 'chapter-5',
-  title: "Capitolo 5 — L'Esame di Caue",
-  // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
-  time: '16:00',
-  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  title: 'Capitolo 5 — La camera 18',
+  time: '11:00',
+  devStart: { mapKey: 'first-floor', spawnName: 'fromRoom18' },
   phone: [
-    { from: 'gaia', text: "Caue ti aspetta nel corridoio principale del primo piano con una domanda... senza rispetto" },
-    { from: 'ana', text: "Wait, Caue is real? Never seen him bro 👀" },
+    { from: 'sara', text: 'Gaia? Sarà chiusa in camera 18 con Alessio, come sempre.' },
+    { from: 'ema', text: 'O ragazzi, qualcuno ha visto Gaia? Grszie' },
+    { from: 'nima', text: 'Gaia sparita, Alessio sparito... coincidence? 👀' },
     // private chats (dm: true)
-    { from: 'nima', text: "Zio Nick, please stasera svuota lavastoviglie 🙏 من فضلك", dm: true },
+    { from: 'ana', text: 'Bro, aperitivo soon at mine 🥑', dm: true },
   ],
   quest: {
-    id: 'caue-quiz',
-    title: "Rispondi alla domanda di Caue",
+    id: 'room-18',
+    title: 'Dov\'è finita Gaia?',
     objectives: [
-      { quiz: 'caue', label: 'Supera la prova di Caue' },
+      { flag: 'gaia-found', at: 'gaia', label: 'Trova Gaia' },
+      { flag: 'find:frigo', place: 'room-18', after: 'gaia-found', label: 'Cerca il frigo segreto di Alessio' },
+      { flag: 'alessio-bilancia', at: 'timo', after: 'find:frigo', label: 'Parla con Alessio' },
     ],
   },
 };

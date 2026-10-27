@@ -5,11 +5,11 @@
 // restarts the story from any chapter already reached, resetting what that
 // chapter and the later ones gave you (js/story/rewind.js), after a confirm.
 import { questState } from '../story/questState.js';
-import { CHAPTERS } from '../story/chapters.js';
+import { CHAPTERS, ORDER } from '../story/chapters.js';
 import { START_MAP } from '../../maps/index.js';
 import { loadSave, clearSave, applySave } from '../core/save.js';
 import { CHARACTERS } from '../core/characters.js';
-import { rewindChoices, rewindTo, itemChaptersFrom } from '../story/rewind.js';
+import { rewindChoices, rewindTo, itemChaptersFrom, devPrime } from '../story/rewind.js';
 
 const FONT = 'monospace';
 const BG_KEY = 'menu-bg';
@@ -18,12 +18,13 @@ const PANEL_ALPHA = 0.72; // dark panel behind the text: lets the photo show thr
 const PANEL_PAD = 28;
 // Bouncing heads, like an old screensaver: every character's head drifts
 // slowly and bounces off the screen edges and off the menu panel.
-const HEAD_IDS = ['zionick', 'ana', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo'];
+const HEAD_IDS = ['zionick', 'ana', 'antonella', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo'];
 const HEAD_SIZE = 96;              // px on screen
 const HEAD_SPEED = [45, 90];       // px/s, random per head
 
-// TEMPORARY test shortcut on the title menu (remove before release).
-const DEV_JUMP = '🛠 DEV · Vai al capitolo 12';
+// TEMPORARY test entry on the title menu (remove before release): start ANY
+// chapter from a fresh run, as if the earlier ones were played (rewind.devPrime).
+const DEV_CHAPTERS = '🛠 DEV · Scegli capitolo';
 
 export default class TitleScene extends Phaser.Scene {
   constructor() {
@@ -63,8 +64,14 @@ export default class TitleScene extends Phaser.Scene {
     if (this.mode === 'confirm') return ['No, torna indietro', 'Sì, cancella e ricomincia'];
     if (this.mode === 'chapters') return [...this.chapterList().map((id) => CHAPTERS[id].title), 'Indietro'];
     if (this.mode === 'rewind') return ['No, torna indietro', 'Sì, riparti da qui'];
-    // DEV_JUMP: TEMPORARY test shortcut (remove before release).
-    return this.save ? ['Continua', 'Scegli capitolo', 'Nuova partita', DEV_JUMP] : ['Nuova partita', DEV_JUMP];
+    if (this.mode === 'dev') return [...this.devList().map((id) => CHAPTERS[id].title), 'Indietro'];
+    // DEV_CHAPTERS: TEMPORARY test entry (remove before release).
+    return this.save ? ['Continua', 'Scegli capitolo', 'Nuova partita', DEV_CHAPTERS] : ['Nuova partita', DEV_CHAPTERS];
+  }
+
+  // DEV: every chapter with a quest, in play order.
+  devList() {
+    return ORDER.filter((id) => CHAPTERS[id]?.quest);
   }
 
   // Chapters you can restart from (1 … the furthest reached in this save).
@@ -90,7 +97,7 @@ export default class TitleScene extends Phaser.Scene {
     }
 
     text(W / 2, H * 0.24, 'OPSgame', { fontSize: '64px', color: '#ffd54a', fontStyle: 'bold' });
-    text(W / 2, H * 0.24 + 56, 'Le indagini di Zio Nick', { fontSize: '20px', color: '#9aa0a8' });
+    text(W / 2, H * 0.24 + 56, 'Zio Nick e i due peperoni', { fontSize: '20px', color: '#9aa0a8' });
 
     // What the save holds (or the warning on the confirm screen).
     let info = '';
@@ -98,6 +105,8 @@ export default class TitleScene extends Phaser.Scene {
       info = 'C\'è già un salvataggio: verrà cancellato.';
     } else if (this.mode === 'chapters') {
       info = 'Da che capitolo vuoi ripartire?\nSi riparte dalla camera di Zio Nick.';
+    } else if (this.mode === 'dev') {
+      info = '🛠 DEV: parti da un capitolo qualsiasi, come se i precedenti fossero fatti.\nÈ una partita nuova: il salvataggio attuale viene sovrascritto.';
     } else if (this.mode === 'rewind') {
       info = `Ripartire da «${CHAPTERS[this.rewindId].title}»?\nObiettivi e oggetti di questo capitolo e dei successivi si azzerano.\nCalzini, favori, punti casa, affinità e indizi restano.`;
     } else if (this.save) {
@@ -110,7 +119,7 @@ export default class TitleScene extends Phaser.Scene {
     if (info) {
       text(W / 2, H * 0.45, info, {
         fontSize: '15px',
-        color: this.mode === 'confirm' || this.mode === 'rewind' ? '#e05a4a' : '#c8ccd4',
+        color: this.mode === 'confirm' || this.mode === 'rewind' || this.mode === 'dev' ? '#e05a4a' : '#c8ccd4',
         align: 'center',
       });
     }
@@ -118,7 +127,7 @@ export default class TitleScene extends Phaser.Scene {
     // The chapter list is long: smaller rows, and a window of at most 7
     // around the selection.
     const opts = this.options();
-    const list = this.mode === 'chapters';
+    const list = this.mode === 'chapters' || this.mode === 'dev';
     const rowH = list ? 30 : 44;
     const maxRows = list ? 7 : opts.length;
     const first = Math.max(0, Math.min(this.sel - Math.floor(maxRows / 2), opts.length - maxRows));
@@ -224,7 +233,7 @@ export default class TitleScene extends Phaser.Scene {
       this.sel = (this.sel + 1) % n;
       this.layout();
     } else if (J(this.escKey) && this.mode !== 'menu') {
-      this.setMode('menu', this.mode === 'confirm' ? 2 : 1);
+      this.setMode('menu', this.mode === 'confirm' ? 2 : this.mode === 'dev' ? (this.save ? 3 : 1) : 1);
     } else if (J(this.cursors.space)) {
       this.choose(this.options()[this.sel]);
     }
@@ -237,6 +246,11 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   choose(label) {
+    if (this.mode === 'dev') {
+      const id = this.devList()[this.sel];
+      if (!id) return this.setMode('menu', this.save ? 3 : 1); // "Indietro"
+      return this.devJump(id);
+    }
     if (this.mode === 'chapters') {
       const id = this.chapterList()[this.sel];
       if (!id) return this.setMode('menu', 1); // "Indietro"
@@ -247,8 +261,8 @@ export default class TitleScene extends Phaser.Scene {
       if (label === 'Sì, riparti da qui') return this.restartFrom(this.rewindId);
       return this.setMode('chapters', Math.max(0, this.chapterList().indexOf(this.rewindId)));
     }
-    if (label === DEV_JUMP) {
-      this.devJump('chapter-12');
+    if (label === DEV_CHAPTERS) {
+      this.setMode('dev');
     } else if (label === 'Continua') {
       this.startWorld(applySave(this.save));
     } else if (label === 'Scegli capitolo') {
@@ -272,15 +286,14 @@ export default class TitleScene extends Phaser.Scene {
     this.startWorld({ mapKey: START_MAP, spawnName: 'default' });
   }
 
-  // TEMPORARY (testing): jump straight to a chapter, keeping the save's
-  // progress if there is one (else from a fresh game). Remove with DEV_JUMP.
+  // TEMPORARY (testing): a fresh run starting at chapter `id`, earlier
+  // chapters counted as done, in the chapter's `devStart` spot. Remove with
+  // DEV_CHAPTERS.
   devJump(id) {
     const data = Object.fromEntries(CHARACTERS.map((f) => [f, this.cache.json.get(`${f}-data`)]));
-    if (this.save) applySave(this.save);
-    else questState.reset();
-    questState.reached = id;
-    rewindTo(id, itemChaptersFrom(data));
-    this.startWorld({ mapKey: START_MAP, spawnName: 'default' });
+    clearSave();
+    devPrime(id, data);
+    this.startWorld(CHAPTERS[id].devStart || { mapKey: START_MAP, spawnName: 'default' });
   }
 
   newGame() {

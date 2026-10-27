@@ -23,12 +23,16 @@
   ],
   "locations": {
     "chapter-1": {
-      "map": "base-floor-vertical-2",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-2": {
-      "map": "base-floor-vertical-2",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-3": {
       "map": "first-floor-kitchen",
@@ -58,21 +62,13 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
+      "wanderRadius": 3
     },
-    "chapter-8": {
-      "map": "first-floor-vertical-1",
-      "facing": "down"
-    },
-    "chapter-9": {
+    "chapter-10": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
-    },
-    "chapter-10": {
-      "map": "first-floor-main",
-      "facing": "down"
     },
     "chapter-11": {
       "map": "first-floor-kitchen",
@@ -83,32 +79,34 @@
   },
   "default": "Sto aspettando Fede Papi 🌸🥺✨",
   "chapters": {
-    "chapter-8": {
+    "chapter-1": {
       "dialogue": [
-        "Mentre aspetto Fede... vuoi una birra? 🌸🍺",
-        "Tieni, è fresca 🌼✨"
-      ],
-      "dialogueAfter": "La birra te l'ho già data! 🌸🥰",
-      "item": {
-        "name": "Birra",
-        "description": "Fresca, in attesa di Fede.",
-        "buff": {
-          "defense": 2
-        }
-      }
+        "Zio Nick, non andare da Gabbo... 🥺🌸"
+      ]
+    },
+    "chapter-2": {
+      "dialogue": [
+        "Tieni i piselli sul ginocchio ancora un po' 🧊🌸"
+      ]
+    },
+    "chapter-7": {
+      "dialogue": [
+        "Che puzza dal frigo 🤢🌸"
+      ]
     },
     "chapter-10": {
       "dialogue": [
-        "Basta! Fede non arriva mai per colpa tua! 😤🌸",
-        "Adesso me la paghi, sbirro 🌷💢"
+        "Ti ho preparato una fascia per il ginocchio 🌸🩹",
+        "Così stavolta niente «aia» ✨"
       ],
-      "dialogueAfter": "Va bene... hai vinto. Aspetterò Fede in pace 🌸🕊️✨",
-      "battle": {
-        "prompt": "Mari è furiosa. Che fai?",
-        "options": [
-          "La affronto",
-          "Le dico che Fede sta arrivando"
-        ]
+      "dialogueAfter": "La fascia ce l'hai già 🌸🥰",
+      "item": {
+        "name": "Fascia per il ginocchio",
+        "description": "Preparata da Mari. Il ginocchio regge. +2 DEF, +10 HP max.",
+        "buff": {
+          "defense": 2,
+          "maxHp": 10
+        }
       }
     }
   }

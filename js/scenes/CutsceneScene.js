@@ -1,5 +1,5 @@
 // js/scenes/CutsceneScene.js
-// A full-screen video cutscene over the PAUSED WorldScene (chapter 12: leaving
+// A full-screen video cutscene over the PAUSED WorldScene (chapter 8: leaving
 // the house for the Alcatraz, js/story/alcatraz.js). Plays `video` (an MP4,
 // with its own sound) cover-fitted, then calls world.onCutsceneDone(). If the
 // file isn't there yet, a title card (`title`) stands in for 3 s. Hold Space

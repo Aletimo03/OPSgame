@@ -15,6 +15,12 @@ export const SOUNDS = {
   // ── Music (looping soundtracks) ──────────────────────────────────────────
   'world-theme':  { path: 'assets/sounds/zionick.mp3', type: 'music', volume: 0.5, loop: true },
   // The Alcatraz (map `music`): "Disco Party" by Aurec, Pixabay (free licence). ~121.35 BPM.
+  // The dream (chapter 9), the user's tracks: the dream house, the maze, and
+  // the shadow closing in (played each time it gets near; .m4a from the user's .wav).
+  'dream-house-theme': { path: 'assets/sounds/dream_house.mp3', type: 'music', volume: 0.6, loop: true },
+  'dream-theme': { path: 'assets/sounds/dream_maze.mp3', type: 'music', volume: 0.6, loop: true },
+  'shadow-near': { path: 'assets/sounds/shadow_near.m4a', type: 'sfx', volume: 0.9 },
+  'jumpscare': { path: 'assets/sounds/jumpscare.m4a', type: 'sfx', volume: 1 }, // the user's scream, when the shadow catches you
   'alcatraz-theme': { path: 'assets/sounds/alcatraz.mp3', type: 'music', volume: 0.55, loop: true },
   // 'battle-theme': { path: 'assets/sounds/battle.mp3', type: 'music', volume: 0.5, loop: true },
 
@@ -78,6 +84,14 @@ class AudioManager {
   // Play this scene's default soundtrack (from SCENE_MUSIC), if any.
   playSceneMusic() {
     this.playMusic(SCENE_MUSIC[this.scene.scene.key]);
+  }
+
+  // Stop every music track (a map whose own track is missing: the dream).
+  silence() {
+    this.stopMusic();
+    for (const [k, d] of Object.entries(SOUNDS)) {
+      if (d.type === 'music') this.scene.sound.get(k)?.stop();
+    }
   }
 
   stopMusic() {

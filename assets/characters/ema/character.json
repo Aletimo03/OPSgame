@@ -7,8 +7,10 @@
   },
   "locations": {
     "chapter-1": {
-      "map": "base-kitchen",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-2": {
       "map": "first-floor-kitchen",
@@ -44,17 +46,7 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
-    },
-    "chapter-8": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
       "wanderRadius": 3
-    },
-    "chapter-9": {
-      "map": "base-floor-main",
-      "facing": "down"
     },
     "chapter-10": {
       "map": "first-floor-kitchen",
@@ -74,23 +66,81 @@
     "chapter-1": {
       "dialogue": [
         "O Szio Nick, già sveglio?",
-        "I tuoi due meloni? Io non li ho visti, giuro su Lameszia Terme.",
-        "Ma il fruttivendolo più vicino dov'è? Grszie!"
+        "Gabbo è nel corridoio. Ma tu dove vai così di corsa? Grszie"
       ]
     },
-    "chapter-9": {
+    "chapter-3": {
       "dialogue": [
-        "O Szio Nick, che giornata...",
-        "Tieni, almeno mangia qualcosa. Grszie che mi fai compagnia!"
+        "O Szio Nick, il riso di Antonella si mangia o si usa per attaccare i poster? Grszie"
+      ]
+    },
+    "chapter-4": {
+      "dialogue": [
+        "O Szio Nick! Stasera faccio la pasta al salmone.",
+        "Però mi mancano i pomodorini. Me li trovi? Grszie",
+        {
+          "who": "zionick",
+          "text": "Io cerco i miei peperoni, non i tuoi pomodorini."
+        },
+        "O Szio Nick, ma il salmone va con i pomodorini o no? Grszie",
+        {
+          "who": "zionick",
+          "text": "SCIMMIA!"
+        },
+        "O Szio Nick, se mi trovi i pomodorini ti dico cosa ho visto ieri sera.",
+        "Forse sono nella cucina di sotto. Grszie"
       ],
-      "dialogueAfter": "O Szio Nick, li hai già presi, non fare il goloso! Grszie.",
-      "item": {
-        "name": "Biscotti fatti in casa",
-        "description": "Ricetta segreta di Emanuele.",
-        "consumable": true,
-        "heal": 15,
-        "qty": 2
-      }
+      "setFlag": "ema-asked",
+      "when": [
+        {
+          "flag": "pomodorini-given",
+          "dialogue": [
+            "O Szio Nick, la pasta è quasi pronta. Grszie!"
+          ]
+        },
+        {
+          "flag": "find:pomodorini",
+          "dialogue": [
+            "O Szio Nick, i pomodorini! Grszie grszie!",
+            "Allora: ieri sera ho visto Gaia uscire dalla cucina con una busta.",
+            "Ora non si trova più. Sarà con Alessio. Grszie",
+            "Tieni, la pasta al salmone. Due piatti, uno per dopo."
+          ],
+          "dialogueAfter": "O Szio Nick, la pasta te l'ho già data! Grszie",
+          "item": {
+            "name": "Pasta al salmone",
+            "description": "La pasta di Emanuele, con i pomodorini trovati da te. Cura 20 HP.",
+            "consumable": true,
+            "heal": 20,
+            "qty": 2
+          },
+          "setFlag": "pomodorini-given"
+        },
+        {
+          "flag": "ema-asked",
+          "dialogue": [
+            "O Szio Nick, i pomodorini? Forse nella cucina di sotto. Grszie",
+            {
+              "who": "zionick",
+              "text": "SCIMMIA."
+            }
+          ]
+        }
+      ]
+    },
+    "chapter-5": {
+      "dialogue": [
+        "O Szio Nick, la pasta al salmone era buonissima. Gaia l'hai trovata? Grszie"
+      ]
+    },
+    "chapter-10": {
+      "dialogue": [
+        "O Szio Nick, ma Gabbo è più forte di te? Grszie",
+        {
+          "who": "zionick",
+          "text": "SCIMMIA."
+        }
+      ]
     }
   }
 }

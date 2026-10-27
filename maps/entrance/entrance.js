@@ -4,7 +4,7 @@ import { makeRoom, setDoor } from '../../js/core/roomBuilder.js';
 
 const grid = makeRoom(11, 9);
 setDoor(grid, 5, 0); // north door -> base floor main hall
-setDoor(grid, 5, 8); // south front door -> out (chapter 12: the Alcatraz, see js/story/alcatraz.js)
+setDoor(grid, 5, 8); // south front door -> out (chapter 8: the Alcatraz, see js/story/alcatraz.js)
 
 export default {
   key: 'entrance',

@@ -35,8 +35,8 @@ export const DEFAULT_STATS = { maxHp: 30, attack: 5, defense: 2 };
 // protagonist (zionick) is the player and is NOT spawned as an NPC, so they're
 // excluded here. Add a folder name here when you add a new character.
 export const CHARACTERS = [
-  'ana', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo',
-  // chapter 12, the Alcatraz (guests)
+  'ana', 'antonella', 'caue', 'ema', 'ernesto', 'gabbo', 'gaia', 'gatta', 'lilia', 'mari', 'nima', 'sara', 'timo',
+  // chapter 8, the Alcatraz (guests)
   'chiara', 'ludovica', 'maranza', 'martina', 'vanessa',
 ];
 
@@ -54,8 +54,11 @@ export function getCharData(scene, folder) {
 export function resolveInteraction(data) {
   const ch = questState.activeChapter;
   let entry = data && data.chapters && data.chapters[ch];
-  // `when: [{ flag, dialogue, dialogueAfter? }]`: once that flag is set, the
-  // chapter entry speaks those lines instead (e.g. Gabbo before / at the Alcatraz).
+  // `when: [{ flag, dialogue, dialogueAfter?, item?, setFlag? }]`: the first
+  // entry whose flag is set replaces those fields (e.g. Gabbo before / at the
+  // Alcatraz, Emanuele once you've found his cherry tomatoes).
+  // `setFlag`: talking (plain or item) sets that flag when the lines close.
+  // Lines may be strings (this character) or { who, text } (WorldScene.say).
   const alt = entry?.when?.find((w) => questState.hasFlag(w.flag));
   if (alt) entry = { ...entry, ...alt, when: undefined };
   if (entry) {
@@ -65,6 +68,7 @@ export function resolveInteraction(data) {
       battle: entry.battle ?? null,
       quiz: entry.quiz ?? null,
       item: entry.item ?? null,
+      setFlag: entry.setFlag ?? null,
     };
   }
   return {
@@ -73,6 +77,7 @@ export function resolveInteraction(data) {
     battle: null,
     quiz: null,
     item: null,
+    setFlag: null,
   };
 }
 
@@ -85,7 +90,7 @@ export function baseStats(data) {
 // { map, tx, ty, facing? } or null if they don't appear that chapter.
 // A location may carry `alt: [{ flag, map, facing?, wander?, wanderRadius? }]`:
 // once that flag is set the character is there instead (Gabbo moves from the
-// house hall to the Alcatraz in chapter 12).
+// house hall to the Alcatraz in chapter 8).
 export function locationFor(data, chapter) {
   const loc = (data && data.locations && data.locations[chapter]) || null;
   const alt = loc?.alt?.find((a) => questState.hasFlag(a.flag));

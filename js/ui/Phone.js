@@ -298,6 +298,7 @@ export class Phone {
     const lines = [];
     if (q) {
       for (const t of objectiveTargets(this.scene)) {
+        if (t.hidden) continue;
         lines.push({
           str: `${t.done ? '✓' : '•'} ${t.label}${t.done ? '' : `  →  ${t.who ? `${t.who}, ` : ''}${t.where}`}`,
           color: t.done ? '#8696a0' : '#111b21',

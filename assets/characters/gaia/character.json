@@ -19,8 +19,10 @@
       "wanderRadius": 3
     },
     "chapter-3": {
-      "map": "first-floor-main",
-      "facing": "down"
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     },
     "chapter-4": {
       "map": "first-floor-kitchen",
@@ -29,10 +31,10 @@
       "wanderRadius": 3
     },
     "chapter-5": {
-      "map": "first-floor-kitchen",
+      "map": "room-18",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 3
+      "wanderRadius": 2
     },
     "chapter-6": {
       "map": "first-floor-kitchen",
@@ -44,21 +46,13 @@
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 2
+      "wanderRadius": 3
     },
-    "chapter-8": {
+    "chapter-10": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
-    },
-    "chapter-9": {
-      "map": "base-floor-vertical-1",
-      "facing": "down"
-    },
-    "chapter-10": {
-      "map": "first-floor-vertical-1",
-      "facing": "down"
     },
     "chapter-11": {
       "map": "first-floor-kitchen",
@@ -69,42 +63,55 @@
   },
   "default": "Alessio ti amo troppo puzo boca",
   "chapters": {
-    "chapter-3": {
+    "chapter-1": {
       "dialogue": [
-        "Lilia? Sì, è qui, è venuta a trovarmi.",
-        "Mi chiedi sempre di mia sorella, eh. Però non chiederle una heets."
+        "Gabbo? Lascia stare, non ne vale la pena.",
+        "Io sto con Alessio 💕"
       ]
     },
-    "chapter-4": {
+    "chapter-2": {
       "dialogue": [
-        "Lilia? Stasera è da Andrea, non c'è.",
-        "Ogni volta che mi vedi mi chiedi di lei!"
+        "Lilia? Oggi non c'è. Mi chiedi sempre di lei!"
       ]
     },
-    "chapter-9": {
+    "chapter-5": {
       "dialogue": [
-        "Meloni? Io mangio solo noodles ultimamente.",
-        "Però stanotte qualcuno pregava in cucina..."
+        "Sì, sono qui. Con Alessio, ovviamente 💕",
+        {
+          "who": "zionick",
+          "text": "Ti cercano tutti. Emanuele dice che avevi una busta."
+        },
+        "Noodles. Solo noodles, ultimamente.",
+        {
+          "who": "zionick",
+          "text": "Gestionale non fa una sega, e nemmeno i noodles."
+        },
+        "Senza rispetto.",
+        {
+          "who": "zionick",
+          "text": "(Sono sicuro che quel bastardo ha un frigo in camera, ma ancora non l'ho colto con le mani nel sacco.)"
+        }
+      ],
+      "setFlag": "gaia-found",
+      "when": [
+        {
+          "flag": "gaia-found",
+          "dialogue": [
+            "Lilia? È qui fuori, mi sta cercando.",
+            "Però non chiederle una heets."
+          ]
+        }
+      ]
+    },
+    "chapter-6": {
+      "dialogue": [
+        "Lilia è qui per l'aperitivo. Però non chiederle una heets."
       ]
     },
     "chapter-10": {
       "dialogue": [
-        "Lilia è qui con me, ma prima tocca a te.",
-        "Non ti lascio passare finché non rispondi.",
-        "Domanda facile facile..."
-      ],
-      "dialogueAfter": "Bravo, sapevo che eri dalla mia parte!",
-      "quiz": {
-        "prompt": "Chi ama Gaia più di tutti?",
-        "options": [
-          "Gabbo",
-          "Alessio",
-          "Nessuno"
-        ],
-        "answer": 1,
-        "correct": "ESATTO! Alessio ti amo troppo!",
-        "wrong": "Ma come ti permetti?! Senza rispetto. Riprova."
-      }
+        "Vai e vinci, Zio Nick."
+      ]
     }
   }
 }

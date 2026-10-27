@@ -69,14 +69,14 @@ export function objectiveTargets(scene) {
   if (!q) return [];
   const ch = questState.activeChapter;
   return q.objectives.map((o) => {
-    const t = { label: o.label, done: o.done, who: null, place: null, mapKey: null, tx: null, ty: null };
+    const t = { label: o.label, done: o.done, hidden: o.hidden, who: null, place: null, mapKey: null, tx: null, ty: null };
     if (o.visit || o.place) {
       t.place = o.visit || o.place;
       t.mapKey = t.place;
-    } else if (!o.flag) {
+    } else if (!o.flag || o.at) {
       const id = o.item
         ? CHARACTERS.find((c) => getCharData(scene, c).chapters?.[ch]?.item?.name === o.item)
-        : o.npc || o.defeat || o.quiz;
+        : o.npc || o.defeat || o.quiz || o.at;
       const data = id ? getCharData(scene, id) : null;
       const loc = data ? locationFor(data, ch) : null;
       if (loc) {
@@ -90,17 +90,18 @@ export function objectiveTargets(scene) {
 }
 
 // Ids of the characters the active quest still needs (talk / beat / quiz /
-// item giver), for the "!" marker over their heads in WorldScene.
+// item giver / a flag objective's `at`), for the "!" over their heads in
+// WorldScene. Hidden objectives (`after`) don't count yet.
 export function questNpcIds(scene) {
   const q = activeQuest();
   const ids = new Set();
   if (!q) return ids;
   const ch = questState.activeChapter;
   for (const o of q.objectives) {
-    if (o.done) continue;
+    if (o.done || o.hidden) continue;
     const id = o.item
       ? CHARACTERS.find((c) => getCharData(scene, c).chapters?.[ch]?.item?.name === o.item)
-      : o.npc || o.defeat || o.quiz;
+      : o.npc || o.defeat || o.quiz || o.at;
     if (id) ids.add(id);
   }
   return ids;

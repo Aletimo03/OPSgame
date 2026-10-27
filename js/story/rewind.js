@@ -6,15 +6,15 @@
 //     and later, and the global sets rebuilt from what's left;
 //   • items and consumables given in those chapters (`itemChapter` maps an
 //     item name → the chapter that gives it; built from the character JSONs);
-//   • chapter cards, events and the ending of those chapters; the premise /
-//     investigation intro if you go back before them;
+//   • chapter cards, events and the ending of those chapters; the premise
+//     if you go back to the first chapter;
 //   • HP full, the clock back to the chapter's start, phone messages marked read.
-// Kept: odd socks, favours + punti casa, affinity, investigation clues, stats,
-// and the furthest chapter reached. Node-importable.
+// Kept: odd socks, favours + punti casa, affinity, stats, and the furthest
+// chapter reached. devPrime() instead builds a fresh run that starts at any
+// chapter (the title screen's DEV chapter select). Node-importable.
 import { questState } from './questState.js';
 import { ORDER, CHAPTERS } from './chapters.js';
 import { EVENTS } from './events.js';
-import { INVESTIGATION } from './investigation.js';
 import { phoneChats } from './phoneChats.js';
 
 // Chapters you may restart from: 1 … the furthest reached.
@@ -50,7 +50,6 @@ export function rewindTo(id, itemChapter = {}) {
     if (laterEvents.has(f)) return false;
     if (laterFlags.has(f)) return false;
     if (f === 'premise-seen' && idx === 0) return false;
-    if (f === 'investigation-intro' && idx <= ORDER.indexOf(INVESTIGATION.opensAt)) return false;
     return true;
   });
 
@@ -69,9 +68,57 @@ export function itemChaptersFrom(dataById) {
   const out = {};
   for (const data of Object.values(dataById)) {
     for (const [ch, entry] of Object.entries(data?.chapters || {})) {
-      if (entry?.item?.name) out[entry.item.name] = ch;
+      // the entry's own item, its `when` variants' items, a battle's reward
+      for (const it of [entry?.item, ...(entry?.when || []).map((w) => w.item), entry?.battle?.reward]) {
+        if (it?.name) out[it.name] = ch;
+      }
     }
   }
   for (const e of EVENTS) if (e.gift?.name) out[e.gift.name] = e.chapter;
   return out;
+}
+
+// DEV chapter select: a FRESH run that starts at chapter `id`, as if every
+// earlier chapter had been played: their objectives done (log + flags), the
+// items they give in the bag (character JSONs + event gifts), their cards and
+// events seen. `dataById` as in itemChaptersFrom.
+export function devPrime(id, dataById = {}) {
+  const idx = ORDER.indexOf(id);
+  if (idx < 0) return false;
+  questState.reset();
+  const done = ORDER.slice(0, idx);
+  for (const ch of done) {
+    questState.activeChapter = ch;
+    for (const o of CHAPTERS[ch]?.quest?.objectives || []) {
+      if (o.npc) questState.greet(o.npc, ch);
+      if (o.defeat) questState.defeat(o.defeat, ch);
+      if (o.quiz) questState.solve(o.quiz, ch);
+      if (o.visit) questState.visit(o.visit, ch);
+      if (o.flag) questState.setFlag(o.flag);
+      if (o.after) questState.setFlag(o.after);
+    }
+    questState.setFlag(`card:${ch}`);
+  }
+  const gifts = [];
+  for (const data of Object.values(dataById)) {
+    for (const [ch, entry] of Object.entries(data?.chapters || {})) {
+      if (!done.includes(ch)) continue;
+      for (const it of [entry?.item, ...(entry?.when || []).map((w) => w.item), entry?.battle?.reward]) if (it?.name) gifts.push(it);
+    }
+  }
+  for (const e of EVENTS) {
+    if (!done.includes(e.chapter)) continue;
+    questState.setFlag(`event:${e.id}`);
+    if (e.gift) gifts.push(e.gift);
+  }
+  for (const it of gifts) {
+    if (it.consumable) questState.addSupply(it, null);
+    else questState.addItem(it);
+  }
+  if (idx > 0) questState.setFlag('premise-seen');
+  questState.activeChapter = id;
+  questState.reached = id;
+  questState.currentMap = null;
+  questState.phoneSeen = Object.fromEntries(phoneChats().map((c) => [c.id, c.messages.length]));
+  return true;
 }

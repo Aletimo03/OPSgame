@@ -1,28 +1,26 @@
 // js/story/chapter-3/chapter-3.js
-// Chapter 3 — after dealing with Gabbo, head to the first-floor kitchen to
-// pick up two items from Alessio and Sara.
+// Chapter 3 — "International Rice". Lunch in the first-floor kitchen:
+// Antonella (new in the house) cooks her International Rice, overcooked rice
+// the whole kitchen mocks her for (event `rice`). She gives Zio Nick a plate
+// (a joke consumable) and the first lead: Emanuele, rummaging in the fridge.
 export default {
   id: 'chapter-3',
-  title: "Capitolo 3 — Rinforzi",
-  // In-game time when this chapter starts (js/story/clock.js); its messages fit it.
-  time: '11:00',
-  // Hint sent to the house group chat (phone, key P) when this chapter starts.
+  title: 'Capitolo 3 — International Rice',
+  time: '12:30',
+  devStart: { mapKey: 'first-floor-kitchen', spawnName: 'default' },
   phone: [
-    { from: 'timo', text: "O fra, cucina primo piano. Roba per te." },
-    { from: 'gaia', text: "Sono con Alessio in cucina di su 💕" },
-    { from: 'sara', text: "Anch'io sono di sopra, ho una cosa per Zio Nick" },
-    { from: 'ana', text: "Bro, Zio Nick ran 15 km this morning?? Insane 🏃" },
+    { from: 'antonella', text: 'Pranzo in cucina di su, cucino io, porco d*o' },
+    { from: 'ema', text: 'O Antonella, cosa cucini? Grszie' },
+    { from: 'nima', text: 'Please, dopo pulite la pentola 🙏 من فضلك' },
     // private chats (dm: true)
-    { from: 'gaia', text: "Hai visto Alessio? Non risponde 😤", dm: true },
-    { from: 'ana', text: "Bro aperitivo friday at mine, you in? 🥑", dm: true },
+    { from: 'gaia', text: 'Hai visto Alessio? Non risponde 😤', dm: true },
   ],
   quest: {
-    id: 'collect-items',
-    title: "Fatti dare rinforzi in cucina di su",
-    // item-based objectives: done once questState.hasItem(name) is true.
+    id: 'international-rice',
+    title: 'Pranzo da Antonella',
     objectives: [
-      { item: 'Trenbolone',    label: "Fatti dare qualcosa da Alessio" },
-      { item: 'Palle a terra', label: "Fatti dare qualcosa da Sara"  },
+      { flag: 'event:rice', place: 'first-floor-kitchen', label: 'Vai a pranzo in cucina di su' },
+      { item: 'International Rice', label: "Assaggia l'International Rice di Antonella" },
     ],
   },
 };

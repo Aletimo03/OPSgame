@@ -127,28 +127,29 @@ export const feetY = (sprite) => sprite.y + sprite.displayHeight * 0.46;
 export const feetCenterY = (sprite) => sprite.y + sprite.displayHeight * 0.32;
 
 // 4-way, diagonal-locked movement. Mutates the player's body + animation.
-export function movePlayer(player, cursors) {
+// `speed` overrides PLAYER.SPEED (e.g. the heavy legs of the dream).
+export function movePlayer(player, cursors, speed = PLAYER.SPEED) {
   const body = player.body;
   body.setVelocity(0);
   const { left, right, up, down } = cursors;
 
   if (left.isDown) {
-    body.setVelocityX(-PLAYER.SPEED);
+    body.setVelocityX(-speed);
     player.facing = 'left';
     player.setFlipX(false); // side art already faces LEFT
     player.anims.play('walk-side', true);
   } else if (right.isDown) {
-    body.setVelocityX(PLAYER.SPEED);
+    body.setVelocityX(speed);
     player.facing = 'right';
     player.setFlipX(true);
     player.anims.play('walk-side', true);
   } else if (up.isDown) {
-    body.setVelocityY(-PLAYER.SPEED);
+    body.setVelocityY(-speed);
     player.facing = 'up';
     player.setFlipX(false);
     player.anims.play('walk-up', true);
   } else if (down.isDown) {
-    body.setVelocityY(PLAYER.SPEED);
+    body.setVelocityY(speed);
     player.facing = 'down';
     player.setFlipX(false);
     player.anims.play('walk-down', true);

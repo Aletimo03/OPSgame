@@ -1,5 +1,5 @@
 // maps/first-floor-kitchen/first-floor-kitchen.js
-// Chapter 3 location: Alessio gives Trenbolone, Sara gives Palle a terra.
+// The "cucina di su": where most of the story happens (see STORY.md).
 import { makeRoom, setDoor } from '../../js/core/roomBuilder.js';
 
 const grid = makeRoom(30, 17);
@@ -13,6 +13,7 @@ export default {
   spawns: {
     default: { tx: 26, ty: 2 },
     fromFirstFloor: { tx: 26, ty: 2 }, // just inside the top-right door
+    sofa: { tx: 25, ty: 9 }, // by the sofas: waking up after the chapter-1 fight
   },
   warps: [{ tx: 26, ty: 0, to: 'first-floor', toSpawn: 'fromKitchen' }],
   // Furniture from the catalogue (js/core/furniture-catalog.js): each entry only
@@ -24,20 +25,20 @@ export default {
     // wall of cabinets along the top wall, top-left (door is top-right). Relative to
     // the image's natural size: 2x longer, 1.1x taller. Its top deliberately pokes
     // above the map edge. Collider = the whole unit (stand at its counter).
-    { furniture: 'kitchen_shelfs', dir: 's', tx: 0.89, ty: -2.89, clue: 'coltello', side: 'moka' },
+    { furniture: 'kitchen_shelfs', dir: 's', tx: 0.89, ty: -2.89, side: 'moka' },
     // 4 recycling bins in a column against the left wall, upper part, just below
     // the shelves. Collider = all of them.
     { furniture: 'trashbins', dir: 's', tx: -0.41, ty: 2.91, hidden: { kind: 'sock', id: 'cucina-primo-bidoni' } },
     // island in the middle (new art, 3 stools). Collider = the band from 1 tile below
     // the slab's top edge to 1 tile below its bottom edge: you can step 1 tile
     // "behind" the slab (it then hides your legs) and still reach every stool.
-    { furniture: 'island', dir: 's', tx: 5.54, ty: 3.37, clue: 'sacchetto' },
+    { furniture: 'island', dir: 's', tx: 5.54, ty: 3.37 },
     // main table, lower half near the right corner. Collider = the wooden top
     // only, so all 8 chairs are walkable; each chair is a seat. ysort: false =
     // characters always draw on top of it (user's choice).
     { furniture: 'main_table', dir: 's', tx: 13, ty: 9.5 },
     // Ana's aperitivo on the table: only in chapter 7 (it stays until you leave the room).
-    { furniture: 'aperitivo', dir: 's', tx: 16.99, ty: 11.16, onlyIn: ['chapter-7'] },
+    { furniture: 'aperitivo', dir: 's', tx: 16.99, ty: 11.16, onlyIn: ['chapter-6'] },
     // sofas (user's layout): a vertical one against the right wall, centred on
     // it and 1.5 tiles lower; a horizontal one between the island and it, 2 tiles
     // lower than the island. Colliders = back + armrests only, so every seat
