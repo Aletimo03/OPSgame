@@ -6,6 +6,7 @@
     "defense": 2
   },
   "locations": {
+    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
     "chapter-0": {
       "map": "first-floor",
       "tx": 24,

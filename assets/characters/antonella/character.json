@@ -6,6 +6,7 @@
     "defense": 2
   },
   "locations": {
+    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
     "chapter-0": {
       "map": "first-floor",
       "tx": 36,
@@ -73,6 +74,35 @@
   },
   "default": "Che c'è, figlio mio? Sto qua a fumare.",
   "chapters": {
+    "chapter-sigaretta": {
+      "dialogue": [
+        "Figlio mio, quanto sei sciupato.",
+        "Tieni, una sigaretta. Fumatela sul balconcino, al primo piano, dagli stendini.",
+        "E non farti vedere da quei disgraziati, bello di zia.",
+        {
+          "who": "zionick",
+          "text": "(Con i 15 km che corro, se mi vedono fumare è finita.)"
+        }
+      ],
+      "setFlag": "sigaretta-held",
+      "banner": "🚬 Hai la sigaretta di Antonella",
+      "when": [
+        {
+          "flag": "sigaretta-held",
+          "dialogue": [
+            "Ancora qui, figlio mio? Vai, vai."
+          ]
+        },
+        {
+          "flag": "sigaretta-beccato",
+          "dialogue": [
+            "Quei disgraziati te l'hanno tolta?",
+            "Tieni, figlio mio, ne ho un'altra.",
+            "Stavolta occhi aperti, bello di zia."
+          ]
+        }
+      ]
+    },
     "chapter-0": {
       "dialogue": [
         "Io sono Antonella, figlio mio. Ma quanto sei sciupato, mangi?",

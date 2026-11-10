@@ -22,6 +22,7 @@
     }
   ],
   "locations": {
+    "chapter-sigaretta": {"map": "base-floor-vertical-2", "facing": "down", "wander": true, "wanderRadius": 5},
     "chapter-0": {
       "map": "base-floor",
       "tx": 28,

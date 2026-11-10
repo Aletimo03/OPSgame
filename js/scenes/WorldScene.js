@@ -48,6 +48,8 @@ import { withCutscenes } from './world/cutscenes.js';
 import { withProgress } from './world/progress.js';
 import { withInteractions } from './world/interactions.js';
 import { withBattles } from './world/battles.js';
+import { withStealth } from './world/stealth.js';
+import { STEALTH } from '../story/stealth.js';
 
 const AUTOSAVE_MS = 4000; // position autosave interval (progress saves immediately)
 let unloadHooked = false; // the tab-close save listener is registered once per page
@@ -55,7 +57,7 @@ let unloadHooked = false; // the tab-close save listener is registered once per 
 // Phaser.Scene + every feature of the world, in one prototype chain.
 const WorldBase = [
   withDecor, withPathing, withClub, withPrologue, withHeets, withFavours,
-  withDream, withCutscenes, withProgress, withInteractions, withBattles,
+  withDream, withCutscenes, withProgress, withInteractions, withBattles, withStealth,
 ].reduce((Base, mixin) => mixin(Base), Phaser.Scene);
 
 export default class WorldScene extends WorldBase {
@@ -327,6 +329,7 @@ export default class WorldScene extends WorldBase {
     this.startDisco(map);
     this.startCrowd(map);
     this.startDream(map);
+    this.setupStealth();
     this.repeaterStars = new Map(); // spot id → its star, in this map
     this.refreshRepeaters();
 
@@ -514,7 +517,7 @@ export default class WorldScene extends WorldBase {
   drawDoorPlates(map) {
     const ICON = {
       'base-kitchen': '🍳', 'first-floor-kitchen': '🍳', 'first-floor-bathroom': '🚿',
-      'laundry-room': '🧺', 'trashbin-room': '🗑️', entrance: '🚪',
+      'laundry-room': '🧺', 'trashbin-room': '🗑️', entrance: '🚪', balcony: '🚬',
     };
     const g = map.grid;
     const used = new Set(); // one plate per wall tile (doors in a corner share neighbours)
@@ -694,7 +697,10 @@ export default class WorldScene extends WorldBase {
     if (this.dialogue.open) {
       this.holdPlayer();
       if (this.inCutscene) stopNpcs(this.npcs, time);
-      else updateNpcs(this, this.npcs, time, this.talkingTo ? new Set([this.talkingTo]) : null);
+      else {
+        updateNpcs(this, this.npcs, time, this.talkingTo ? new Set([this.talkingTo]) : null);
+        this.stealthTick(delta);
+      }
       if (this.dialogue.mode === 'choice') {
         if (this.justPressed('up')) this.dialogue.moveSelection(-1);
         else if (this.justPressed('down')) this.dialogue.moveSelection(1);
@@ -726,7 +732,7 @@ export default class WorldScene extends WorldBase {
       return;
     }
 
-    movePlayer(this.player, this.cursors, this.dazed ? HEETS.dazedSpeed : MAPS[this.mapKey].playerSpeed || PLAYER.SPEED);
+    movePlayer(this.player, this.cursors, this.dazed ? HEETS.dazedSpeed : this.sneaking() ? STEALTH.sneakSpeed : MAPS[this.mapKey].playerSpeed || PLAYER.SPEED);
     this.assistDoor(); // slide into a doorway you're slightly off-centre from
     this.player.setDepth(this.characterDepth(this.player)); // vs NPCs and props, by feet
     updateNpcs(this, this.npcs, time); // NPCs stroll around so they feel alive
@@ -736,6 +742,7 @@ export default class WorldScene extends WorldBase {
     this.followTick(this.time.now, delta);
     this.dreamTick(this.time.now, delta);
     this.heetsTick(delta);
+    this.stealthTick(delta);
     this.repeaterTick();
     this.dazeMark?.setPosition(this.player.x, this.player.y - this.player.displayHeight * 0.5);
     this.checkBar();
@@ -784,6 +791,7 @@ export default class WorldScene extends WorldBase {
       if (!this.tryBar(px, py) && !this.trySit()) this.tryExamine(px, py);
       return;
     }
+    if (this.stealthTalk(target)) return; // with the cigarette in your hand? caught
     faceNpcToPlayer(target, this.player.facing, this.time.now);
     this.talkingTo = target; // stands still for the whole conversation (update)
     this.audio?.playSfx('npc-talk'); // interaction blip (no-op until a file is added)
@@ -910,7 +918,7 @@ export default class WorldScene extends WorldBase {
   // After a plain chat (or an item already given): favours (side quests) and
   // Alessio's shop. Never after battles or quizzes.
   afterTalk(target) {
-    if (target.id === HEETS.npc) { this.offerHeets(target); return; }
+    if (target.id === HEETS.npc && questState.activeChapter !== STEALTH.chapter) { this.offerHeets(target); return; } // that chapter she gives a cigarette instead
     const st = sideStepFor(target.id);
     if (st) {
       const q = st.quest;

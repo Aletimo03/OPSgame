@@ -10,6 +10,7 @@ import firstFloorKitchen from './first-floor-kitchen/first-floor-kitchen.js';
 import firstFloorBathroom from './first-floor-bathroom/first-floor-bathroom.js';
 import laundryRoom from './laundry-room/laundry-room.js';
 import trashbinRoom from './trashbin-room/trashbin-room.js';
+import balcony from './balcony/balcony.js';
 import alcatraz from './alcatraz/alcatraz.js';
 import dreamMaze from './dream-maze/dream-maze.js';
 
@@ -55,6 +56,7 @@ export const MAPS = {
   'first-floor-bathroom': firstFloorBathroom,
   'laundry-room': laundryRoom,
   'trashbin-room': trashbinRoom,
+  balcony, // off the first-floor racks hall (the cigarette chapter)
   alcatraz, // the Milan club (chapter 8), reached by a cutscene from the entrance
   'dream-maze': dreamMaze, // Zio Nick's nightmare (chapter 9), reached by sleeping in his bed
   'room-1': bRoom1, 'room-2': bRoom2, 'room-3': bRoom3, 'room-4': bRoom4,

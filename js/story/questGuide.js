@@ -20,6 +20,7 @@ const PLACE = {
   'laundry-room': 'Lavanderia',
   alcatraz: 'Alcatraz (Milano)',
   'trashbin-room': 'Stanza dei bidoni',
+  balcony: 'Balconcino',
   entrance: 'Ingresso',
 };
 const AREA = {

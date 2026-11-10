@@ -140,6 +140,13 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - **Obiettivi:** farsi dare le **Pile AAA** da Ernesto (le usa per i prototipi del draghetto); cambiarle alla **bilancia** sul bancone della cucina di su (zona invisibile a sinistra del frigo, finché non arriva un'immagine). In memoria: **480 g alle 03:12 di notte**. «Chi torna a casa alle tre di notte?»
 - **Scena:** l'aperitivo di Ana, con il guacamole (×2, cura 25).
 
+### Intermezzo — La sigaretta sul balconcino · *stealth*
+- **Quando:** 22:30, la sera dell'aperitivo.
+- **Obiettivi:** farsi dare una **sigaretta** da Antonella in cucina di su; portarla sul **balconcino** (primo piano, porta sulla parete destra della sala stendini) senza farsi vedere.
+- **Come si gioca:** con la sigaretta in mano Zio Nick va in punta di piedi. Nima (corridoio fuori dalla cucina), Sara (corridoio a ovest delle scale) e Alessio (sala stendini, fermo, si gira) hanno coni di vista; muri e stendini fanno da copertura.
+- **Se ti beccano:** predica di chi ti ha visto, sigaretta sequestrata, si torna in cucina e Antonella ne ha un'altra.
+- **Perché si nasconde:** con i 15 km che corre, se lo vedono fumare è finita.
+
 ### Capitolo 7 — Il frigo con le mosche · *minigioco*
 - **Quando:** 10:00. Nima protesta per il formaggio ammuffito.
 - **Obiettivi:** pulire il frigo di su dalle mosche (minigioco in prima persona) e buttare il formaggio nei bidoni. Dietro il formaggio c'è un **braccialetto dell'Alcatraz**.

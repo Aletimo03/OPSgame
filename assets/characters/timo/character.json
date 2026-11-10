@@ -7,6 +7,7 @@
     "defense": 2
   },
   "locations": {
+    "chapter-sigaretta": {"map": "first-floor", "tx": 23, "ty": 21, "facing": "right", "wander": false},
     "chapter-0": {
       "map": "base-floor",
       "tx": 31,
@@ -78,6 +79,12 @@
   },
   "default": "O fra... ...",
   "chapters": {
+    "chapter-sigaretta": {
+      "dialogue": [
+        "O fra.",
+        "Sto qui."
+      ]
+    },
     "chapter-0": {
       "dialogue": [
         "O fra. Alessio."

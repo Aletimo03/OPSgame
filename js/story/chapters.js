@@ -8,6 +8,7 @@ import chapter3 from './chapter-3/chapter-3.js';
 import chapter4 from './chapter-4/chapter-4.js';
 import chapter5 from './chapter-5/chapter-5.js';
 import chapter6 from './chapter-6/chapter-6.js';
+import chapterSigaretta from './chapter-sigaretta/chapter-sigaretta.js';
 import chapter7 from './chapter-7/chapter-7.js';
 import chapter8 from './chapter-8/chapter-8.js';
 import chapter9 from './chapter-9/chapter-9.js';
@@ -22,6 +23,7 @@ export const CHAPTERS = {
   'chapter-4': chapter4,
   'chapter-5': chapter5,
   'chapter-6': chapter6,
+  'chapter-sigaretta': chapterSigaretta,
   'chapter-7': chapter7,
   'chapter-8': chapter8,
   'chapter-9': chapter9,
@@ -33,7 +35,7 @@ export const CHAPTERS = {
 // to the next chapter that actually has a quest defined.
 export const ORDER = [
   'chapter-0', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
-  'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
+  'chapter-6', 'chapter-sigaretta', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
 ];
 
 // The whole story is finished: the last chapter is active and its quest done.

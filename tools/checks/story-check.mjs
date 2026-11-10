@@ -42,7 +42,7 @@ const { CHAPTERS, activeQuest, advanceChapterIfDone, isStoryComplete } = await i
 const { writeSave, loadSave, clearSave, applySave } = await imp('js/core/save.js');
 const { MAPS, START_MAP } = await imp('maps/index.js');
 const { resolveSpawn } = await imp('maps/spawn-points/spawn-points.js');
-const { DEFEAT_RESPAWN } = await imp('js/config.js');
+const { DEFEAT_RESPAWN, TILE } = await imp('js/config.js');
 const { propColliders } = await imp('js/core/props.js');
 const { FURNITURE } = await imp('js/core/furniture-catalog.js');
 const { FURNITURE_ERRORS, checkFurnitureEntry } = await imp('js/core/furniture.js');
@@ -58,6 +58,7 @@ const { rewindTo, rewindChoices, itemChaptersFrom, devPrime } = await imp('js/st
 const { AFFINITY_DMS } = await imp('js/story/affinity.js');
 const { EVENTS } = await imp('js/story/events.js');
 const { FRIDGE } = await imp('js/story/fridge.js');
+const { STEALTH, guardAt, sees, routeLength, sightBoxes } = await imp('js/story/stealth.js');
 
 // CHARACTERS lives in js/core/characters.js, which only needs the game at call
 // time — reading the array from the source keeps this script Phaser-free.
@@ -120,6 +121,7 @@ produce(DREAM.trashFlag, DREAM.chapter);
 produce(DREAM.wokeLinesFlag, DREAM.chapter); // his waking lines in the dream house
 produce(PROLOGUE.wifiFlag, PROLOGUE.chapter); // the last repeater
 produce(PROLOGUE.napFlag, PROLOGUE.chapter);  // the nap in his bed
+produce(STEALTH.flags.smoked, STEALTH.chapter); // reaching the balcony with the cigarette
 produce(FRIDGE.flags.clean, FRIDGE.chapter);
 produce(FRIDGE.flags.thrown, FRIDGE.chapter);
 const enter = (mapKey) => {
@@ -564,5 +566,60 @@ for (const [key, map] of Object.entries(MAPS)) {
   }
 }
 
-console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${FINDS.length} story finds.`);
+// The cigarette: the guards' scripts stay on the floor and close their loops,
+// everyone is placed, and the balcony can be reached unseen from the kitchen
+// door: a time-expanded search (position × time, guards are deterministic),
+// with a wider cone than the real one so the way through isn't pixel-perfect.
+let stealthSecs = null;
+{
+  const map = MAPS[STEALTH.map];
+  const { grid } = map;
+  const boxes = sightBoxes(map);
+  check(order.includes(STEALTH.chapter), 'stealth: the chapter is not in ORDER');
+  check(STEALTH.sneakSpeed > 0, 'stealth: no sneak speed');
+  for (const g of STEALTH.guards) {
+    check(DATA[g.id]?.locations?.[STEALTH.chapter]?.map === STEALTH.map, `stealth: guard ${g.id} isn't on ${STEALTH.map}`);
+    check(STEALTH.caught[g.id]?.length, `stealth: guard ${g.id} has no lecture`);
+    const end = guardAt(g, routeLength(g) - 1e-6);
+    check(Math.hypot(end.x - g.start[0], end.y - g.start[1]) < 0.01, `stealth: guard ${g.id}'s route doesn't loop`);
+    for (let t = 0; t < routeLength(g); t += 0.1) {
+      const p = guardAt(g, t);
+      check(grid[Math.floor(p.y)]?.[Math.floor(p.x)] === 0 && !boxes.some((b) => p.x >= b.tx && p.x <= b.tx + b.w && p.y >= b.ty && p.y <= b.ty + b.h),
+        `stealth: guard ${g.id} leaves the floor at t=${t.toFixed(1)}`);
+    }
+  }
+  const door = map.warps.find((w) => w.to === STEALTH.balcony);
+  if (check(door, 'stealth: no door to the balcony')) {
+    const { ok: onFoot } = floodFill(map);
+    const ok = (cx, cy) => onFoot(cx, cy) && !boxes.some((b) => cx - FX < b.tx + b.w && cx + FX > b.tx && cy + FY0 < b.ty + b.h && cy + FY1 > b.ty);
+    const wide = { ...STEALTH.vision, range: STEALTH.vision.range + 0.5, halfAngle: STEALTH.vision.halfAngle + 4 * Math.PI / 180, near: STEALTH.vision.near + 0.3 };
+    const FEET = (FY0 + FY1) / 2, DT = 0.12, MOVE = Math.round((STEALTH.sneakSpeed / TILE) * DT / STEP);
+    const key = (i, j) => i * 1000 + j;
+    const safe = (i, j, guards) => guards.every((st) => !sees(st, i * STEP, j * STEP + FEET, grid, boxes, wide));
+    const atDoor = (i, j) => {
+      const cx = i * STEP, cy = j * STEP;
+      return cx + FX > door.tx && cx - FX < door.tx + door.w && cy + FY0 < door.ty + door.h && cy + FY1 > door.ty;
+    };
+    const sp = map.spawns.fromKitchen;
+    let layer = new Map([[key(Math.round((sp.tx + 0.5) / STEP), Math.round((sp.ty + 0.5) / STEP)), true]]);
+    for (let n = 1; n * DT <= 60 && stealthSecs === null && layer.size; n++) {
+      const guards = STEALTH.guards.map((g) => guardAt(g, n * DT));
+      const next = new Map();
+      for (const k of layer.keys()) {
+        const i = Math.floor(k / 1000), j = k % 1000;
+        for (const [di, dj] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          let a = i, b = j, free = true;
+          for (let m = 0; m < (di || dj ? MOVE : 0) && free; m++) { a += di; b += dj; free = ok(a * STEP, b * STEP); }
+          if (!free || next.has(key(a, b)) || !safe(a, b, guards)) continue;
+          next.set(key(a, b), true);
+          if (atDoor(a, b)) stealthSecs = n * DT;
+        }
+      }
+      layer = next;
+    }
+    check(stealthSecs !== null, 'stealth: no way to reach the balcony unseen within 60 s');
+  }
+}
+
+console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${FINDS.length} story finds, balcony reachable unseen in ${stealthSecs?.toFixed(1)} s.`);
 process.exit(fails ? 1 : 0);

@@ -6,6 +6,7 @@
     "defense": 2
   },
   "locations": {
+    "chapter-sigaretta": {"map": "first-floor", "tx": 56, "ty": 11, "facing": "down", "wander": false},
     "chapter-0": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -70,6 +71,11 @@
   },
   "default": "من بحق الجحيم قام بتنظيف المطبخ؟",
   "chapters": {
+    "chapter-sigaretta": {
+      "dialogue": [
+        "Goodnights Zio Nick. Tonight controllo i corridoi, troppo disordine 😤"
+      ]
+    },
     "chapter-0": {
       "dialogue": [
         "Buongiorns! Every thing al suo posto, please 🙏"

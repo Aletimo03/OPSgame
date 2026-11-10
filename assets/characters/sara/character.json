@@ -6,6 +6,7 @@
     "defense": 3
   },
   "locations": {
+    "chapter-sigaretta": {"map": "first-floor", "tx": 30, "ty": 29, "facing": "right", "wander": false},
     "chapter-0": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -80,6 +81,11 @@
   },
   "default": "Accendi la cappa o ti accoppo",
   "chapters": {
+    "chapter-sigaretta": {
+      "dialogue": [
+        "Faccio due passi. Se sento odore di fritto senza cappa, qualcuno lo accoppo."
+      ]
+    },
     "chapter-0": {
       "dialogue": [
         "Accendi la cappa o ti accoppo"
