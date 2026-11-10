@@ -6,6 +6,23 @@
     "defense": 3
   },
   "locations": {
+    "chapter-0": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "alt": [
+        {
+          "flag": "nap-done",
+          "map": "base-kitchen",
+          "tx": 10,
+          "ty": 13,
+          "facing": "down",
+          "wander": true,
+          "wanderRadius": 2
+        }
+      ]
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -63,6 +80,48 @@
   },
   "default": "Accendi la cappa o ti accoppo",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "Accendi la cappa o ti accoppo"
+      ],
+      "when": [
+        {
+          "flag": "nap-done",
+          "dialogue": [
+            "Se non accendete la cappa vi accoppo tutti."
+          ]
+        },
+        {
+          "flag": "badge-got",
+          "dialogue": [
+            "Il badge vale solo per quelle camere. Non fare il furbo."
+          ]
+        },
+        {
+          "flag": "ripetitori-start",
+          "dialogue": [
+            {
+              "who": "zionick",
+              "text": "Devo entrare nelle camere 2, 15 e 19 per i ripetitori."
+            },
+            "Tieni il badge master.",
+            "Ma solo per quelle camere, eh."
+          ],
+          "dialogueAfter": "Il badge te l'ho già dato.",
+          "item": {
+            "name": "Badge master",
+            "description": "Da Sara. Apre solo le camere 2, 15 e 19."
+          },
+          "setFlag": "badge-got"
+        },
+        {
+          "flag": "event:peperoni",
+          "dialogue": [
+            "Spero tanto che non sia Sean, quell'idiota."
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "Ho appena fatto il caffè.",

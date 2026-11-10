@@ -6,7 +6,7 @@
 //   +1 for Gabbo when you win a rematch, +1 for Alessio when you buy at his shop.
 // Reaching 2 and 4 hearts unlocks a private message from them (AFFINITY_DMS),
 // stored in questState.extraMessages so it stays in the phone. Texts follow
-// each persona.md (normal house chat: nobody knows about the melons).
+// each persona.md (normal house chat).
 // Node-importable.
 import { questState } from './questState.js';
 import { clockNow } from './clock.js';

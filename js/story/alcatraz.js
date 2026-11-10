@@ -14,7 +14,7 @@ export const ALCATRAZ = {
   title: "Verso l'Alcatraz...",
   to: { mapKey: 'alcatraz', spawnName: 'default' },
   locked: ['Non è il momento di uscire.'],
-  needPartner: ["Gabbo ti aspetta giù nella hall.", 'Prima passa da lui.'],
+  needPartner: ["Gabbo mi aspetta giù nella hall.", 'Prima passo da lui.'],
 };
 
 // What the front door does right now: 'go' | 'locked' | 'needPartner'.

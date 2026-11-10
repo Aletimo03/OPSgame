@@ -1,5 +1,5 @@
 // js/story/flirt.js
-// Chapter 12 at the Alcatraz: help Gabbo get a girl's number. Node-importable.
+// Chapter 8 at the Alcatraz: help Gabbo get a girl's number. Node-importable.
 //
 // Each girl shows a MOOD icon that changes every few seconds (MOOD_MS):
 // 💃 wants to dance · 🍹 wants a drink · 😂 wants to laugh · 😒 not now.
@@ -45,7 +45,7 @@ export const APPROACHES = [
 
 export const GABBO = {
   ask: 'O fra, cosa le dico? Diahane.',
-  win: 'O fra, ho il numero! Sei un fenomeno, diahane!',
+  win: 'Ho il numero! Sei un fenomeno, diahane!',
   gone: "O fra, va be', ce ne sono altre, diahane.",
   garbled: 'O fra... hic... ho detto la cosa sbagliata? Diahane.',
   toBar: 'O fra, vai al bar a prenderle da bere. Uno anche per me, diahane.',
@@ -111,7 +111,7 @@ export const GIRLS = {
     trap: true,
     hello: 'Ciao Gabbo... sei proprio carino.',
     ask: 'Gabbo, ti va se ce ne andiamo a casa insieme?',
-    gabbo: 'O fra, che faccio? Vado con lei? Diahane.',
+    gabbo: 'Che faccio? Vado con lei? Diahane.',
     // The refusal is first, so it's the one pre-selected; accepting asks again.
     options: ['No Gabbo, stasera restiamo qui a pushare', 'Vai pure con lei'],
     confirm: 'Sicuro? Se Gabbo va via con lei, la serata è persa.',
@@ -119,7 +119,7 @@ export const GIRLS = {
     stay: 'O fra, hai ragione. Stasera si pusha, diahane.',
     drunkGo: 'O fra... hic... non ti sento... vado con lei, diahane.',
     refused: 'Peccato! Se ci ripensi, Gabbo, sono qui.',
-    lose: "Gabbo è tornato a casa con Chiara... e tu sei rimasto da solo all'Alcatraz.\nMissione fallita! Torna da Gabbo nella hall e riprova.",
+    lose: "Gabbo è tornato a casa con Chiara... e io sono rimasto da solo all'Alcatraz.\nMissione fallita! Torna da Gabbo nella hall e riprova.",
   },
 };
 

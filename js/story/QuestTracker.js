@@ -1,7 +1,9 @@
 // js/story/QuestTracker.js
 // A small panel pinned to the TOP-RIGHT of the screen showing the active quest
-// and its objectives as a done/todo checklist. Rebuilt whenever progress
-// changes (call refresh()) and once per scene (it's recreated on every map).
+// and its objectives as a done/todo checklist. Closed it's just a tab; O opens
+// and closes it, like the bag (toggle(); the tab turns green when there's
+// something new to read). Rebuilt whenever progress changes (call refresh())
+// and once per scene (it's recreated on every map).
 import { activeQuest } from './chapters.js';
 import { objectiveTargets } from './questGuide.js';
 import { hud, hudPx } from '../config.js';
@@ -9,6 +11,10 @@ import { hud, hudPx } from '../config.js';
 const DEPTH = 1000000;
 const W = hud(280); // panel width (px, HUD_SCALE)
 const PAD = hud(12);
+
+// Module level: they survive WorldScene's restarts on every map.
+let open = false;
+let seen = ''; // the objectives last read with the box open
 
 export class QuestTracker {
   constructor(scene) {
@@ -24,6 +30,9 @@ export class QuestTracker {
     this.bottom = hud(12); // screen y just below the panel (PhoneHud sits there)
     const q = activeQuest();
     if (!q) return;
+    const list = q.objectives.filter((o) => !o.hidden && !o.done).map((o) => o.label).join(';');
+    if (open) seen = list;
+    if (!open) { this.buildTab(list !== seen); return; }
 
     // Width clamps to the screen; every line word-wraps and the box is sized
     // to the measured text, so long titles/objectives never run off the right
@@ -55,13 +64,10 @@ export class QuestTracker {
     // Each open objective gets a small "→ who, where" line under it (questGuide).
     const where = objectiveTargets(this.scene);
     q.objectives.forEach((o, i) => {
-      if (o.hidden) return; // not revealed yet (`after`)
-      ty += text(ty, `${o.done ? '☑' : '☐'} ${o.label}`, {
-        fontSize: hudPx(13),
-        color: o.done ? '#8f97a3' : '#ffffff',
-      }).height + hud(6);
+      if (o.hidden || o.done) return; // not revealed yet (`after`), or finished: only what's still open
+      ty += text(ty, `☐ ${o.label}`, { fontSize: hudPx(13), color: '#ffffff' }).height + hud(6);
       const t = where[i];
-      if (!o.done && t && t.where && t.where !== '—') {
+      if (t && t.where && t.where !== '—') {
         ty += text(ty - hud(4), `   → ${t.who ? `${t.who}, ` : ''}${t.where}`, {
           fontSize: hudPx(11),
           color: '#8fb3d9',
@@ -76,6 +82,23 @@ export class QuestTracker {
         .setStrokeStyle(2, 0xffffff, 0.55)
     ).setDepth(DEPTH - 1);
     this.bottom = ty + PAD - hud(6);
+  }
+
+  // Closed: a small tab, right-aligned like the phone's hint.
+  buildTab(fresh) {
+    const cam = this.scene.cameras.main;
+    const M = hud(12);
+    const t = this.scene.add.text(cam.width - M, M, fresh ? '[O] nuovi obiettivi' : '[O] obiettivi', {
+      fontFamily: 'monospace', fontSize: hudPx(13), color: fresh ? '#7CFC8A' : '#ffd54a', fontStyle: 'bold',
+      backgroundColor: 'rgba(13,15,23,0.82)', padding: { x: hud(8), y: hud(5) },
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(DEPTH);
+    this.objs.push(t);
+    this.bottom = M + t.height;
+  }
+
+  toggle() {
+    open = !open;
+    this.build();
   }
 
   refresh() {

@@ -1,5 +1,5 @@
 {
-  "name": "Mari",
+  "name": "Marilena",
   "stats": {
     "maxHp": 46,
     "attack": 13,
@@ -22,6 +22,23 @@
     }
   ],
   "locations": {
+    "chapter-0": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "alt": [
+        {
+          "flag": "nap-done",
+          "map": "base-kitchen",
+          "tx": 27,
+          "ty": 14,
+          "facing": "down",
+          "wander": true,
+          "wanderRadius": 2
+        }
+      ]
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -79,6 +96,25 @@
   },
   "default": "Sto aspettando Fede Papi 🌸🥺✨",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "Benvenuto in casa 🌸✨"
+      ],
+      "when": [
+        {
+          "flag": "nap-done",
+          "dialogue": [
+            "Vieni a ballare 🌸✨"
+          ]
+        },
+        {
+          "flag": "event:peperoni",
+          "dialogue": [
+            "Io non ho visto nulla 🥺🌸"
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "Zio Nick, non andare da Gabbo... 🥺🌸"

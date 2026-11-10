@@ -159,7 +159,7 @@ export const FURNITURE = {
   // Laundry: Zio Nick's drying rack (with his clothes). Same rules as `hanger`.
   hanger_zionick: {
     label: "Stendino di Zio Nick",
-    examine: ["I panni di Zio Nick. Nessuno osa toccarli."],
+    examine: ["I miei panni. Nessuno osa toccarli."],
     group: 'others',
     dirs: {
       s: {
@@ -193,7 +193,7 @@ export const FURNITURE = {
   // Wardrobe seen from the side (front faces right: against a left wall).
   armadio: {
     label: 'Armadio',
-    examine: ["Un armadio. Dentro, vestiti di qualcuno che non è Zio Nick."],
+    examine: ["Un armadio. Dentro, vestiti di qualcuno che non sono io."],
     group: 'rooms',
     dirs: {
       e: {

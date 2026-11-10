@@ -51,6 +51,7 @@ export default class BattleScene extends Phaser.Scene {
         // third of your HP, and you say `lossLine` as you go down. The world
         // then calls onScriptedLoss instead of the usual defeat.
         this.mustLose = !!data.mustLose;
+        this.blackBg = !!data.blackBg; // plain black background (no art for this place yet)
         this.lossLine = data.lossLine || null;
     }
 
@@ -71,7 +72,9 @@ export default class BattleScene extends Phaser.Scene {
         this.audio.playSceneMusic();
 
         // REPLACE THE RECTANGLE WITH THIS IMAGE GENERATOR:
-        if (this.textures.exists(BATTLE_BG_KEY)) {
+        if (this.blackBg) {
+            this.add.rectangle(0, 0, W, H, 0x000000).setOrigin(0, 0).setDepth(DEPTH.bg);
+        } else if (this.textures.exists(BATTLE_BG_KEY)) {
             this.add
                 .image(0, 0, BATTLE_BG_KEY)
                 .setOrigin(0, 0)

@@ -11,11 +11,11 @@ node --no-warnings tools/checks/story-check.mjs
 
 ## Premessa
 
-**Zio Nick non si fa mai gli affari suoi.** Una mattina nel gruppo della cucina tutti parlano di **Gabbo l'allungamani** e delle sue mani lunghe, e Zio Nick va a "fare giustizia". Perde: «Aia, il ginocchio!». Si risveglia in cucina con i piselli surgelati di Mari sul ginocchio e una sola idea per riprendersi: **il suo chili**. Ma i suoi **due peperoni** sono spariti dal frigo.
+**Non c'è un narratore esterno:** tutto ciò che non dice un altro personaggio è Zio Nick che parla con se stesso, in prima persona.
 
-Comincia la caccia: il riso di Antonella, i pomodorini di Emanuele, la camera 18 (e il frigo segreto di Alessio, che non c'è), la bilancia che ricorda tutto, il frigo con le mosche, una notte all'Alcatraz e un incubo. Alla fine la verità: **i peperoni li ha presi Gabbo**. La rivincita, stavolta vinta, e il chili per tutta la casa.
+**Stiamo riscrivendo il gioco da zero.** Una partita nuova gioca il **Prologo** e per ora si ferma lì. I capitoli 1–11 qui sotto sono la versione precedente (scaletta v3): restano provabili da **🛠 DEV · Scegli capitolo**, ma una partita nuova non ci arriva e andranno riscritti o tolti man mano.
 
-> Gabbo "allungamani": solo allusioni (le pacche citate, mai mostrate, le ragazze che dicono di stare attente), d'accordo con lui. Mai "stupratore".
+Zio Nick è appena arrivato a OPS. È nuovo, deve ambientarsi e, anche se la spesa l'ha già sistemata in cucina stamattina, decide di andare a conoscere gli altri.
 
 ## Come si gioca
 
@@ -23,8 +23,9 @@ Comincia la caccia: il riso di Antonella, i pomodorini di Emanuele, la camera 18
 |---|---|
 | Frecce o WASD | muoversi; nei menu, scegliere (frecce) |
 | Spazio | parlare, far avanzare il dialogo, confermare. Se non hai nessuno davanti e sei su una sedia o uno sgabello, ti **siedi** |
+| O | apre e chiude il riquadro degli **obiettivi** |
 | I | zaino: **HP di Zio Nick**, oggetti con i loro bonus, consumabili |
-| P | telefono: la chat WhatsApp del gruppo **"Cucina di su"**, con la missione e il **dove andare** fissati in alto (↑/↓ o W/S per scorrere) |
+| P | telefono: la chat WhatsApp del gruppo **"Cucina di su"**, (↑/↓ o W/S per scorrere) |
 | M | mappa del piano dove ti trovi, con gli obiettivi segnati (quelli sull'altro piano sono elencati come "altro piano") |
 | Esc | pausa: *Riprendi* / *Ricomincia da capo* (chiude anche zaino, telefono e mappa) |
 
@@ -52,7 +53,7 @@ All'avvio puoi scegliere **Continua**, **Scegli capitolo** o **Nuova partita**. 
 |---|---|---|---|
 | `zionick` | Zio Nick | protagonista: saccente, ingegnere mancato, non si fa mai gli affari suoi | 30 / 100 / 2 (ATK 100 messo dall'utente; il valore di gioco era 5) |
 | `gabbo` | Gabbo | l'allungamani: batte Zio Nick all'inizio, ha preso i peperoni | 34 / 8 / 3 |
-| `mari` | Mari | mette i piselli surgelati sul ginocchio, poi prepara la fascia | 46 / 13 / 5 |
+| `mari` | Marilena (Mari) | mette i piselli surgelati sul ginocchio, poi prepara la fascia | 46 / 13 / 5 |
 | `antonella` | Antonella | nuova in casa, 19 anni, piccolina: l'International Rice | 24 / 4 / 2 |
 | `ema` | Emanuele | vuole i pomodorini per la pasta al salmone («SCIMMIA!») | 28 / 4 / 2 |
 | `gaia` | Gaia | sparita: è nella camera 18 con Alessio | 28 / 5 / 2 |
@@ -73,11 +74,11 @@ Ogni personaggio ha un `persona.md` in `assets/characters/<id>/` con il suo modo
 
 | Personaggio | Come parla |
 |---|---|
-| Zio Nick | parla ogni tanto, da saccente: ingegneria meccanica/aerospaziale sopra tutto, gestionale «non fa una sega»; chiama Emanuele «SCIMMIA»; «Aia, il ginocchio!» |
-| Antonella | bestemmia (censurata) in ogni frase, non sa l'inglese; l'abruzzese vero arriverà dall'utente |
+| Zio Nick | parla ogni tanto, da saccente: fa ingegneria spaziale, la migliore di tutte, e si arrabbia se dicono "aerospaziale"; gestionale «non fa una sega»; chiama Emanuele «SCIMMIA»; «Aia, il ginocchio!» |
+| Antonella | come una vecchietta di paese abruzzese, casalinga disoccupata e *cigarette mom*: «figlio mio», «bello di zia»; non bestemmia, non sa l'inglese |
 | Emanuele | "O Szio Nick...", "sz" al posto della "z", sempre "grszie", domande tipo "dov'è la farmacia?" |
 | Ana | in inglese, invita agli aperitivi (guacamole) |
-| Gabbo | "O fra" all'inizio di **ogni** frase e "diahane" alla fine |
+| Gabbo | "O fra" all'inizio di circa 4 frasi su 5 e "diahane" alla fine |
 | Alessio | taciturno, "O fra" solo all'inizio della prima frase |
 | Gaia | "senza rispetto" ogni tanto, sempre con Alessio; Zio Nick le chiede sempre di Lilia |
 | Ernesto | italiano normale; vino, aperitivi, salame piemontese, il draghetto Kinder |
@@ -95,6 +96,19 @@ Nel gruppo "Cucina di su" arrivano **da 2 a 5 messaggi per capitolo**: il primo 
 ## I capitoli
 
 La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena sveglio. Anche caricando un salvataggio si riparte sempre da lì. Quasi tutta la casa sta in **cucina di su** (cucina del primo piano).
+
+### Prologo — L'arrivo a OPS
+- **Quando:** 13:00.
+- **Il video:** una partita nuova comincia con Zio Nick che arriva davanti a OPS. Quando si ferma a metà strada il video si blocca e dice: «Ah, questo deve essere OPS, il posto di cui parlano tutti. Da fuori sembra bello. Sono sicuro che sarà pieno di persone normali, con cui potrò fare amicizia.»
+- **Camera 20:** Zio Nick non può uscire («Prima finisco di esplorare la stanza.») finché non esamina il **tavolino** e prende il **telefono**, che però non funziona: niente wi-fi. Per tutto il prologo il telefono non si apre e la sua icona non c'è.
+- **Le altre camere** sono chiuse: «Non ho la chiave.»
+- **Cucina di su** (il frigo di Zio Nick è lì): scena con **Sara**, **Marilena** e **Nima**, che si presentano. Zio Nick dice che fa ingegneria spaziale, Nima capisce «aerospaziale» e lui si arrabbia. Ha fame; Sara: «accendi la cappa ogni volta che cucini, o ti accoppo». Da qui non si esce («Ho troppa fame, meglio che mi cucini qualcosa.») finché non apre il **frigo**: i suoi due peperoni sono spariti. Zio Nick si arrabbia, Marilena non ha visto nulla, Nima dice che c'è sempre qualcuno che ruba le cose e che Antonella mette le pentole sopra le altre nella lavastoviglie, Sara ha visto qualcuno salire in cucina e spera tanto che non sia **Sean**, quell'idiota.
+- **Le indagini:** uscito dalla cucina, gli altri sono negli spazi comuni e si presentano. Sono sparsi tra spazi comuni e corridoi. Al primo piano: Gaia e Ana vicino agli stendini, Ernesto, Antonella e Caue nei corridoi. Al piano terra: Gabbo e Alessio vicino al divano, Emanuele e Gatta nei corridoi. Quasi tutti gli chiedono se fa «aerospaziale». **Gaia:** i peperoni potrebbero essere insieme ai sofficini di Irene o ai merluzzetti di Gianluca.
+- **Il wi-fi:** Gabbo e Alessio spiegano che i ripetitori TP-Link non sono compatibili e bloccano il wi-fi. Zio Nick pensa (tra parentesi) che col wi-fi potrebbe anche scrivere nel gruppo comune e trovare i peperoni.
+- **I ripetitori:** ne restano quattro, attaccati al muro e segnati da una stellina: nel corridoio del piano terra e nelle camere 2, 15 e 19. **Sara** gli dà il **badge master**, che apre solo quelle camere. Il contatore è in alto a destra. Trovati tutti, il telefono funziona.
+- **Il pisolino:** trovati i ripetitori, Zio Nick è stanco e va a dormire nel suo letto. Si sveglia di notte, ha dormito troppo, ed è svegliato da un gran casino.
+- **La festa:** nella cucina di sotto ci sono Gabbo, Fede Gatta, Sara, Ana, Gaia, Alessio e Marilena, con luci da discoteca e musica: poco in camera, un po' di più nei corridoi, altissima in cucina. Gabbo fa lo scemo, prova a dargli una pacca, ma gli fa male al ginocchio, e parte il **combattimento** (sfondo nero per ora). Se Zio Nick vince, Gabbo: «O fra, ti devo fare una statua, diahane. Intanto tieni questa» e gli dà la **Statuetta di Zio Nick**.
+- **Per ora la storia si ferma qui.**
 
 ### Capitolo 1 — La sconfitta · *scontro perso per copione*
 - **Quando:** 7:30. Nel gruppo si parla delle mani lunghe di Gabbo.
@@ -115,6 +129,7 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 ### Capitolo 4 — La pasta al salmone · *ricerca*
 - **Quando:** 19:30.
 - **Obiettivi:** parlare con **Emanuele** (vuole i pomodorini per la pasta al salmone; Zio Nick: «SCIMMIA!»); trovare i **pomodorini** sotto l'isola della **cucina di sotto**; riportarglieli. In cambio: **Pasta al salmone** (×2, cura 20) e la pista: Gaia è uscita dalla cucina con una busta e non si trova più.
+- **Chi manca:** in questo capitolo **Gaia e Alessio non sono in casa da nessuna parte** (sono chiusi in camera 18: li trovi nel capitolo 5). Quindi niente negozio di Alessio e niente favore di Gaia finché non ricompaiono.
 
 ### Capitolo 5 — La camera 18 · *esplorazione + falsa pista*
 - **Quando:** 11:00. Gaia è sparita (Lilia la cerca nel corridoio).
@@ -205,7 +220,7 @@ Consumabili lungo la storia: Caffè della moka (cap. 1), Piselli surgelati (2), 
 
 ## Oltre la storia
 
-- **Orologio e giorno/notte:** in alto a sinistra c'è l'ora del gioco (☀️ giorno, 🌅 alba, 🌆 sera, 🌙 notte), che scorre di un minuto ogni secondo di gioco. Di notte la casa si scurisce. Ogni capitolo comincia a un'ora sua (cap. 1 alle 7:30, cap. 2 alle 9:00, cap. 3 alle 12:30, cap. 4 alle 19:30, cap. 5 alle 11:00, cap. 6 alle 18:00, cap. 7 alle 10:00, cap. 8 alle 23:30, cap. 9 alle 4:00, cap. 10 alle 12:00, cap. 11 alle 20:00) e i messaggi del telefono hanno orari coerenti.
+- **Giorno e notte:** l'ora non si vede e non scorre da sola: ogni capitolo è di giorno o di notte, e la storia può cambiarlo (il pisolino del Prologo). Di notte la casa si scurisce.
 - **Le scenette** (i piselli, il riso, l'aperitivo, il chili) sono "da film": bande nere, interfaccia nascosta, la visuale zooma su chi parla, che si gira verso la telecamera e fa un saltello; dopo mezzo secondo la battuta appare in grande, col ritratto alto mezzo schermo e il resto oscurato. Lo schermo trema sulle battute urlate. Anche Zio Nick ha le sue battute.
 - **Arredi nuovi:** l'aperitivo sul tavolo della cucina di su (solo nel capitolo 6), un armadio nell'anticamera di ogni camera singola, il divano visto da dietro nel soggiorno del piano terra.
 - **Si riparte sempre dalla camera di Zio Nick**, qualunque sia il salvataggio.
@@ -215,6 +230,7 @@ Consumabili lungo la storia: Caffè della moka (cap. 1), Piselli surgelati (2), 
 - **Affinità ❤:** ogni coinquilino ha da 0 a 5 cuori. Li guadagni chiacchierando (il primo saluto di ogni capitolo), facendo favori e comprando da Alessio. A 2 e 4 cuori ti scrive un messaggio privato.
 - **Favori ★ e punti casa:** Emanuele (la moka, dal cap. 2), Gaia (i noodles, cap. 3), Ana (l'avocado, cap. 4), Nima (il coperchio, cap. 5) e Sara (il detersivo, cap. 6) ti chiedono di trovare qualcosa nei mobili. Il "?" azzurro indica chi ha un favore. Riportandoglielo guadagni **punti casa**, da spendere nel **negozio di Alessio**: Proteine (cura 20), Pre-workout (+2 ATK), Cintura da palestra (+2 DEF).
 - **L'aperitivo di Ana 🥑:** nel capitolo 6, in cucina di su: una scenetta con tutta la casa e 2 porzioni di guacamole (cura 25).
+- **La heets di Antonella 🚬:** se parli con Antonella ti offre una heets (puoi rifiutare). Fuori dalla cucina Zio Nick se la fuma in pace. **In cucina** è «tutto così calmo» (la musica si ferma), «troppo calmo», la stanza si scurisce, «...»: tre passi da gigante fanno tremare lo schermo e **Nima** entra di corsa **dalla porta della cucina**. Devi girargli intorno ai mobili e uscire proprio da lì, con la musica e i suoni dell'incubo. Se esci dalla porta: «Ma cosa era quello?». Se ti prende: schermo nero e ti risvegli in camera tutto stordito (la visuale ondeggia e cammini piano per qualche secondo). Antonella si sposta di capitolo in capitolo: cucina di su (cap. 1–3, 6, 11), salotto (4), cucina di sotto (5), corridoi (7, 10).
 - **La casa vive in cucina di su:** nei capitoli in cui non hanno un ruolo nella storia, i coinquilini stanno in cucina al primo piano.
 
 ## Il finale
@@ -229,8 +245,7 @@ Poi con Spazio torni in casa e puoi continuare a girare.
 ## Il gruppo "Cucina di su"
 
 Il telefono (P) è una chat stile WhatsApp del gruppo **Cucina di su**:
-- in alto c'è il messaggio fissato 📌 con la missione attuale e dove andare per ogni obiettivo;
-- sotto ci sono i messaggi, con un separatore per ogni capitolo.
+- ci sono i messaggi, con un separatore per ogni capitolo.
 
 A ogni capitolo arrivano 2–5 messaggi normali dai coinquilini: il primo dà l'indizio su dove andare, gli altri sono chiacchiere di casa. I testi sono nei file `js/story/chapter-N/chapter-N.js`, alla voce `phone`. Sono **provvisori**: riscrivili con lo stile vero del vostro gruppo.
 

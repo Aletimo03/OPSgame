@@ -86,7 +86,7 @@ export default {
   barIsland: { x0: 42, y0: 21, x1: 47, y1: 26, barman: 'timo' },
   // Stepping in sets a flag (WorldScene.checkFlagZones): chapter 8's last objective.
   flagZones: [
-    { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-8', requires: 'alcatraz-number', banner: '🎤 Sul palco dell\'Alcatraz con Gabbo!',
+    { ...AREAS.stage, flag: 'alcatraz-stage', chapter: 'chapter-8', requires: 'alcatraz-number',
       // Gabbo lets slip the chili (the lead to chapter 10): WorldScene.say.
       say: [
         { who: 'gabbo', text: 'O fra, stasera mi sento un leone, diahane!' },

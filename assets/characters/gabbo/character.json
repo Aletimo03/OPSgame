@@ -22,6 +22,26 @@
     }
   ],
   "locations": {
+    "chapter-0": {
+      "map": "base-floor",
+      "tx": 28,
+      "ty": 22,
+      "facing": "down",
+      "wander": false,
+      "wanderRadius": 2,
+      "after": "event:peperoni",
+      "alt": [
+        {
+          "flag": "nap-done",
+          "map": "base-kitchen",
+          "tx": 21,
+          "ty": 4,
+          "facing": "down",
+          "wander": false,
+          "wanderRadius": 2
+        }
+      ]
+    },
     "chapter-1": {
       "map": "first-floor-main",
       "facing": "down"
@@ -88,6 +108,104 @@
   },
   "default": "O fra, non ho niente da dirti, sbirro, diahane",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "O fra, tu sei quello nuovo, diahane.",
+        "Io sono Gabbo, diahane.",
+        "O fra, il wi-fi non va, diahane.",
+        {
+          "who": "timo",
+          "text": "O fra. Ripetitori TP-Link."
+        },
+        {
+          "who": "timo",
+          "text": "Non compatibili. Bloccano il wi-fi."
+        },
+        "O fra, finché restano attaccati non c'è wi-fi per nessuno, diahane.",
+        {
+          "who": "timo",
+          "text": "Ne restano quattro."
+        },
+        "O fra, uno è nel corridoio del piano terra, attaccato al muro, gli altri nelle camere 2, 15 e 19, diahane.",
+        {
+          "who": "timo",
+          "text": "O fra. Per entrare nelle camere serve il badge master. Ce l'ha Sara, in cucina di su."
+        },
+        {
+          "who": "zionick",
+          "text": "(Il wi-fi potrebbe aiutarmi a trovare i peperoni: così posso anche scrivere nel gruppo comune.)"
+        },
+        {
+          "who": "zionick",
+          "text": "(Prima il badge: torno da Sara, in cucina di su.)"
+        }
+      ],
+      "setFlag": "ripetitori-start",
+      "banner": "🎯 Vai da Sara in cucina di su:\nha il badge master",
+      "when": [
+        {
+          "flag": "nap-done",
+          "dialogue": [
+            {
+              "who": "zionick",
+              "text": "Gabbo! Cos'è tutto questo casino?"
+            },
+            "O fra, è una festa, diahane!",
+            {
+              "who": "zionick",
+              "text": "Sono le undici di sera e mi mancano due peperoni."
+            },
+            "O fra, peperoni? Il peperone sono io, diahane!",
+            {
+              "who": "timo",
+              "text": "O fra. Buona."
+            },
+            "Guarda come balla il peperone, diahane!",
+            {
+              "who": "zionick",
+              "text": "Smettila."
+            },
+            "O fra, dai, fatti dare una pacca, diahane.",
+            {
+              "who": "zionick",
+              "text": "Giù le mani!"
+            },
+            {
+              "who": "zionick",
+              "text": "AIA, IL GINOCCHIO!"
+            },
+            {
+              "who": "zionick",
+              "text": "Adesso basta."
+            }
+          ],
+          "dialogueAfter": "O fra, la statua te la devo ancora fare, diahane.",
+          "battle": {
+            "prompt": "O fra, che fai, diahane?",
+            "options": [
+              "Lo affronto",
+              "Gli spiego la fisica degli urti"
+            ],
+            "blackBg": true,
+            "won": [
+              "O fra, ti devo fare una statua, diahane.",
+              "Intanto tieni questa, diahane."
+            ],
+            "reward": {
+              "name": "Statuetta di Zio Nick",
+              "description": "Da Gabbo. In attesa della statua vera."
+            }
+          }
+        },
+        {
+          "flag": "ripetitori-start",
+          "dialogue": [
+            "O fra, corridoio del piano terra, camere 2, 15 e 19, diahane.",
+            "Il badge ce l'ha Sara, in cucina di su, diahane."
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         {
@@ -114,7 +232,7 @@
           "mapKey": "first-floor-kitchen",
           "spawnName": "sofa"
         },
-        "wakeNotice": "Zio Nick si risveglia in cucina di su..."
+        "wakeNotice": "Aia... sono in cucina di su?"
       }
     },
     "chapter-2": {
@@ -125,7 +243,7 @@
     },
     "chapter-8": {
       "dialogue": [
-        "O fra, Alessio non c'è, è sempre con Gaia, diahane.",
+        "Alessio non c'è, è sempre con Gaia, diahane.",
         "O fra, niente rancore per l'altro giorno, diahane.",
         "O fra, mi servi te per andare a pushare, diahane.",
         "O fra, si esce dall'ingresso: Alcatraz, diahane!",
@@ -139,7 +257,7 @@
           "flag": "alcatraz-number",
           "dialogue": [
             "O fra, ho il numero, diahane!",
-            "O fra, ora tutti sul palco, diahane!"
+            "Ora tutti sul palco, diahane!"
           ]
         },
         {
@@ -168,7 +286,7 @@
           "text": "E sul palco hai parlato di chili. Ingegneria forense."
         },
         "O fra... va bene, li ho presi io, diahane.",
-        "O fra, ma se li rivuoi devi battermi, diahane!"
+        "Ma se li rivuoi devi battermi, diahane!"
       ],
       "dialogueAfter": "O fra, basta, i peperoni ce li hai, diahane",
       "battle": {

@@ -19,14 +19,14 @@ export const FRIDGE = {
   ammo: 3,            // shots before reloading
   reloadMs: 3000,
   flags: { clean: 'fridge-clean', held: 'cheese-held', thrown: 'cheese-thrown' },
-  intro: ['Che puzza... in fondo al frigo c\'è un formaggio ammuffito, pieno di mosche!', 'Zio Nick impugna lo spruzzino del detersivo.'],
+  intro: ['Che puzza... in fondo al frigo c\'è un formaggio ammuffito, pieno di mosche!', 'Prendo lo spruzzino del detersivo.'],
   done: 'Frigo pulito! Hai preso il formaggio ammuffito 🧀\nOra buttalo nei bidoni.',
   // What was behind the cheese: the lead to the Alcatraz (chapter 8). WorldScene.say.
   found: [
     "Dietro il formaggio c'è qualcos'altro: un braccialetto dell'Alcatraz.",
-    { who: 'zionick', text: "Un braccialetto dell'Alcatraz in frigo. Chi va all'Alcatraz in questa casa?" },
+    "Un braccialetto dell'Alcatraz in frigo. Chi va all'Alcatraz in questa casa?",
   ],
-  throwLines: ['Zio Nick butta il formaggio ammuffito nei bidoni.', 'Addio formaggio, addio mosche.'],
+  throwLines: ['Via il formaggio ammuffito, nei bidoni.', 'Addio formaggio, addio mosche.'],
 };
 
 const F = FRIDGE.flags;

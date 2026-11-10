@@ -1,6 +1,7 @@
 // js/story/chapters.js
 // Registry of every story chapter + helpers to read the currently-active quest.
 import { questState } from './questState.js';
+import chapter0 from './chapter-0/chapter-0.js';
 import chapter1 from './chapter-1/chapter-1.js';
 import chapter2 from './chapter-2/chapter-2.js';
 import chapter3 from './chapter-3/chapter-3.js';
@@ -14,6 +15,7 @@ import chapter10 from './chapter-10/chapter-10.js';
 import chapter11 from './chapter-11/chapter-11.js';
 
 export const CHAPTERS = {
+  'chapter-0': chapter0,
   'chapter-1': chapter1,
   'chapter-2': chapter2,
   'chapter-3': chapter3,
@@ -30,7 +32,7 @@ export const CHAPTERS = {
 // Play order. When the active chapter's quest is complete, the story advances
 // to the next chapter that actually has a quest defined.
 export const ORDER = [
-  'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
+  'chapter-0', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
   'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
 ];
 
@@ -63,7 +65,7 @@ export function markReached() {
 
 export function advanceChapterIfDone() {
   const q = activeQuest();
-  if (!q || !q.complete) return;
+  if (!q || !q.complete || activeChapter()?.stop) return; // `stop`: the written story ends here for now
   const i = ORDER.indexOf(questState.activeChapter);
   for (let j = i + 1; j < ORDER.length; j++) {
     if (CHAPTERS[ORDER[j]] && CHAPTERS[ORDER[j]].quest) {

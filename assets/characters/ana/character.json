@@ -6,6 +6,26 @@
     "defense": 2
   },
   "locations": {
+    "chapter-0": {
+      "map": "first-floor",
+      "tx": 30,
+      "ty": 25,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2,
+      "after": "event:peperoni",
+      "alt": [
+        {
+          "flag": "nap-done",
+          "map": "base-kitchen",
+          "tx": 17,
+          "ty": 9,
+          "facing": "down",
+          "wander": true,
+          "wanderRadius": 2
+        }
+      ]
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -63,6 +83,25 @@
   },
   "default": "Hi I'm gumba bro ",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "Hi, I'm Ana, gumba bro!",
+        "Aerospace engineering? Sick bro!",
+        {
+          "who": "zionick",
+          "text": "SPAZIALE!"
+        },
+        "Okay bro, chill. Aperitivo soon, guacamole 🥑"
+      ],
+      "when": [
+        {
+          "flag": "nap-done",
+          "dialogue": [
+            "Bro, party! 🥑"
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "Bro, Gabbo again? 🙄",

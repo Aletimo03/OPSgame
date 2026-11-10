@@ -6,6 +6,16 @@
     "defense": 2
   },
   "locations": {
+    "chapter-0": {
+      "map": "base-floor",
+      "tx": 37,
+      "ty": 31,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2,
+      "after": "event:peperoni",
+      "until": "nap-done"
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -63,6 +73,17 @@
   },
   "default": "O Szio Nick, ma dov'è la farmacia? Grszie!",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "O Szio Nick, sei nuovo qui?",
+        "Benvenuto in casa! Io sono Emanuele, da Lameszia Terme.",
+        "O Szio Nick, è vero che fai aerospasziale? Grszie",
+        {
+          "who": "zionick",
+          "text": "SPAZIALE, SCIMMIA!"
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "O Szio Nick, già sveglio?",

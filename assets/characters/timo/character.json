@@ -7,6 +7,26 @@
     "defense": 2
   },
   "locations": {
+    "chapter-0": {
+      "map": "base-floor",
+      "tx": 31,
+      "ty": 22,
+      "facing": "down",
+      "wander": false,
+      "wanderRadius": 2,
+      "after": "event:peperoni",
+      "alt": [
+        {
+          "flag": "nap-done",
+          "map": "base-kitchen",
+          "tx": 24,
+          "ty": 4,
+          "facing": "down",
+          "wander": false,
+          "wanderRadius": 2
+        }
+      ]
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -20,12 +40,6 @@
       "wanderRadius": 3
     },
     "chapter-3": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
-    "chapter-4": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
@@ -64,6 +78,25 @@
   },
   "default": "O fra... ...",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "O fra. Alessio."
+      ],
+      "when": [
+        {
+          "flag": "nap-done",
+          "dialogue": [
+            "O fra. Festa."
+          ]
+        },
+        {
+          "flag": "ripetitori-start",
+          "dialogue": [
+            "Il badge: Sara. Cucina di su."
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "O fra. Gabbo. Lascia stare."
@@ -76,7 +109,7 @@
     },
     "chapter-5": {
       "dialogue": [
-        "O fra. Fuori dalla mia camera."
+        "Fuori dalla mia camera."
       ],
       "when": [
         {
@@ -110,7 +143,7 @@
         "O fra. Guanti.",
         "Spacca."
       ],
-      "dialogueAfter": "O fra, già dati. E smettila di toccarmi le braccia.",
+      "dialogueAfter": "Già dati. E smettila di toccarmi le braccia.",
       "item": {
         "name": "Guanti da palestra",
         "description": "Quelli di Alessio. Enormi. +3 ATK.",

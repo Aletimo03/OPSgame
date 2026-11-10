@@ -2,15 +2,70 @@
 // One-off scenes: entering `map` during `chapter` the first time plays a short
 // scene with the housemates who are there (each line only if that character
 // is in the room; `who: 'zionick'` = Zio Nick himself, always there), then
-// optional rewards. Flag `event:<id>` = seen. Texts follow each persona.md.
-// Node-importable.
+// optional rewards. Flag `event:<id>` = seen. `requires`: only once that flag
+// is set. Texts follow each persona.md. Node-importable.
 export const EVENTS = [
+  {
+    // Prologue: the nap is over, it's night and there's a racket.
+    id: 'risveglio',
+    chapter: 'chapter-0',
+    map: 'room-20',
+    requires: 'nap-done',
+    lines: [
+      { who: 'zionick', text: 'Ho dormito troppo... saranno le undici di sera.' },
+      { who: 'zionick', text: "Ma cos'è questo casino?!" },
+      { who: 'zionick', text: 'Viene dalla cucina di sotto. Vado a controllare.' },
+    ],
+  },
+  {
+    // Prologue: the party in the base kitchen.
+    id: 'festa',
+    chapter: 'chapter-0',
+    map: 'base-kitchen',
+    requires: 'nap-done',
+    lines: [
+      { who: 'zionick', text: '(Una festa. E i miei peperoni ancora non si trovano.)' },
+      { who: 'zionick', text: '(E Gabbo che fa più casino di tutti. Adesso ci parlo.)' },
+    ],
+  },
+  {
+    // Prologue: the first people Zio Nick meets, in the kitchen upstairs. He does
+    // space engineering: everyone wrongly says aerospace, and he gets angry.
+    id: 'benvenuto',
+    chapter: 'chapter-0',
+    map: 'first-floor-kitchen',
+    lines: [
+      { who: 'sara', text: 'Ehi, sei tu quello nuovo? Benvenuto! Io sono Sara.' },
+      { who: 'mari', text: 'E io sono Marilena, piacere 🌸✨' },
+      { who: 'zionick', text: 'Zio Nick. Faccio ingegneria spaziale: la migliore di tutte.' },
+      { who: 'nima', text: 'Buongiorns! I am Nima. Ah, aerospaziale? Nice!' },
+      { who: 'zionick', text: 'SPAZIALE! Non aerospaziale! SPAZIALE!' },
+      { who: 'nima', text: 'Okay okay, sorry my friend 😅 Same thing, no?' },
+      { who: 'zionick', text: 'NO!' },
+      { who: 'zionick', text: 'Comunque. Ho una fame tremenda.' },
+      { who: 'sara', text: 'Allora ricordati: accendi la cappa ogni volta che cucini, o ti accoppo.' },
+    ],
+  },
+  {
+    // Prologue: the fridge (js/story/finds.js) is short of two peppers.
+    id: 'peperoni',
+    chapter: 'chapter-0',
+    map: 'first-floor-kitchen',
+    requires: 'find:peperoni',
+    lines: [
+      { who: 'zionick', text: 'CHI HA PRESO I MIEI PEPERONI?!' },
+      { who: 'mari', text: 'Io non ho visto nulla 🥺🌸' },
+      { who: 'nima', text: 'Always somebody che ruba le cose in questa casa 😤' },
+      { who: 'nima', text: 'E Antonella che mette le pentole sopra le altre nella lavastoviglie! من فضلك' },
+      { who: 'sara', text: 'Prima ho visto qualcuno salire qui in cucina.' },
+      { who: 'sara', text: 'Spero tanto che non sia Sean, quell\'idiota.' },
+    ],
+  },
   {
     // Chapter 2: waking up in the kitchen after losing to Gabbo.
     id: 'piselli',
     chapter: 'chapter-2',
     map: 'first-floor-kitchen',
-    title: '🧊 I piselli surgelati',
     lines: [
       { who: 'mari', text: 'Zio Nick! Finalmente ti sei svegliato 🥺🌸' },
       { who: 'mari', text: 'Stai fermo: ti ho messo i piselli surgelati sul ginocchio 🧊🌼' },
@@ -27,18 +82,17 @@ export const EVENTS = [
     id: 'rice',
     chapter: 'chapter-3',
     map: 'first-floor-kitchen',
-    title: '🍚 International Rice',
     lines: [
-      { who: 'antonella', text: 'Oh, porco d*o, sei ancora col ginocchio a pezzi?' },
-      { who: 'antonella', text: 'Siediti, va\'. Oggi cucino io, porco d*o.' },
+      { who: 'antonella', text: 'Oh, figlio mio, sei ancora col ginocchio a pezzi?' },
+      { who: 'antonella', text: 'Siediti, va\'. Oggi cucino io, come una volta.' },
       { who: 'ana', text: 'Bro... what is that? 👀' },
-      { who: 'antonella', text: 'Che dice questa? Non capisco una parola, porco d*o!' },
+      { who: 'antonella', text: 'Che dice questa? Non capisco una parola, Gesù mio!' },
       { who: 'ema', text: 'O Antonella, ma è riso o colla? Grszie' },
       { who: 'nima', text: 'Buonanots... this riso is crying 😭' },
       { who: 'ernesto', text: 'Io ho portato un po\' di salame. Non si sa mai.' },
       { who: 'timo', text: 'O fra. Colla.' },
-      { who: 'antonella', text: 'E tu ridi, Alessio? Ti rispedisco in Moldavia, porco d*o!' },
-      { who: 'antonella', text: 'Ridete, ridete, porco d*o! È l\'International Rice!' },
+      { who: 'antonella', text: 'E tu ridi, Alessio? Ti rispedisco in Moldavia, ti rispedisco!' },
+      { who: 'antonella', text: 'Ridete, ridete, disgraziati! È l\'International Rice!' },
     ],
   },
   {
@@ -46,13 +100,12 @@ export const EVENTS = [
     id: 'aperitivo',
     chapter: 'chapter-6',
     map: 'first-floor-kitchen',
-    title: '🥑 Aperitivo da Ana',
     lines: [
       { who: 'ana', text: 'Yo bros! Aperitivo time 🥑 guacamole for everyone!' },
-      { who: 'antonella', text: 'Che è sta roba verde, porco d*o?' },
+      { who: 'antonella', text: 'E che è sta roba verde, Madonna mia?' },
       { who: 'ema', text: "O Ana, ma il guacamole con cosa si mangia? Grszie" },
       { who: 'nima', text: 'Buonaseras! Please, dopo tutti i piatti nel lavandino 🙏' },
-      { who: 'gaia', text: 'Arrivo con Alessio 🍜' },
+      { who: 'gaia', text: 'Io e Alessio ci siamo 🍜' },
       { who: 'timo', text: 'O fra. Buono.' },
       { who: 'gatta', text: "Pota, a Brescia l'aperitivo è meglio. Però buono." },
       { who: 'sara', text: 'Finalmente una cosa bella in questa casa, porco d*o' },
@@ -70,12 +123,11 @@ export const EVENTS = [
     id: 'chili',
     chapter: 'chapter-11',
     map: 'first-floor-kitchen',
-    title: '🌶️ Il chili di Zio Nick',
     lines: [
-      { who: 'zionick', text: 'Due peperoni, fagioli, carne e un pizzico di ingegneria aerospaziale.' },
+      { who: 'zionick', text: 'Due peperoni, fagioli, carne e un pizzico di ingegneria spaziale.' },
       { who: 'ema', text: 'O Szio Nick, ma il chili è piccante? Grszie' },
       { who: 'zionick', text: 'SCIMMIA. Certo che è piccante.' },
-      { who: 'antonella', text: 'Meglio del mio riso, porco d*o. Di poco.' },
+      { who: 'antonella', text: 'Meglio del mio riso, figlio mio. Di poco.' },
       { who: 'mari', text: 'Buonissimo! 🌸🌶️✨' },
       { who: 'nima', text: 'Buonaseras! Very good... but please, dopo piatti nel lavandino 🙏' },
       { who: 'timo', text: 'O fra. Buono.' },

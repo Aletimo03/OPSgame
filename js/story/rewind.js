@@ -15,6 +15,7 @@
 import { questState } from './questState.js';
 import { ORDER, CHAPTERS } from './chapters.js';
 import { EVENTS } from './events.js';
+import { FINDS } from './finds.js';
 import { phoneChats } from './phoneChats.js';
 
 // Chapters you may restart from: 1 … the furthest reached.
@@ -69,12 +70,13 @@ export function itemChaptersFrom(dataById) {
   for (const data of Object.values(dataById)) {
     for (const [ch, entry] of Object.entries(data?.chapters || {})) {
       // the entry's own item, its `when` variants' items, a battle's reward
-      for (const it of [entry?.item, ...(entry?.when || []).map((w) => w.item), entry?.battle?.reward]) {
+      for (const it of [entry?.item, entry?.battle?.reward, ...(entry?.when || []).flatMap((w) => [w.item, w.battle?.reward])]) {
         if (it?.name) out[it.name] = ch;
       }
     }
   }
   for (const e of EVENTS) if (e.gift?.name) out[e.gift.name] = e.chapter;
+  for (const f of FINDS) if (f.gives?.name) out[f.gives.name] = f.chapter;
   return out;
 }
 
@@ -103,7 +105,7 @@ export function devPrime(id, dataById = {}) {
   for (const data of Object.values(dataById)) {
     for (const [ch, entry] of Object.entries(data?.chapters || {})) {
       if (!done.includes(ch)) continue;
-      for (const it of [entry?.item, ...(entry?.when || []).map((w) => w.item), entry?.battle?.reward]) if (it?.name) gifts.push(it);
+      for (const it of [entry?.item, entry?.battle?.reward, ...(entry?.when || []).flatMap((w) => [w.item, w.battle?.reward])]) if (it?.name) gifts.push(it);
     }
   }
   for (const e of EVENTS) {
@@ -111,6 +113,7 @@ export function devPrime(id, dataById = {}) {
     questState.setFlag(`event:${e.id}`);
     if (e.gift) gifts.push(e.gift);
   }
+  for (const f of FINDS) if (f.gives && done.includes(f.chapter)) gifts.push(f.gives);
   for (const it of gifts) {
     if (it.consumable) questState.addSupply(it, null);
     else questState.addItem(it);

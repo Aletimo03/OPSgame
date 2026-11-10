@@ -9,11 +9,11 @@ export default {
   time: '12:30',
   devStart: { mapKey: 'first-floor-kitchen', spawnName: 'default' },
   phone: [
-    { from: 'antonella', text: 'Pranzo in cucina di su, cucino io, porco d*o' },
+    { from: 'antonella', text: 'Pranzo in cucina di su, cucino io, figli miei' },
     { from: 'ema', text: 'O Antonella, cosa cucini? Grszie' },
     { from: 'nima', text: 'Please, dopo pulite la pentola 🙏 من فضلك' },
     // private chats (dm: true)
-    { from: 'gaia', text: 'Hai visto Alessio? Non risponde 😤', dm: true },
+    { from: 'gaia', text: 'Io il riso di Antonella non lo mangio. Mi faccio i noodles 🍜', dm: true },
   ],
   quest: {
     id: 'international-rice',

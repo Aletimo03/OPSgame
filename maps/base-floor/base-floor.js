@@ -45,7 +45,7 @@ const rooms = [
   { label: 'room-12', x: 42, y: 30, w: 9, h: 9, solid: true }, // above the living, door on its top-left (grid cols21-29, rows9-17)
 ];
 
-const { grid, rooms: C } = makeFloorPlan({ cols, rows, rooms, corridors });
+const { grid } = makeFloorPlan({ cols, rows, rooms, corridors });
 
 // --- Doorways (GRID coords) --------------------------------------------------
 // vertical-top caps (horizontal door in the room's bottom wall, into the corridor top)

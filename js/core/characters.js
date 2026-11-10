@@ -57,7 +57,8 @@ export function resolveInteraction(data) {
   // `when: [{ flag, dialogue, dialogueAfter?, item?, setFlag? }]`: the first
   // entry whose flag is set replaces those fields (e.g. Gabbo before / at the
   // Alcatraz, Emanuele once you've found his cherry tomatoes).
-  // `setFlag`: talking (plain or item) sets that flag when the lines close.
+  // `setFlag`: talking (plain or item) sets that flag when the lines close,
+  // and shows `banner` if there is one.
   // Lines may be strings (this character) or { who, text } (WorldScene.say).
   const alt = entry?.when?.find((w) => questState.hasFlag(w.flag));
   if (alt) entry = { ...entry, ...alt, when: undefined };
@@ -69,6 +70,7 @@ export function resolveInteraction(data) {
       quiz: entry.quiz ?? null,
       item: entry.item ?? null,
       setFlag: entry.setFlag ?? null,
+      banner: entry.banner ?? null,
     };
   }
   return {
@@ -78,6 +80,7 @@ export function resolveInteraction(data) {
     quiz: null,
     item: null,
     setFlag: null,
+    banner: null,
   };
 }
 
@@ -93,6 +96,8 @@ export function baseStats(data) {
 // house hall to the Alcatraz in chapter 8).
 export function locationFor(data, chapter) {
   const loc = (data && data.locations && data.locations[chapter]) || null;
+  if (loc?.after && !questState.hasFlag(loc.after)) return null; // not around yet
+  if (loc?.until && questState.hasFlag(loc.until)) return null;   // gone by now
   const alt = loc?.alt?.find((a) => questState.hasFlag(a.flag));
   return alt || loc;
 }
@@ -123,7 +128,7 @@ export function placementsForMap(scene, mapKey) {
     out.push({
       character: folder,
       data,
-      at: { tx: sp.tx, ty: sp.ty, facing: loc.facing, wander: loc.wander, wanderRadius: loc.wanderRadius },
+      at: { tx: loc.tx ?? sp.tx, ty: loc.ty ?? sp.ty, facing: loc.facing, wander: loc.wander, wanderRadius: loc.wanderRadius },
     });
   }
   return out;

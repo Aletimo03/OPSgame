@@ -9,6 +9,7 @@ import { CHAPTERS, ORDER } from '../story/chapters.js';
 import { START_MAP } from '../../maps/index.js';
 import { loadSave, clearSave, applySave } from '../core/save.js';
 import { CHARACTERS } from '../core/characters.js';
+import { arrivalCutscene } from '../story/prologue.js';
 import { rewindChoices, rewindTo, itemChaptersFrom, devPrime } from '../story/rewind.js';
 
 const FONT = 'monospace';
@@ -293,18 +294,19 @@ export default class TitleScene extends Phaser.Scene {
     const data = Object.fromEntries(CHARACTERS.map((f) => [f, this.cache.json.get(`${f}-data`)]));
     clearSave();
     devPrime(id, data);
+    if (id === ORDER[0]) { this.startWorld(arrivalCutscene(), 'CutsceneScene'); return; }
     this.startWorld(CHAPTERS[id].devStart || { mapKey: START_MAP, spawnName: 'default' });
   }
 
   newGame() {
     clearSave();
     questState.reset();
-    this.startWorld({ mapKey: START_MAP, spawnName: 'default' });
+    this.startWorld(arrivalCutscene(), 'CutsceneScene'); // the video, then Zio Nick's room
   }
 
-  startWorld(data) {
+  startWorld(data, scene = 'WorldScene') {
     this.leaving = true;
     this.cameras.main.fadeOut(200);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('WorldScene', data));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start(scene, data));
   }
 }

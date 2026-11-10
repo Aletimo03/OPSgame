@@ -61,7 +61,7 @@ const rooms = [
   { label: 'room-27', x: 42, y: 30, w: 9, h: 9, solid: true }, // grid cols21-29, rows9-17 (above living)
 ];
 
-const { grid, rooms: C } = makeFloorPlan({ cols, rows, rooms, corridors });
+const { grid } = makeFloorPlan({ cols, rows, rooms, corridors });
 
 // --- Doorways (GRID coords). Horizontal walls -> horizontal door; ------------
 //     vertical walls -> setDoor(..., true).

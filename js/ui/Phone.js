@@ -2,18 +2,15 @@
 // House phone (key P), drawn as WhatsApp. Two screens:
 //   • LIST: every chat so far, most recent first: the group "Cucina di su" and
 //     the private chats (chapter `phone` entries with `dm: true`), each with
-//     its last message, time and a green unread badge. The 📌 mission (with
-//     WHERE to do each objective, from questGuide) is pinned on top.
+//     its last message, time and a green unread badge.
 //     ↑/↓ (W/S) choose, Space / Enter / → open.
 //   • CHAT: the bubbles of one chat, a chapter "date chip" between chapters,
-//     newest at the bottom; the group chat also keeps the 📌 mission. ↑/↓ (W/S)
+//     newest at the bottom. ↑/↓ (W/S)
 //     scroll, ← / Backspace back to the list.
 // P or Esc close the phone. Opening a chat marks it read (phoneChats.markRead),
 // which clears that part of the HUD badge (PhoneHud). Everything is plain
 // Phaser shapes + text (screen-fixed, so the unzoomed HUD camera draws it).
 
-import { activeQuest } from '../story/chapters.js';
-import { objectiveTargets } from '../story/questGuide.js';
 import { GROUP, phoneChats, unreadIn, markRead } from '../story/phoneChats.js';
 import { CHARACTERS, getCharData } from '../core/characters.js';
 import { heartsLabel } from '../story/affinity.js';
@@ -30,7 +27,6 @@ const C = {
   listBg: 0xffffff,
   rowSel: 0xe9edef,
   bubble: 0xffffff,
-  pinned: 0xffffff,
   chip: 0xe1f3fb,
   input: 0xffffff,
   send: 0x00a884,
@@ -216,16 +212,15 @@ export class Phone {
     }).setOrigin(0.5, 0), 3);
   }
 
-  // LIST screen: header, pinned mission, one row per chat.
+  // LIST screen: header, one row per chat.
   buildList(g, x, hy, hh, bottom, w) {
     this.text('WhatsApp', { fontSize: '20px', color: '#ffffff', fontStyle: 'bold' }).setPosition(x + 16, hy + 16);
     this.text('Chat', { fontSize: '13px', color: '#d1f4ee' }).setOrigin(1, 0).setPosition(x + w - 16, hy + 22);
-    const pinned = this.buildPinned(x, hy + hh, w);
 
     const chats = phoneChats();
     this.sel = Phaser.Math.Clamp(this.sel, 0, Math.max(0, chats.length - 1));
     const rowH = 64;
-    const top = pinned.bottom + 4;
+    const top = hy + hh + 4;
     const fit = Math.max(1, Math.floor((bottom - 24 - top) / rowH));
     const first = Phaser.Math.Clamp(this.sel - fit + 1, 0, Math.max(0, chats.length - fit)); // keep the selection visible
     chats.slice(first, first + fit).forEach((chat, k) => {
@@ -266,8 +261,8 @@ export class Phone {
     }
   }
 
-  // CHAT screen: header with back arrow + avatar + name, (group: pinned
-  // mission), bubbles, decorative input bar.
+  // CHAT screen: header with back arrow + avatar + name, bubbles, decorative
+  // input bar.
   buildChatView(g, x, hy, hh, bottom, w) {
     const id = this.chatId;
     const isGroup = id === GROUP;
@@ -280,7 +275,7 @@ export class Phone {
     this.fitText(sub, w - 80 - 34, { fontSize: '12px', color: '#d1f4ee' }).setPosition(x + 80, hy + 32);
     this.text('⋮', { fontSize: '20px', color: '#ffffff' }).setOrigin(1, 0).setPosition(x + w - 12, hy + 16);
 
-    const top = isGroup ? this.buildPinned(x, hy + hh, w).bottom + 6 : hy + hh + 6;
+    const top = hy + hh + 6;
 
     // Input bar (decorative).
     const iy = bottom - 54;
@@ -290,35 +285,6 @@ export class Phone {
     this.text('🎤', { fontSize: '16px' }).setOrigin(0.5).setPosition(x + w - 30, iy + 27);
 
     this.buildChat(g, x, top, w, iy - 4, isGroup);
-  }
-
-  // White pinned box under the header. Returns { bottom }.
-  buildPinned(x, y, w) {
-    const q = activeQuest();
-    const lines = [];
-    if (q) {
-      for (const t of objectiveTargets(this.scene)) {
-        if (t.hidden) continue;
-        lines.push({
-          str: `${t.done ? '✓' : '•'} ${t.label}${t.done ? '' : `  →  ${t.who ? `${t.who}, ` : ''}${t.where}`}`,
-          color: t.done ? '#8696a0' : '#111b21',
-        });
-      }
-    }
-    const head = this.text(q ? `📌  ${q.title}` : '📌  Nessuna missione', {
-      fontSize: '13px', color: '#00a884', fontStyle: 'bold', wordWrap: { width: w - 24 },
-    }).setPosition(x + 12, y + 8);
-    let cy = y + 8 + head.height + 4;
-    for (const l of lines) {
-      const t = this.text(l.str, { fontSize: '11px', color: l.color, wordWrap: { width: w - 24 } })
-        .setPosition(x + 12, cy);
-      cy += t.height + 2;
-    }
-    const bottom = cy + 6;
-    const g = this.add(this.scene.add.graphics(), 2);
-    g.fillStyle(C.pinned, 0.97).fillRect(x, y, w, bottom - y);
-    g.fillStyle(0x000000, 0.08).fillRect(x, bottom, w, 2); // soft shadow
-    return { bottom };
   }
 
   // Bubbles + chapter chips between `top` and `bottom`, newest at the bottom,

@@ -1,5 +1,5 @@
 // maps/dream-maze/dream-maze.js
-// Chapter 13 — Zio Nick's nightmare: a dark maze (js/story/dream.js builds it
+// Chapter 9 — Zio Nick's nightmare: a dark maze (js/story/dream.js builds it
 // from a fixed seed, so it's always the same one). You start in the
 // bottom-left corner; the pale light in the top-right corner wakes you up. A
 // shadow hunts you through the corridors (WorldScene.startShadow).
@@ -29,6 +29,6 @@ export default {
   // The way out: a pale light pulsing in the top-right cell.
   disco: [{ area: exit, lights: 2, radius: 2.2, colors: [0xfff2c0, 0xc8e0ff] }],
   flagZones: [
-    { ...exit, flag: 'dream-escaped', chapter: 'chapter-9', banner: '☀️ Una luce... Zio Nick si sta svegliando!' },
+    { ...exit, flag: 'dream-escaped', chapter: 'chapter-9', banner: '☀️ Una luce... mi sto svegliando!' },
   ],
 };

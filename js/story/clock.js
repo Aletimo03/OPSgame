@@ -1,15 +1,13 @@
 // js/story/clock.js
-// In-game clock. Each chapter has a start time (`time: 'HH:MM'` in its file),
-// picked so its phone messages make sense (e.g. chapter 3 at 12:30: lunch). The clock starts there when the chapter
-// starts and runs at RATE game minutes per real second while you play
-// (questState.clock = { chapter, min }, saved). Phone message times are
-// derived from it: a chapter's messages arrive in the minutes BEFORE its start
-// time; affinity messages keep the minute they arrived. Day/night comes from
-// the time (nightAlpha, the HUD icon). Node-importable.
+// The time of day. It isn't shown and doesn't run by itself (user's choice,
+// 2026-11-08): each chapter has a start time (`time: 'HH:MM'` in its file), the
+// story can change it (setClock, e.g. the prologue's nap), and it decides day
+// or night (nightAlpha) and the phone's times: a chapter's messages arrive in
+// the minutes BEFORE its start time. Saved in questState.clock = { chapter, min }.
+// Node-importable.
 import { questState } from './questState.js';
 import { CHAPTERS } from './chapters.js';
 
-export const RATE = 1; // game minutes per real second
 const DAY = 24 * 60;
 
 export function parseTime(hhmm) {
@@ -28,9 +26,10 @@ export function clockNow() {
   return questState.clock.min;
 }
 
-export function advanceClock(ms) {
+// The story moves the time of day (hhmm: 'HH:MM').
+export function setClock(hhmm) {
   clockNow();
-  questState.clock.min = (questState.clock.min + (ms / 1000) * RATE) % DAY;
+  questState.clock.min = parseTime(hhmm);
 }
 
 export const fmt = (min) => {
@@ -47,11 +46,3 @@ export function nightAlpha(min) {
   if (h < 8) return NIGHT_MAX * (1 - (h - 6) / 2);  // dawn
   return NIGHT_MAX * ((h - 18.5) / 3);              // dusk
 }
-
-export const phaseIcon = (min) => {
-  const h = (((min % DAY) + DAY) % DAY) / 60;
-  if (h >= 21.5 || h < 6) return '🌙';
-  if (h < 8) return '🌅';
-  if (h >= 18.5) return '🌆';
-  return '☀️';
-};

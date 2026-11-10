@@ -81,7 +81,7 @@ export function objectiveTargets(scene) {
       const loc = data ? locationFor(data, ch) : null;
       if (loc) {
         const sp = resolveSpawn(loc.map);
-        Object.assign(t, { who: data.name || id, place: loc.map, mapKey: sp.map, tx: sp.tx ?? null, ty: sp.ty ?? null });
+        Object.assign(t, { who: data.name || id, place: loc.map, mapKey: sp.map, tx: loc.tx ?? sp.tx ?? null, ty: loc.ty ?? sp.ty ?? null });
       }
     }
     t.where = placeName(t.place);

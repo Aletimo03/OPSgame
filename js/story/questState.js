@@ -22,7 +22,7 @@ class QuestState {
 
   // Wipe all progress back to a brand-new game.
   reset() {
-    this.activeChapter = 'chapter-1';
+    this.activeChapter = 'chapter-0';
     this.greeted = new Set();  // npc ids the player has talked to (interact quests)
     this.defeated = new Set(); // npc ids beaten in battle (fight quests)
     this.solved = new Set();   // npc ids whose quiz was answered right (quiz quests)
@@ -37,7 +37,7 @@ class QuestState {
     this.stats = { playMs: 0, wins: 0, losses: 0 }; // for the ending screen
     this.affinity = {}; // hearts per housemate (js/story/affinity.js)
     this.extraMessages = []; // phone messages unlocked by affinity: { from, text|sticker, dm, chapter }
-    this.reached = 'chapter-1'; // furthest chapter ever reached (title-screen chapter select)
+    this.reached = 'chapter-0'; // furthest chapter ever reached (title-screen chapter select)
     this.clock = null; // in-game clock { chapter, min } (js/story/clock.js)
     this.side = {}; // side quests: id → 'active' | 'done' (js/story/sideQuests.js)
     this.points = 0; // punti casa, earned with favours, spent at Alessio's shop

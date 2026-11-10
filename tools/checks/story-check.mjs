@@ -49,9 +49,11 @@ const { FURNITURE_ERRORS, checkFurnitureEntry } = await imp('js/core/furniture.j
 const { HIDDEN, KINDS: COLLECTIBLE_KINDS } = await imp('js/story/collectibles.js');
 const { SIDE_QUESTS, SHOP } = await imp('js/story/sideQuests.js');
 const { FINDS, findFlag } = await imp('js/story/finds.js');
+const { PROLOGUE } = await imp('js/story/prologue.js');
 const { resolveInteraction } = await imp('js/core/characters.js');
 const { ALCATRAZ } = await imp('js/story/alcatraz.js');
 const { DREAM } = await imp('js/story/dream.js');
+const { HEETS, inKitchen, nimaStart } = await imp('js/story/heets.js');
 const { rewindTo, rewindChoices, itemChaptersFrom, devPrime } = await imp('js/story/rewind.js');
 const { AFFINITY_DMS } = await imp('js/story/affinity.js');
 const { EVENTS } = await imp('js/story/events.js');
@@ -116,6 +118,8 @@ produce('alcatraz-number', ALCATRAZ.chapter); // js/story/flirt.js winNumber
 produce(DREAM.enteredFlag, DREAM.chapter);
 produce(DREAM.trashFlag, DREAM.chapter);
 produce(DREAM.wokeLinesFlag, DREAM.chapter); // his waking lines in the dream house
+produce(PROLOGUE.wifiFlag, PROLOGUE.chapter); // the last repeater
+produce(PROLOGUE.napFlag, PROLOGUE.chapter);  // the nap in his bed
 produce(FRIDGE.flags.clean, FRIDGE.chapter);
 produce(FRIDGE.flags.thrown, FRIDGE.chapter);
 const enter = (mapKey) => {
@@ -128,6 +132,12 @@ const pending = () => activeQuest().objectives.filter((o) => !o.done).map((o) =>
 for (const n of NPCS) {
   for (const [ch, loc] of Object.entries(DATA[n].locations || {})) {
     check(MAPS[resolveSpawn(loc.map).map], `${n}.locations.${ch}.map "${loc.map}" is not a map or spawn point`);
+    // Placed on an exact tile: on the floor, never on the stairs.
+    for (const at of [loc, ...(loc.alt || [])].filter((x) => x.tx != null)) {
+      const m = MAPS[resolveSpawn(at.map).map], st = m?.stairs;
+      check(m?.grid[at.ty]?.[at.tx] === 0, `${n}.locations.${ch}: (${at.tx},${at.ty}) is not floor in ${at.map}`);
+      check(!st || at.tx < st.tx || at.tx >= st.tx + st.w || at.ty < st.ty || at.ty >= st.ty + st.h, `${n}.locations.${ch}: (${at.tx},${at.ty}) is on the stairs`);
+    }
     check(CHAPTERS[ch], `${n}.locations has "${ch}", which is not a registered chapter`);
     for (const alt of loc.alt || []) {
       check(MAPS[resolveSpawn(alt.map).map], `${n}.locations.${ch}.alt map "${alt.map}" is not a map or spawn point`);
@@ -174,10 +184,15 @@ for (const ch of order) {
       const id = o.npc || o.defeat || o.quiz;
       const entry = DATA[id]?.chapters?.[ch];
       if (!check(DATA[id]?.locations?.[ch], `${ch}: "${id}" is an objective but isn't placed in ${ch} (soft-lock)`)) continue;
-      if (o.defeat) check(entry?.battle, `${ch}: defeat "${id}" but their ${ch} entry has no battle block`);
+      if (o.defeat) check(entry?.battle || entry?.when?.some((w) => w.battle), `${ch}: defeat "${id}" but their ${ch} entry has no battle block`);
       if (o.quiz) check(entry?.quiz, `${ch}: quiz "${id}" but their ${ch} entry has no quiz block`);
       talk(id);
     }
+  }
+  if (CHAPTERS[ch].stop) { // the written story ends here for now: go on by hand, to check the rest
+    check(activeQuest().complete && questState.activeChapter === ch, `${ch} (stop) did not complete or rolled on`);
+    questState.activeChapter = order[order.indexOf(ch) + 1];
+    continue;
   }
   const last = ch === order[order.length - 1];
   check(last ? activeQuest().complete : questState.activeChapter !== ch, `${ch} did not complete (left: ${pending()})`);
@@ -234,7 +249,7 @@ check(loadSave() === null, 'clearSave did not clear');
     questState.greet('ana', ch);
     questState.setFlag(`card:${ch}`);
   }
-  for (const [name, ch] of Object.entries(itemCh)) questState.addItem({ name, buff: { attack: 1 } });
+  for (const name of Object.keys(itemCh)) questState.addItem({ name, buff: { attack: 1 } });
   questState.reached = order[order.length - 1];
   questState.setFlag('ending-seen');
   questState.points = 7;
@@ -397,7 +412,7 @@ for (const [key, map] of Object.entries(MAPS)) {
     check(MAPS[e.map] && order.includes(e.chapter), `event '${e.id}': unknown map or chapter`);
     check(e.lines.every((l) => (NPCS.includes(l.who) || l.who === 'zionick') && l.text), `event '${e.id}': bad line`);
     const placed = e.lines.filter((l) => resolveSpawn(DATA[l.who]?.locations?.[e.chapter]?.map || '')?.map === e.map);
-    check(placed.length > 0, `event '${e.id}': nobody who speaks is in ${e.map} in ${e.chapter}`);
+    check(placed.length > 0 || e.lines.every((l) => l.who === 'zionick'), `event '${e.id}': nobody who speaks is in ${e.map} in ${e.chapter}`);
     if (e.gift) check(e.gift.consumable ? e.gift.heal > 0 : e.gift.buff, `event '${e.id}': bad gift`);
   }
   // Affinity messages: known characters, texts present, thresholds in range.
@@ -485,6 +500,37 @@ for (const f of FINDS.filter((x) => x.zone)) {
     }));
     check(ok, 'fridge: its zone can\'t be faced from anywhere reachable');
     check((map.props || []).some((p) => p.furniture === 'trashbins'), 'fridge: no bins in its kitchen to throw the cheese');
+  }
+}
+
+// The opening video is on disk, and new-game rules point at real maps.
+check(fs.existsSync(new URL(PROLOGUE.arrival.video, ROOT)), `prologue: ${PROLOGUE.arrival.video} is missing`);
+check(MAPS[PROLOGUE.room] && MAPS[PROLOGUE.kitchen] && MAPS[PROLOGUE.otherKitchen], 'prologue: unknown map');
+check(fs.existsSync(new URL(PROLOGUE.star.path, ROOT)), `prologue: ${PROLOGUE.star.path} is missing`);
+// Every repeater's star can be walked onto, and each badge room has a door from a hub.
+for (const sp of PROLOGUE.spots) {
+  const map = MAPS[sp.map];
+  if (!check(map, `prologue: repeater '${sp.id}' in an unknown map`)) continue;
+  const { pts } = floodFill(map);
+  check(map.grid[sp.ty]?.[sp.tx] === 1 && map.grid[sp.ty + 1]?.[sp.tx] === 0, `prologue: repeater '${sp.id}' is not on a wall above the floor`);
+  check(pts.some(([i, j]) => Math.hypot(i * STEP - (sp.tx + 0.5), j * STEP + (FY0 + FY1) / 2 - (sp.ty + 0.5)) < PROLOGUE.touchTiles),
+    `prologue: repeater '${sp.id}' can't be reached on foot`);
+}
+for (const r of PROLOGUE.rooms) check(Object.values(MAPS).some((m) => (m.warps || []).some((w) => w.to === r)), `prologue: no door to ${r}`);
+
+// Antonella's heets: she's in a kitchen somewhere and out of one somewhere;
+// in every kitchen Nima's door leads onto floor, so he can run in.
+{
+  const where = Object.values(DATA[HEETS.npc].locations).map((l) => resolveSpawn(l.map).map);
+  check(where.some((m) => inKitchen(m)), 'heets: Antonella is never in a kitchen');
+  check(where.some((m) => !inKitchen(m)), 'heets: Antonella is never outside a kitchen');
+  check(NPCS.includes(HEETS.chaser), 'heets: unknown chaser');
+  check(HEETS.nimaSpeed < 600, 'heets: Nima comes in by the only exit, he must be slower than Zio Nick (600 px/s) or nobody escapes');
+  for (const key of HEETS.kitchens) {
+    const map = MAPS[key];
+    if (!check(map?.warps?.length, `heets: ${key} has no door`)) continue;
+    const { tx, ty } = nimaStart(map);
+    check([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => map.grid[ty + dy]?.[tx + dx] === 0), `heets: Nima's door in ${key} leads nowhere`);
   }
 }
 

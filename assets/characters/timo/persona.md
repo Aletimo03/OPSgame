@@ -8,7 +8,7 @@ Come **parla e si comporta** Alessio in OPSgame. Non decide *cosa* succede nella
 - Sta sempre con **Gaia**, che lo ama alla follia.
 
 ## Come parla
-- Usa **"O fra" solo all'inizio della prima frase** di ogni battuta o messaggio, non in quelle dopo.
+- Usa **"O fra" solo all'inizio della prima frase** di una battuta o messaggio, non in quelle dopo, e in **circa 4 battute su 5**.
 - **Taciturno**: non parla quasi mai, frasi cortissime.
 - Fa spesso **battute sconce**, anche davanti a Gaia (nel gioco: allusioni leggere, il gioco è pubblico online).
 

@@ -4,6 +4,7 @@
 // phoneChats.totalUnread; opening a chat marks it read), with "[P] telefono" below.
 // It re-renders only when the count or the tracker's height changes.
 import { totalUnread } from '../story/phoneChats.js';
+import { phoneLocked, repeaterCounter } from '../story/prologue.js';
 import { hud, hudPx } from '../config.js';
 
 const DEPTH = 1000000;
@@ -26,14 +27,24 @@ export class PhoneHud {
     const cam = this.scene.cameras.main;
     const n = this.unread();
     const top = (this.tracker?.bottom ?? hud(12)) + hud(10);
-    const key = `${n}|${top}|${cam.width}`;
+    const key = `${n}|${top}|${cam.width}|${phoneLocked()}|${repeaterCounter()}`;
     if (key !== this.key) this.build(n, top, cam.width);
   }
 
   build(n, top, W) {
-    this.key = `${n}|${top}|${W}`;
+    this.key = `${n}|${top}|${W}|${phoneLocked()}|${repeaterCounter()}`;
     this.objs.forEach((o) => o.destroy());
     this.objs = [];
+    if (phoneLocked()) { // no phone yet (the prologue): in its place, the repeaters found
+      const label = repeaterCounter();
+      if (label) {
+        this.objs.push(this.scene.add.text(W - hud(12), top, label, {
+          fontFamily: 'monospace', fontSize: hudPx(14), color: '#ffd54a', fontStyle: 'bold',
+          backgroundColor: 'rgba(13,15,23,0.82)', padding: { x: hud(8), y: hud(5) },
+        }).setOrigin(1, 0).setScrollFactor(0).setDepth(DEPTH));
+      }
+      return;
+    }
     const s = this.scene;
     const add = (o, d = 0) => {
       o.setScrollFactor(0).setDepth(DEPTH + d);

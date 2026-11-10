@@ -23,5 +23,24 @@
       "chance": 0.4
     }
   ],
-  "default": "Sopportandovi a vicenda e perdonandovi vicendevolmente, se qualcuno abbia di che lamentarsi nei riguardi degli altri. (Colossesi 3:13)"
+  "locations": {
+    "chapter-0": {
+      "map": "first-floor",
+      "tx": 56,
+      "ty": 18,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2,
+      "after": "event:peperoni",
+      "until": "nap-done"
+    }
+  },
+  "default": "Sopportandovi a vicenda e perdonandovi vicendevolmente, se qualcuno abbia di che lamentarsi nei riguardi degli altri. (Colossesi 3:13)",
+  "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "Accoglietevi gli uni gli altri. (Romani 15:7) 🙏"
+      ]
+    }
+  }
 }

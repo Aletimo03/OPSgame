@@ -36,7 +36,7 @@ export const DREAM = {
   ],
   lineFlag: (id) => `dream-line:${id}`,
   revealTiles: 3,                  // the shadow rises once you've walked this far from the maze entrance
-  trashScene: ['La puzza qui è insopportabile...', 'Il pavimento sotto i bidoni si spalanca nel buio!'],
+  trashScene: ['La puzza qui è insopportabile...', 'Il pavimento sotto i bidoni si sta aprendo!'],
   escapedFlag: 'dream-escaped',
   playerSpeed: 330,      // px/s in the dream (awake: 600): legs feel heavy
   shadow: {
@@ -49,12 +49,12 @@ export const DREAM = {
     nearTiles: 4.5,      // closer than this: its sound plays over and over (faster when closer)
     scale: 1.25,
   },
-  enter: ['Zio Nick chiude gli occhi... 💤'],
-  mazeEnter: 'Zio Nick precipita nel buio...\ne si ritrova in un labirinto. Non è solo.',
+  enter: ['Chiudo gli occhi... 💤'],
+  mazeEnter: 'Sto precipitando nel buio...\nUn labirinto? Non sono solo.',
   caughtFlag: 'dream-caught',
   jumpscareMs: 5000,   // the jumpscare stays on screen this long, shaking
-  caughtWake: 'Zio Nick si sveglia urlando, sudato fradicio.\nEra solo un sogno... forse.',
-  wake: 'Zio Nick si sveglia di soprassalto, sudato.\nEra solo un sogno... forse.',
+  caughtWake: 'Mi sveglio urlando, sudato fradicio.\nEra solo un sogno... forse.',
+  wake: 'Mi sveglio di soprassalto, sudato.\nEra solo un sogno... forse.',
 };
 
 // In the dream house: gone to bed, not yet down to the trash room.

@@ -6,6 +6,26 @@
     "defense": 2
   },
   "locations": {
+    "chapter-0": {
+      "map": "first-floor",
+      "tx": 24,
+      "ty": 22,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2,
+      "after": "event:peperoni",
+      "alt": [
+        {
+          "flag": "nap-done",
+          "map": "base-kitchen",
+          "tx": 11,
+          "ty": 9,
+          "facing": "down",
+          "wander": true,
+          "wanderRadius": 2
+        }
+      ]
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -19,12 +39,6 @@
       "wanderRadius": 3
     },
     "chapter-3": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
-    "chapter-4": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
@@ -63,6 +77,32 @@
   },
   "default": "Alessio ti amo troppo puzo boca",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "Ciao, io sono Gaia. Sto per laurearmi in ingegneria gestionale.",
+        {
+          "who": "zionick",
+          "text": "Gestionale non fa una sega."
+        },
+        "Come vuoi. Cerchi i tuoi peperoni?",
+        "Potrebbero essere insieme ai sofficini di Irene o ai merluzzetti di Gianluca."
+      ],
+      "setFlag": "gaia-hint",
+      "when": [
+        {
+          "flag": "nap-done",
+          "dialogue": [
+            "Alessio ti amo troppo puzo boca"
+          ]
+        },
+        {
+          "flag": "gaia-hint",
+          "dialogue": [
+            "Prova con i sofficini di Irene o i merluzzetti di Gianluca."
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "Gabbo? Lascia stare, non ne vale la pena.",

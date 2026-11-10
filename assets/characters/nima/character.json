@@ -6,6 +6,13 @@
     "defense": 2
   },
   "locations": {
+    "chapter-0": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "until": "nap-done"
+    },
     "chapter-1": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -63,6 +70,19 @@
   },
   "default": "من بحق الجحيم قام بتنظيف المطبخ؟",
   "chapters": {
+    "chapter-0": {
+      "dialogue": [
+        "Buongiorns! Every thing al suo posto, please 🙏"
+      ],
+      "when": [
+        {
+          "flag": "event:peperoni",
+          "dialogue": [
+            "Always somebody che ruba le cose 😤"
+          ]
+        }
+      ]
+    },
     "chapter-1": {
       "dialogue": [
         "Buongiorns! If you fight, please not in cucina 🙏"

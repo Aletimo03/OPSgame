@@ -5,6 +5,8 @@ Come **parla e si comporta** Nima in OPSgame. Non decide *cosa* succede nella st
 ## Chi è
 - **Iraniano**, lavora in **smart working**.
 - **Rompe per la cucina**: ordine, rimettere le cose a posto, pulizia.
+- Si lamenta che in casa **c'è sempre qualcuno che ruba le cose** e che **Antonella mette le pentole sopra le altre nella lavastoviglie**.
+- **Se qualcuno si fuma una heets in cucina arriva di corsa**, velocissimo (vedi `js/story/heets.js`).
 - Ogni tanto porta in residenza la sua ragazza **Elisa**, simpatica. Elisa **non è un personaggio del gioco**: compare solo nominata (es. Nima: "Tonight viene Elisa, so please cucina in ordine 🙏").
 
 ## Come parla

@@ -11,7 +11,7 @@ export default {
     { from: 'ema', text: 'O Szio Nick, stasera chili in cucina di su? Grszie' },
     { from: 'gabbo', text: 'O fra, scusa per i peperoni, diahane' },
     { from: 'caue', text: 'Chi ha due tuniche ne dia una a chi non ne ha. (Luca 3:11) 🙏' },
-    { from: 'antonella', text: 'Porto il riso, porco d*o' },
+    { from: 'antonella', text: 'Porto il riso, figli miei' },
   ],
   quest: {
     id: 'the-chili',
