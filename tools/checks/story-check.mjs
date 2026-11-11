@@ -50,11 +50,15 @@ const { HIDDEN, KINDS: COLLECTIBLE_KINDS } = await imp('js/story/collectibles.js
 const { SIDE_QUESTS, SHOP } = await imp('js/story/sideQuests.js');
 const { FINDS, findFlag } = await imp('js/story/finds.js');
 const { PROLOGUE } = await imp('js/story/prologue.js');
-const { resolveInteraction } = await imp('js/core/characters.js');
+const { FORMAGGIO, SAFE, checkCode } = await imp('js/story/formaggio.js');
+const { FRIDGE_TASKS } = await imp('js/story/fridge.js');
+const { STRANGERS } = await imp('js/story/phoneChats.js');
+const { resolveInteraction, baseStats } = await imp('js/core/characters.js');
 const { ALCATRAZ } = await imp('js/story/alcatraz.js');
 const { DREAM } = await imp('js/story/dream.js');
 const { HEETS, inKitchen, nimaStart } = await imp('js/story/heets.js');
 const { rewindTo, rewindChoices, itemChaptersFrom, devPrime } = await imp('js/story/rewind.js');
+const { simulate, power, accuracy, maxPp } = await imp('js/core/battleRules.js');
 const { AFFINITY_DMS } = await imp('js/story/affinity.js');
 const { EVENTS } = await imp('js/story/events.js');
 const { FRIDGE } = await imp('js/story/fridge.js');
@@ -122,7 +126,12 @@ produce(DREAM.wokeLinesFlag, DREAM.chapter); // his waking lines in the dream ho
 produce(PROLOGUE.wifiFlag, PROLOGUE.chapter); // the last repeater
 produce(PROLOGUE.napFlag, PROLOGUE.chapter);  // the nap in his bed
 produce(STEALTH.flags.smoked, STEALTH.chapter); // reaching the balcony with the cigarette
-produce(FRIDGE.flags.clean, FRIDGE.chapter);
+for (const t of FRIDGE_TASKS) produce(t.clean, t.chapter); // the fridge minigame
+produce(FORMAGGIO.sleepFlag, FORMAGGIO.chapter); // back to bed after the party
+produce(FORMAGGIO.noteFlag, FORMAGGIO.chapter);  // the note on the laundry floor
+produce(SAFE.openFlag, FORMAGGIO.chapter);       // the key safe's code
+// Reading a chat with a `readFlag` message (once its `after` flag is set).
+for (const [ch, c] of Object.entries(CHAPTERS)) for (const m of c.phone || []) if (m.readFlag) produce(m.readFlag, ch);
 produce(FRIDGE.flags.thrown, FRIDGE.chapter);
 const enter = (mapKey) => {
   questState.visit(mapKey);
@@ -279,6 +288,41 @@ check(loadSave() === null, 'clearSave did not clear');
     check(early.every((n) => questState.hasItem(n)), `devPrime: ${id} misses earlier items`);
     const start = CHAPTERS[id].devStart;
     check(!start || MAPS[start.mapKey]?.spawns[start.spawnName], `${id}: devStart ${start?.mapKey}/${start?.spawnName} is not a spawn`);
+    // Mid-chapter starts: up to their objective, not further, and a real spawn.
+    for (const pt of CHAPTERS[id].devPoints || []) {
+      devPrime(id, DATA, pt);
+      const objs = activeQuest().objectives;
+      const k = (CHAPTERS[id].quest.objectives || []).findIndex((o) => o.flag === pt.upTo);
+      check(k >= 0, `${id}: devPoint «${pt.label}» upTo ${pt.upTo} is not an objective flag`);
+      check(objs.slice(0, k + 1).every((o) => o.done) && !activeQuest().complete, `${id}: devPoint «${pt.label}» primes the wrong objectives`);
+      check(MAPS[pt.start?.mapKey]?.spawns[pt.start?.spawnName], `${id}: devPoint «${pt.label}» start is not a spawn`);
+    }
+  }
+}
+
+// ── 3d. battles: every fight of the story is winnable but not a walkover ────
+// Monte Carlo (js/core/battleRules.js) with Zio Nick's base stats and the
+// consumables a fresh run has by then (devPrime). Scripted losses are skipped.
+const battleOdds = [];
+{
+  const heroData = JSON.parse(fs.readFileSync(new URL('assets/characters/zionick/character.json', ROOT)));
+  const heroMoves = heroData.moves || [];
+  check(heroMoves.length >= 1 && heroMoves.length <= 4, 'Zio Nick needs 1 to 4 moves');
+  for (const m of heroMoves) check((m.arrest || power(m) || m.status) && accuracy(m) > 0 && maxPp(m) > 0, `Zio Nick's move ${m.name} is malformed`);
+  for (const [id, data] of Object.entries(DATA)) {
+    for (const [ch, entry] of Object.entries(data?.chapters || {})) {
+      for (const v of [entry, ...(entry?.when || [])]) {
+        const b = v?.battle;
+        if (!b || b.mustLose) continue;
+        devPrime(ch, DATA, (CHAPTERS[ch]?.devPoints || [])[0] || null);
+        const heals = questState.suppliesLeft().flatMap((sp) => Array(sp.qty).fill(sp.heal));
+        const enemy = { ...baseStats(data), ...(b.stats || {}) };
+        const res = simulate({ hero: questState.heroStats(baseStats(heroData)), heroMoves, enemy, enemyMoves: b.moves || data.moves || [], heals, runs: 3000 });
+        battleOdds.push(`${id} ${ch} ${Math.round(res.winRate * 100)}%`);
+        check(res.winRate >= 0.3, `${ch}: the fight with ${id} is too hard (${Math.round(res.winRate * 100)}% wins)`);
+        check(res.winRate <= 0.995 || res.rounds >= 4, `${ch}: the fight with ${id} is a walkover`);
+      }
+    }
   }
 }
 
@@ -518,6 +562,34 @@ for (const sp of PROLOGUE.spots) {
   check(pts.some(([i, j]) => Math.hypot(i * STEP - (sp.tx + 0.5), j * STEP + (FY0 + FY1) / 2 - (sp.ty + 0.5)) < PROLOGUE.touchTiles),
     `prologue: repeater '${sp.id}' can't be reached on foot`);
 }
+// Chapter-formaggio: the note's star can be walked onto, the safe can be
+// faced from the floor, its picture exists, its code is the note's, the
+// phone's senders and `after` flags make sense.
+{
+  const n = FORMAGGIO.note, map = MAPS[n.map];
+  if (check(map, 'formaggio: the note is in an unknown map')) {
+    const { pts } = floodFill(map);
+    check(map.grid[n.ty]?.[n.tx] === 0, 'formaggio: the note is not on the floor');
+    check(pts.some(([i, j]) => Math.hypot(i * STEP - (n.tx + 0.5), j * STEP + (FY0 + FY1) / 2 - (n.ty + 0.5)) < FORMAGGIO.touchTiles),
+      "formaggio: the note can't be reached on foot");
+  }
+  const sm = MAPS[SAFE.map], s = sm?.safe;
+  if (check(s, `formaggio: map ${SAFE.map} has no safe`)) {
+    const { pts } = floodFill(sm);
+    // Facing left from the floor just right of it: feet centre ~1 tile right of the wall.
+    check(pts.some(([i, j]) => Math.abs(i * STEP - (s.tx + s.w + 0.5)) <= 0.5 && Math.abs(j * STEP + (FY0 + FY1) / 2 - (s.ty + s.h / 2)) <= 0.5),
+      "formaggio: the safe can't be faced from the floor");
+  }
+  check(fs.existsSync(new URL(SAFE.image.path, ROOT)), `formaggio: ${SAFE.image.path} is missing`);
+  check(checkCode(SAFE.code.split('').map(Number)) && FORMAGGIO.noteLines.some((l) => l.includes(SAFE.code)), "formaggio: the note doesn't give the safe's code");
+  check(Object.values(MAPS).some((m) => (m.warps || []).some((w) => w.to === 'room-18')), 'formaggio: no door to room-18');
+  for (const [ch, c] of Object.entries(CHAPTERS)) {
+    for (const m of c.phone || []) {
+      check(NPCS.includes(m.from) || STRANGERS[m.from], `${ch}: phone message from unknown sender "${m.from}"`);
+      if (m.after) check(PRODUCERS.some((p) => p.flag === m.after) || (c.quest?.objectives || []).some((o) => o.flag === m.after), `${ch}: phone message waits for unknown flag "${m.after}"`);
+    }
+  }
+}
 for (const r of PROLOGUE.rooms) check(Object.values(MAPS).some((m) => (m.warps || []).some((w) => w.to === r)), `prologue: no door to ${r}`);
 
 // Antonella's heets: she's in a kitchen somewhere and out of one somewhere;
@@ -621,5 +693,5 @@ let stealthSecs = null;
   }
 }
 
-console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${FINDS.length} story finds, balcony reachable unseen in ${stealthSecs?.toFixed(1)} s.`);
+console.log(fails ? `\n${fails} problem(s) found.` : `OK — ${order.length} chapters, ${NPCS.length} characters, ${Object.keys(MAPS).length} maps, save system, hero HP, ${seatCount} seats, ${views} furniture views, ${HIDDEN.length} collectibles, ${SIDE_QUESTS.length} side quests, ${FINDS.length} story finds, balcony reachable unseen in ${stealthSecs?.toFixed(1)} s, battles won ${battleOdds.join(', ')}.`);
 process.exit(fails ? 1 : 0);

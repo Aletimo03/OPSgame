@@ -21,6 +21,7 @@ const PLACE = {
   alcatraz: 'Alcatraz (Milano)',
   'trashbin-room': 'Stanza dei bidoni',
   balcony: 'Balconcino',
+  ripostiglio: 'Ripostiglio',
   entrance: 'Ingresso',
 };
 const AREA = {

@@ -34,7 +34,10 @@ export const FINDS = [
       'Vediamo il frigo. La spesa di stamattina è al suo posto.',
       '...quasi tutta.',
       'I miei due peperoni. Li ho messi qui stamattina.',
+      'Almeno i piselli surgelati ci sono. Li tengo, non si sa mai.',
     ],
+    gives: { name: 'Piselli surgelati', description: 'Ancora freddi. Cura 10 HP.', consumable: true, heal: 10, qty: 2 },
+    banner: '🧊 Piselli surgelati x2\nIn battaglia: ZAINO, +10 HP',
   },
   {
     id: 'pomodorini',

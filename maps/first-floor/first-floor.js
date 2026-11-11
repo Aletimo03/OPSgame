@@ -91,6 +91,7 @@ setDoor(grid, 10, 8, 2); // room-25
 setDoor(grid, 21, 18, 2, true); // room-26 (living's left wall)
 setDoor(grid, 22, 17, 2); // room-27 (living's top wall)
 setDoor(grid, 32, 21, 2, true); // the balcony (living's right wall, between the racks)
+setDoor(grid, 17, 26, 2); // the ripostiglio (corridor's upper wall, left of the racks hall)
 
 // --- Staircase down to the base floor: attached to the TOP edge of the bottom
 //     hall, between the living and the right vertical corridor (grid cols42-45)
@@ -119,6 +120,7 @@ export default {
     fromKitchen: { tx: 56, ty: 10 },
     fromBathroom: { tx: 31, ty: 32 },
     fromBalcony: { tx: 30, ty: 21 },
+    fromRipostiglio: { tx: 17, ty: 27 },
   },
   warps: [
     { tx: SC.tx, ty: SC.ty, w: 1, h: SC.h, to: 'base-floor', toSpawn: 'fromStairs' }, // last (leftmost) column = darkest shadow
@@ -146,6 +148,7 @@ export default {
     { tx: 21, ty: 18, w: 1, h: 2, to: 'room-26', toSpawn: 'default', plateAt: { tx: 21, ty: 20 } }, // plate under the door
     { tx: 22, ty: 17, w: 2, h: 1, to: 'room-27', toSpawn: 'default', plateAt: { tx: 24, ty: 17 } }, // plate right of the door
     { tx: 32, ty: 21, w: 1, h: 2, to: 'balcony', toSpawn: 'default' },
+    { tx: 17, ty: 26, w: 2, h: 1, to: 'ripostiglio', toSpawn: 'default' },
   ],
   // Drying racks in the square hall (the open `living`, interior x 22–31,
   // y 18–26), along its top wall and right side, away from the room-26/27 doors

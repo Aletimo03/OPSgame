@@ -7,7 +7,7 @@
 // chat's length with questState.phoneSeen[id]. Node-importable.
 import { CHAPTERS, ORDER, phoneMessages } from './chapters.js';
 import { questState } from './questState.js';
-import { chapterStart } from './clock.js';
+import { chapterStart, parseTime } from './clock.js';
 
 export const GROUP = 'group';
 export const chatIdOf = (m) => (m.dm ? m.from : GROUP);
@@ -33,6 +33,8 @@ export function allMessages() {
   extra.filter((m) => !seen.has(m.chapter)).forEach((m) => out.push({ ...m, chapterTitle: CHAPTERS[m.chapter]?.title || '' }));
   // Times: a chapter's own messages arrive 4 min apart, the last one 2 min
   // before the chapter's start time; affinity ones keep their own minute.
+  // A message with `at: 'HH:MM'` arrives at that time (the morning after a night).
+  out.forEach((m) => { if (m.min == null && m.at) m.min = parseTime(m.at); });
   const per = {};
   out.forEach((m) => { if (m.min == null) per[m.chapter] = (per[m.chapter] || 0) + 1; });
   const seenIn = {};
@@ -68,6 +70,16 @@ export function totalUnread() {
   return phoneChats().reduce((n, c) => n + unreadIn(c), 0);
 }
 
+// Marks a chat read. A message with `readFlag` sets that flag once its chat is
+// opened (a chapter objective: "read the phone"). Returns the flags newly set.
 export function markRead(chat) {
   questState.phoneSeen = { ...(questState.phoneSeen || {}), [chat.id]: chat.messages.length };
+  const set = [];
+  for (const m of chat.messages) {
+    if (m.readFlag && !questState.hasFlag(m.readFlag)) { questState.setFlag(m.readFlag); set.push(m.readFlag); }
+  }
+  return set;
 }
+
+// Senders who aren't characters (no sprite, no profile picture): name only.
+export const STRANGERS = { mrjackson: 'mrjackson' };

@@ -9,15 +9,22 @@
 // finds the last four, and the phone works. He takes a nap and is woken at
 // night by a party in the base kitchen; Gabbo plays the fool, tries to touch
 // him, and they fight (a win gives the Statuetta di Zio Nick). The rules are in
-// js/story/prologue.js. `stop`: the story written so far ends here, it doesn't
-// roll into chapter 1.
+// js/story/prologue.js. It rolls into chapter-formaggio (the next morning).
 export default {
   id: 'chapter-0',
   title: "Prologo — L'arrivo a OPS",
   card: 'PROLOGO',
-  stop: true,
   time: '13:00',
   devStart: { mapKey: 'room-20', spawnName: 'default' },
+  // DEV chapter select: start after the nap, in front of his bed, with the
+  // party going on downstairs (scene `risveglio`, then the fight with Gabbo).
+  devPoints: [{
+    label: 'Il risveglio: la festa e Gabbo',
+    upTo: 'nap-done',
+    clock: '23:00',
+    itemText: { Telefono: 'Con il wi-fi funziona.' },
+    start: { mapKey: 'room-20', spawnName: 'bedside' },
+  }],
   // Readable once the wi-fi is back.
   phone: [
     { from: 'sara', text: 'Il wi-fi è tornato. Accendete la cappa.' },
@@ -26,7 +33,7 @@ export default {
     { from: 'gabbo', text: 'O fra, il wi-fi va, diahane' },
     { from: 'mari', sticker: '🌸' },
   ],
-  resetFlags: ['stop-seen', 'ripetitore:corridoio', 'ripetitore:camera-2', 'ripetitore:camera-15', 'ripetitore:camera-19'],
+  resetFlags: ['ripetitore:corridoio', 'ripetitore:camera-2', 'ripetitore:camera-15', 'ripetitore:camera-19'],
   quest: {
     id: 'arrival',
     title: 'Ambientati a OPS',

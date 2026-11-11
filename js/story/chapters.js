@@ -2,6 +2,7 @@
 // Registry of every story chapter + helpers to read the currently-active quest.
 import { questState } from './questState.js';
 import chapter0 from './chapter-0/chapter-0.js';
+import chapterFormaggio from './chapter-formaggio/chapter-formaggio.js';
 import chapter1 from './chapter-1/chapter-1.js';
 import chapter2 from './chapter-2/chapter-2.js';
 import chapter3 from './chapter-3/chapter-3.js';
@@ -17,6 +18,7 @@ import chapter11 from './chapter-11/chapter-11.js';
 
 export const CHAPTERS = {
   'chapter-0': chapter0,
+  'chapter-formaggio': chapterFormaggio,
   'chapter-1': chapter1,
   'chapter-2': chapter2,
   'chapter-3': chapter3,
@@ -34,7 +36,7 @@ export const CHAPTERS = {
 // Play order. When the active chapter's quest is complete, the story advances
 // to the next chapter that actually has a quest defined.
 export const ORDER = [
-  'chapter-0', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
+  'chapter-0', 'chapter-formaggio', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
   'chapter-6', 'chapter-sigaretta', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
 ];
 
@@ -49,7 +51,9 @@ export function isStoryComplete() {
 export function phoneMessages() {
   const upTo = ORDER.indexOf(questState.activeChapter);
   return ORDER.slice(0, upTo + 1).flatMap((k) =>
-    (CHAPTERS[k]?.phone || []).map((m) => ({ ...m, chapter: k, chapterTitle: CHAPTERS[k].title }))
+    (CHAPTERS[k]?.phone || [])
+      .filter((m) => !m.after || questState.hasFlag(m.after)) // `after`: hidden until that flag
+      .map((m) => ({ ...m, chapter: k, chapterTitle: CHAPTERS[k].title }))
   );
 }
 

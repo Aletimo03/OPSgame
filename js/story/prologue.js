@@ -91,10 +91,22 @@ export const repeatersFound = () => PROLOGUE.spots.filter((s) => questState.hasF
 export const repeatersOn = () => inPrologue() && questState.hasFlag(PROLOGUE.startFlag) && !questState.hasFlag(PROLOGUE.wifiFlag);
 export const repeaterCounter = () => (repeatersOn() ? `📡 Ripetitori ${repeatersFound()}/${PROLOGUE.spots.length}` : '');
 
+// The chapters after the prologue that keep its house rules on bedroom doors
+// (no key = no entry; Sara's badge = rooms 2, 15, 19), with extra keys:
+// { 'room-N': item that opens it }.
+const KEPT_RULES = { 'chapter-formaggio': { 'room-18': 'Chiave della camera 18' } };
+
 // What Zio Nick says at a door he can't use right now, or null if it's open.
 export function warpGate(mapKey, warp) {
-  if (!inPrologue()) return null;
   const has = (f) => questState.hasFlag(f);
+  const keys = KEPT_RULES[questState.activeChapter];
+  if (keys) {
+    if (!/^room-\d+$/.test(warp.to) || warp.to === PROLOGUE.room) return null;
+    if (keys[warp.to] && questState.hasItem(keys[warp.to])) return null;
+    if (has(PROLOGUE.badgeFlag) && PROLOGUE.rooms.includes(warp.to)) return null;
+    return PROLOGUE.noKey;
+  }
+  if (!inPrologue()) return null;
   if (mapKey === PROLOGUE.room && !has(PROLOGUE.phoneFlag)) return PROLOGUE.notYet;
   if (mapKey === PROLOGUE.kitchen && has(PROLOGUE.metFlag) && !has(PROLOGUE.fridgeFlag)) return PROLOGUE.tooHungry;
   if (warp.to === PROLOGUE.otherKitchen && !has(PROLOGUE.metFlag)) return PROLOGUE.wrongKitchen;

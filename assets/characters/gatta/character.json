@@ -22,7 +22,12 @@
     }
   ],
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
+    "chapter-sigaretta": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-0": {
       "map": "base-floor",
       "tx": 56,
@@ -96,6 +101,13 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-formaggio": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "after": "mattina"
     }
   },
   "default": "Pota figa bro, vado a Brescia ",
@@ -131,6 +143,20 @@
     "chapter-10": {
       "dialogue": [
         "Pota, se vinci ti porto a Brescia a festeggiare."
+      ]
+    },
+    "chapter-formaggio": {
+      "dialogue": [
+        "Pota, che puzza in questa cucina.",
+        "A Brescia i frigo non puzzano così."
+      ],
+      "when": [
+        {
+          "flag": "frigo-pulito",
+          "dialogue": [
+            "Pota, adesso si respira. Bravo bro."
+          ]
+        }
       ]
     }
   }

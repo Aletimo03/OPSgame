@@ -6,7 +6,12 @@
     "defense": 2
   },
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
+    "chapter-sigaretta": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-0": {
       "map": "first-floor",
       "tx": 36,
@@ -70,6 +75,13 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-formaggio": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "after": "mattina"
     }
   },
   "default": "Che c'è, figlio mio? Sto qua a fumare.",
@@ -136,6 +148,20 @@
     "chapter-10": {
       "dialogue": [
         "Vai e vinci, figlio mio! Quello è troppo pieno di sé."
+      ]
+    },
+    "chapter-formaggio": {
+      "dialogue": [
+        "Figlio mio, buongiorno. Sei sciupato.",
+        "E in questa cucina c'è una puzza, che disgraziati."
+      ],
+      "when": [
+        {
+          "flag": "frigo-pulito",
+          "dialogue": [
+            "Bello di zia, hai pulito il frigo. Bravo."
+          ]
+        }
       ]
     }
   }

@@ -17,6 +17,7 @@ import { ORDER, CHAPTERS } from './chapters.js';
 import { EVENTS } from './events.js';
 import { FINDS } from './finds.js';
 import { phoneChats } from './phoneChats.js';
+import { parseTime } from './clock.js';
 
 // Chapters you may restart from: 1 … the furthest reached.
 export function rewindChoices() {
@@ -84,7 +85,12 @@ export function itemChaptersFrom(dataById) {
 // earlier chapter had been played: their objectives done (log + flags), the
 // items they give in the bag (character JSONs + event gifts), their cards and
 // events seen. `dataById` as in itemChaptersFrom.
-export function devPrime(id, dataById = {}) {
+// `point` (a chapter's `devPoints` entry: { upTo, clock?, itemText? }) also
+// plays chapter `id` itself up to the objective whose flag is `upTo`: those
+// objectives done, its finds' and its NPCs' items (an entry or `when` variant
+// whose `setFlag` is now set) in the bag, the clock at `clock`, and the
+// descriptions in `itemText` ({ item name: text }) applied.
+export function devPrime(id, dataById = {}, point = null) {
   const idx = ORDER.indexOf(id);
   if (idx < 0) return false;
   questState.reset();
@@ -120,8 +126,37 @@ export function devPrime(id, dataById = {}) {
   }
   if (idx > 0) questState.setFlag('premise-seen');
   questState.activeChapter = id;
+  if (point) primeUpTo(id, dataById, point);
   questState.reached = id;
   questState.currentMap = null;
   questState.phoneSeen = Object.fromEntries(phoneChats().map((c) => [c.id, c.messages.length]));
   return true;
+}
+
+function primeUpTo(id, dataById, point) {
+  const objs = CHAPTERS[id]?.quest?.objectives || [];
+  const last = objs.findIndex((o) => o.flag === point.upTo);
+  for (const o of objs.slice(0, last + 1)) {
+    if (o.npc) questState.greet(o.npc, id);
+    if (o.defeat) questState.defeat(o.defeat, id);
+    if (o.quiz) questState.solve(o.quiz, id);
+    if (o.visit) questState.visit(o.visit, id);
+    if (o.flag) questState.setFlag(o.flag);
+  }
+  questState.setFlag(`card:${id}`);
+  questState.setFlag('premise-seen');
+  for (const f of FINDS) {
+    if (f.chapter !== id || !questState.hasFlag(`find:${f.id}`) || !f.gives) continue;
+    if (f.gives.consumable) questState.addSupply(f.gives, null); else questState.addItem(f.gives);
+  }
+  for (const data of Object.values(dataById)) {
+    const entry = data?.chapters?.[id];
+    for (const v of [entry, ...(entry?.when || [])]) {
+      if (v?.item && v.setFlag && questState.hasFlag(v.setFlag)) {
+        if (v.item.consumable) questState.addSupply(v.item, null); else questState.addItem(v.item);
+      }
+    }
+  }
+  for (const it of questState.items) if (point.itemText?.[it.name]) it.description = point.itemText[it.name];
+  if (point.clock) questState.clock = { chapter: id, min: parseTime(point.clock) };
 }

@@ -18,6 +18,18 @@ export const EVENTS = [
     ],
   },
   {
+    // Chapter-formaggio: back to bed after the party, he wakes up in the morning.
+    id: 'sveglia',
+    chapter: 'chapter-formaggio',
+    map: 'room-20',
+    requires: 'mattina',
+    lines: [
+      { who: 'zionick', text: 'Che nottata... Gabbo e le sue pacche.' },
+      { who: 'zionick', text: 'Il ginocchio fa ancora male.' },
+      { who: 'zionick', text: 'Il telefono vibra. Vediamo cosa scrivono nel gruppo.' },
+    ],
+  },
+  {
     // Prologue: the party in the base kitchen.
     id: 'festa',
     chapter: 'chapter-0',

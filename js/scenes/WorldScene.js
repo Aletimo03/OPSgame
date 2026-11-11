@@ -6,7 +6,7 @@
 // its methods to the class, so everything still runs as `this.method()`.
 
 import {
-  TILE, TILES, PLAYER, hud, hudPx, DOOR_WIDTH, BATTLE_BG_KEY, BATTLE_BG_PATH, CAMERA_ZOOM, CAMERA_MARGIN,
+  TILE, TILES, PLAYER, hud, hudPx, DOOR_WIDTH, CAMERA_ZOOM, CAMERA_MARGIN,
 } from '../config.js';
 import { drawMap, drawStairs, buildWallColliders } from '../core/MapRenderer.js';
 import {
@@ -49,6 +49,7 @@ import { withProgress } from './world/progress.js';
 import { withInteractions } from './world/interactions.js';
 import { withBattles } from './world/battles.js';
 import { withStealth } from './world/stealth.js';
+import { withFormaggio } from './world/formaggio.js';
 import { STEALTH } from '../story/stealth.js';
 
 const AUTOSAVE_MS = 4000; // position autosave interval (progress saves immediately)
@@ -57,7 +58,7 @@ let unloadHooked = false; // the tab-close save listener is registered once per 
 // Phaser.Scene + every feature of the world, in one prototype chain.
 const WorldBase = [
   withDecor, withPathing, withClub, withPrologue, withHeets, withFavours,
-  withDream, withCutscenes, withProgress, withInteractions, withBattles, withStealth,
+  withDream, withCutscenes, withProgress, withInteractions, withBattles, withStealth, withFormaggio,
 ].reduce((Base, mixin) => mixin(Base), Phaser.Scene);
 
 export default class WorldScene extends WorldBase {
@@ -135,7 +136,6 @@ export default class WorldScene extends WorldBase {
     for (const d of map?.dancers || []) { // static dancers (the bear on the Alcatraz stage)
       if (!this.textures.exists(d.key)) this.load.image(d.key, d.path);
     }
-    if (!this.textures.exists(BATTLE_BG_KEY)) this.load.image(BATTLE_BG_KEY, BATTLE_BG_PATH);
 
     // Soundtrack + sound effects (declared in js/core/audio.js).
     loadAudio(this);
@@ -330,6 +330,7 @@ export default class WorldScene extends WorldBase {
     this.startCrowd(map);
     this.startDream(map);
     this.setupStealth();
+    this.setupFormaggio();
     this.repeaterStars = new Map(); // spot id → its star, in this map
     this.refreshRepeaters();
 
@@ -517,7 +518,7 @@ export default class WorldScene extends WorldBase {
   drawDoorPlates(map) {
     const ICON = {
       'base-kitchen': '🍳', 'first-floor-kitchen': '🍳', 'first-floor-bathroom': '🚿',
-      'laundry-room': '🧺', 'trashbin-room': '🗑️', entrance: '🚪', balcony: '🚬',
+      'laundry-room': '🧺', 'trashbin-room': '🗑️', entrance: '🚪', balcony: '🚬', ripostiglio: '🗝️',
     };
     const g = map.grid;
     const used = new Set(); // one plate per wall tile (doors in a corner share neighbours)
@@ -744,6 +745,7 @@ export default class WorldScene extends WorldBase {
     this.heetsTick(delta);
     this.stealthTick(delta);
     this.repeaterTick();
+    this.formaggioTick();
     this.dazeMark?.setPosition(this.player.x, this.player.y - this.player.displayHeight * 0.5);
     this.checkBar();
 
@@ -788,7 +790,7 @@ export default class WorldScene extends WorldBase {
     }
     if (!target) {
       // Nobody in front: the bar, else sit if standing on a seat, else look at the furniture ahead.
-      if (!this.tryBar(px, py) && !this.trySit()) this.tryExamine(px, py);
+      if (!this.tryBar(px, py) && !this.trySit() && !this.trySafe(px, py)) this.tryExamine(px, py);
       return;
     }
     if (this.stealthTalk(target)) return; // with the cigarette in your hand? caught

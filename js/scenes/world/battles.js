@@ -4,6 +4,8 @@
 import { PLAYER, DEFEAT_RESPAWN } from '../../config.js';
 import { questState } from '../../story/questState.js';
 import { advanceChapterIfDone } from '../../story/chapters.js';
+import { battleEnv } from '../../core/battleRules.js';
+import { PROLOGUE, partyOn } from '../../story/prologue.js';
 
 export const withBattles = (Base) => class extends Base {
   // A fight lost by the script (chapter 1, Gabbo): the loss IS the story. Set
@@ -60,12 +62,17 @@ export const withBattles = (Base) => class extends Base {
   // player is exactly where they were.
   // `chapter` = the chapter this fight belongs to (a win is credited to it).
   // `b` = the JSON battle block: `mustLose` (+ `lossLine`, `lossFlag`, `wakeAt`,
-  // `wakeNotice`: onScriptedLoss), `won` lines and a `reward` item (afterBattleWin).
+  // `wakeNotice`: onScriptedLoss), `won` lines and a `reward` item (afterBattleWin),
+  // `stats` / `moves` (this fight's enemy, instead of the JSON's), `bg` (a backdrop
+  // instead of the one picked from the map: kitchen, party, corridor, room,
+  // bathroom, club, dream).
   startBattle(npc, chapter, b = {}) {
     this.battleInfo = { npc, chapter, b };
     this.scene.pause();
     this.scene.launch('BattleScene', {
-      blackBg: !!b.blackBg,
+      env: b.bg || battleEnv(this.mapKey, partyOn() && this.mapKey === PROLOGUE.party.kitchen),
+      enemyStats: b.stats || null,
+      enemyMoves: b.moves || null,
       mustLose: !!b.mustLose,
       lossLine: b.lossLine || null,
       enemyKey: npc.spriteKey,    // texture for the enemy sprite

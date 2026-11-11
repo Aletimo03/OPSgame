@@ -11,7 +11,7 @@
 // which clears that part of the HUD badge (PhoneHud). Everything is plain
 // Phaser shapes + text (screen-fixed, so the unzoomed HUD camera draws it).
 
-import { GROUP, phoneChats, unreadIn, markRead } from '../story/phoneChats.js';
+import { GROUP, phoneChats, unreadIn, markRead, STRANGERS } from '../story/phoneChats.js';
 import { CHARACTERS, getCharData } from '../core/characters.js';
 import { heartsLabel } from '../story/affinity.js';
 import { clockNow, fmt } from '../story/clock.js';
@@ -83,6 +83,7 @@ export class Phone {
   }
 
   show() {
+    this.readFlags = [];
     this.open = true;
     this.view = 'list';
     this.sel = 0; // the most recent chat
@@ -92,6 +93,10 @@ export class Phone {
   close() {
     this.open = false;
     this.clear();
+    // Chats with a `readFlag` message were read: the world reacts (objectives, comments).
+    const flags = this.readFlags || [];
+    this.readFlags = [];
+    if (flags.length) this.scene.onPhoneRead?.(flags);
   }
 
   clear() {
@@ -111,7 +116,7 @@ export class Phone {
     this.view = 'chat';
     this.chatId = chat.id;
     this.scroll = 0; // open on the newest message
-    markRead(chat);
+    this.readFlags = [...(this.readFlags || []), ...markRead(chat)];
     this.rebuild();
   }
 
@@ -149,6 +154,7 @@ export class Phone {
   }
 
   nameOf(id) {
+    if (STRANGERS[id]) return STRANGERS[id];
     return id === GROUP ? GROUP_NAME : getCharData(this.scene, id).name || id;
   }
 
@@ -162,9 +168,14 @@ export class Phone {
     return this.add(this.scene.add.text(0, 0, str, { fontFamily: FONT, ...style }), 3);
   }
 
-  // Round avatar: 🍳 for the group, the coloured initial for a person.
+  // Round avatar: 🍳 for the group, the coloured initial for a person, a grey
+  // silhouette for a stranger with no profile picture (STRANGERS).
   avatar(g, x, y, r, id) {
-    if (id === GROUP) {
+    if (STRANGERS[id]) {
+      g.fillStyle(0xcfd8dc, 1).fillCircle(x, y, r);
+      g.fillStyle(0xf5f7f8, 1).fillCircle(x, y - r * 0.22, r * 0.36);
+      g.fillStyle(0xf5f7f8, 1).fillEllipse(x, y + r * 0.55, r * 1.1, r * 0.72);
+    } else if (id === GROUP) {
       g.fillStyle(C.avatar, 1).fillCircle(x, y, r);
       this.text('🍳', { fontSize: `${Math.round(r * 1.05)}px` }).setOrigin(0.5).setPosition(x, y);
     } else {

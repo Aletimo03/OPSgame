@@ -13,7 +13,7 @@ node --no-warnings tools/checks/story-check.mjs
 
 **Non c'è un narratore esterno:** tutto ciò che non dice un altro personaggio è Zio Nick che parla con se stesso, in prima persona.
 
-**Stiamo riscrivendo il gioco da zero.** Una partita nuova gioca il **Prologo** e per ora si ferma lì. I capitoli 1–11 qui sotto sono la versione precedente (scaletta v3): restano provabili da **🛠 DEV · Scegli capitolo**, ma una partita nuova non ci arriva e andranno riscritti o tolti man mano.
+**Stiamo riscrivendo il gioco da zero.** Una partita nuova gioca il **Prologo** e il nuovo **Capitolo 1 — Il formaggio ammuffito**, e per ora si ferma lì. I capitoli 1–11 della «sconfitta» qui sotto sono la versione precedente (scaletta v3): restano provabili da **🛠 DEV · Scegli capitolo**, ma una partita nuova non ci arriva e andranno riscritti o tolti man mano.
 
 Zio Nick è appena arrivato a OPS. È nuovo, deve ambientarsi e, anche se la spesa l'ha già sistemata in cucina stamattina, decide di andare a conoscere gli altri.
 
@@ -37,7 +37,7 @@ Il gioco **salva da solo**:
 - ogni 4 secondi;
 - quando chiudi la scheda.
 
-All'avvio puoi scegliere **Continua**, **Scegli capitolo** o **Nuova partita**. La nuova partita chiede conferma se esiste già un salvataggio. Per le prove c'è anche **🛠 DEV · Scegli capitolo** (temporaneo, da togliere prima dell'uscita): parte da un capitolo qualsiasi come se i precedenti fossero fatti, con i loro oggetti nello zaino; è una partita nuova e sovrascrive il salvataggio.
+All'avvio puoi scegliere **Continua**, **Scegli capitolo** o **Nuova partita**. La nuova partita chiede conferma se esiste già un salvataggio. Per le prove c'è anche **🛠 DEV · Scegli capitolo** (temporaneo, da togliere prima dell'uscita): parte da un capitolo qualsiasi come se i precedenti fossero fatti, con i loro oggetti nello zaino; è una partita nuova e sovrascrive il salvataggio. Sotto il Prologo c'è anche **↳ Il risveglio: la festa e Gabbo**: parti dopo il pisolino, alle 23, davanti al letto, con la festa in corso e i piselli nello zaino.
 
 **Gli HP di Zio Nick restano tra uno scontro e l'altro.** Fuori dagli scontri si vedono solo nello zaino (I).
 - per recuperarli ti siedi su una sedia o uno sgabello in cucina (+3 HP al secondo) e ti alzi con le frecce o Spazio;
@@ -51,8 +51,8 @@ All'avvio puoi scegliere **Continua**, **Scegli capitolo** o **Nuova partita**. 
 
 | Id | Nome | Ruolo nella storia | HP / ATK / DEF |
 |---|---|---|---|
-| `zionick` | Zio Nick | protagonista: saccente, ingegnere mancato, non si fa mai gli affari suoi | 30 / 100 / 2 (ATK 100 messo dall'utente; il valore di gioco era 5) |
-| `gabbo` | Gabbo | l'allungamani: batte Zio Nick all'inizio, ha preso i peperoni | 34 / 8 / 3 |
+| `zionick` | Zio Nick | protagonista: saccente, ingegnere mancato, non si fa mai gli affari suoi | 32 / 5 / 3 |
+| `gabbo` | Gabbo | l'allungamani: batte Zio Nick all'inizio, ha preso i peperoni | 44 / 6 / 2 (cap. 10: 52 / 6 / 3) |
 | `mari` | Marilena (Mari) | mette i piselli surgelati sul ginocchio, poi prepara la fascia | 46 / 13 / 5 |
 | `antonella` | Antonella | nuova in casa, 19 anni, piccolina: l'International Rice | 24 / 4 / 2 |
 | `ema` | Emanuele | vuole i pomodorini per la pasta al salmone («SCIMMIA!») | 28 / 4 / 2 |
@@ -102,12 +102,24 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - **Il video:** una partita nuova comincia con Zio Nick che arriva davanti a OPS. Quando si ferma a metà strada il video si blocca e dice: «Ah, questo deve essere OPS, il posto di cui parlano tutti. Da fuori sembra bello. Sono sicuro che sarà pieno di persone normali, con cui potrò fare amicizia.»
 - **Camera 20:** Zio Nick non può uscire («Prima finisco di esplorare la stanza.») finché non esamina il **tavolino** e prende il **telefono**, che però non funziona: niente wi-fi. Per tutto il prologo il telefono non si apre e la sua icona non c'è.
 - **Le altre camere** sono chiuse: «Non ho la chiave.»
-- **Cucina di su** (il frigo di Zio Nick è lì): scena con **Sara**, **Marilena** e **Nima**, che si presentano. Zio Nick dice che fa ingegneria spaziale, Nima capisce «aerospaziale» e lui si arrabbia. Ha fame; Sara: «accendi la cappa ogni volta che cucini, o ti accoppo». Da qui non si esce («Ho troppa fame, meglio che mi cucini qualcosa.») finché non apre il **frigo**: i suoi due peperoni sono spariti. Zio Nick si arrabbia, Marilena non ha visto nulla, Nima dice che c'è sempre qualcuno che ruba le cose e che Antonella mette le pentole sopra le altre nella lavastoviglie, Sara ha visto qualcuno salire in cucina e spera tanto che non sia **Sean**, quell'idiota.
+- **Cucina di su** (il frigo di Zio Nick è lì): scena con **Sara**, **Marilena** e **Nima**, che si presentano. Zio Nick dice che fa ingegneria spaziale, Nima capisce «aerospaziale» e lui si arrabbia. Ha fame; Sara: «accendi la cappa ogni volta che cucini, o ti accoppo». Da qui non si esce («Ho troppa fame, meglio che mi cucini qualcosa.») finché non apre il **frigo**: i suoi due peperoni sono spariti. Almeno ci sono i **piselli surgelati**: se ne prende due confezioni (+10 HP ciascuna, da usare nello ZAINO in battaglia). Zio Nick si arrabbia, Marilena non ha visto nulla, Nima dice che c'è sempre qualcuno che ruba le cose e che Antonella mette le pentole sopra le altre nella lavastoviglie, Sara ha visto qualcuno salire in cucina e spera tanto che non sia **Sean**, quell'idiota.
 - **Le indagini:** uscito dalla cucina, gli altri sono negli spazi comuni e si presentano. Sono sparsi tra spazi comuni e corridoi. Al primo piano: Gaia e Ana vicino agli stendini, Ernesto, Antonella e Caue nei corridoi. Al piano terra: Gabbo e Alessio vicino al divano, Emanuele e Gatta nei corridoi. Quasi tutti gli chiedono se fa «aerospaziale». **Gaia:** i peperoni potrebbero essere insieme ai sofficini di Irene o ai merluzzetti di Gianluca.
 - **Il wi-fi:** Gabbo e Alessio spiegano che i ripetitori TP-Link non sono compatibili e bloccano il wi-fi. Zio Nick pensa (tra parentesi) che col wi-fi potrebbe anche scrivere nel gruppo comune e trovare i peperoni.
 - **I ripetitori:** ne restano quattro, attaccati al muro e segnati da una stellina: nel corridoio del piano terra e nelle camere 2, 15 e 19. **Sara** gli dà il **badge master**, che apre solo quelle camere. Il contatore è in alto a destra. Trovati tutti, il telefono funziona.
 - **Il pisolino:** trovati i ripetitori, Zio Nick è stanco e va a dormire nel suo letto. Si sveglia di notte, ha dormito troppo, ed è svegliato da un gran casino.
-- **La festa:** nella cucina di sotto ci sono Gabbo, Fede Gatta, Sara, Ana, Gaia, Alessio e Marilena, con luci da discoteca e musica: poco in camera, un po' di più nei corridoi, altissima in cucina. Gabbo fa lo scemo, prova a dargli una pacca, ma gli fa male al ginocchio, e parte il **combattimento** (sfondo nero per ora). Se Zio Nick vince, Gabbo: «O fra, ti devo fare una statua, diahane. Intanto tieni questa» e gli dà la **Statuetta di Zio Nick**.
+- **La festa:** nella cucina di sotto ci sono Gabbo, Fede Gatta, Sara, Ana, Gaia, Alessio e Marilena, con luci da discoteca e musica: poco in camera, un po' di più nei corridoi, altissima in cucina. Gabbo fa lo scemo, prova a dargli una pacca, ma gli fa male al ginocchio, e parte il **combattimento**, sullo sfondo della festa (la cucina al buio con le luci colorate). Se Zio Nick vince, Gabbo: «O fra, ti devo fare una statua, diahane. Intanto tieni questa» e gli dà la **Statuetta di Zio Nick**.
+- Dopo la vittoria Zio Nick è a pezzi e torna a dormire.
+
+### Capitolo 1 — Il formaggio ammuffito · *minigioco + enigma*
+
+- **Quando:** la notte della festa (23:30), poi la mattina dopo.
+- **Di notte:** la festa è finita, non c'è più nessuno in giro. Zio Nick torna nel suo letto (camera 20) e si sveglia alle 8:30: «Che nottata... Gabbo e le sue pacche. Il ginocchio fa ancora male. Il telefono vibra. Vediamo cosa scrivono nel gruppo.»
+- **Il telefono:** nel gruppo Nima scrive che nel frigo della cucina di su c'è un **formaggio ammuffito**; Fede Gatta e Emanuele commentano. Letto il messaggio, Zio Nick va a pulirlo: nel frigo c'è la sua spesa.
+- **La cucina di su:** ci sono **Fede Gatta, Antonella ed Emanuele**. Davanti al frigo parte il **minigioco delle mosche** (spruzzino del detersivo). Pulito il frigo, il formaggio finisce nei bidoni.
+- **mrjackson:** subito dopo arriva un messaggio privato da **mrjackson**, senza foto profilo: «Se vuoi rivedere i tuoi peperoni vai nel locale lavatrice al piano di su.»
+- **Il locale lavatrice** (bagno condiviso del primo piano): per terra, davanti alla lavatrice, c'è una stellina come quelle dei ripetitori. Passandoci sopra è un **bigliettino**: «Stai cercando nel frigo sbagliato. 356.»
+- **Il ripostiglio:** nel corridoio del primo piano, a sinistra della sala degli stendini, sul muro di fronte alle camere 19, 20 ecc., c'è una porta che dà su una stanzina stretta e lunga. Appena entrati, sulla sinistra, c'è una **cassetta per le chiavi** con un lucchetto a tre cifre: interagendo compare la cassetta a tutto schermo con «Inserisci il codice». Con **356** si apre: dentro c'è la **chiave della camera 18**, quella di Alessio. Zio Nick: «Sono sicuro che quel bastardo ha un frigo in camera, ma ancora non l'ho colto con le mani nel sacco. "Il frigo sbagliato"... I miei peperoni sono nel suo frigo segreto!»
+- Le camere degli altri restano chiuse (con il badge di Sara solo la 2, la 15 e la 19); la 18 si apre con la chiave.
 - **Per ora la storia si ferma qui.**
 
 ### Capitolo 1 — La sconfitta · *scontro perso per copione*
@@ -192,38 +204,43 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 
 ## Crescita di Zio Nick
 
-| Quando | Oggetti | HP / ATK / DEF (con ATK base 5) |
+| Quando | Oggetti | HP / ATK / DEF |
 |---|---|---|
-| inizio | — | 30 / 5 / 2 |
-| cap. 10, in cucina | Fascia per il ginocchio, Guanti da palestra | 40 / 8 / 4 |
+| inizio | — | 32 / 5 / 3 |
+| cap. 10, in cucina | Fascia per il ginocchio, Guanti da palestra | 42 / 8 / 5 |
 
-Consumabili lungo la storia: Caffè della moka (cap. 1), Piselli surgelati (2), International Rice (3), Pasta al salmone (4), Guacamole di Ana (6). Nel negozio di Alessio: Proteine, Pre-workout (+2 ATK), Cintura da palestra (+2 DEF).
+Consumabili lungo la storia: Piselli surgelati ×2 (Prologo, nel frigo), Caffè della moka (cap. 1), Piselli surgelati (2), International Rice (3), Pasta al salmone (4), Guacamole di Ana (6). Nel negozio di Alessio: Proteine, Pre-workout (+2 ATK), Cintura da palestra (+2 DEF).
 
 ## Scontri
 
+**Come si vede:** come in Pokémon. Il nemico è in alto a destra su una pedana e Zio Nick in basso a sinistra, tutti e due con i ritratti grandi dei dialoghi; i riquadri con gli HP; in basso il testo che scorre e i comandi **LOTTA** e **ZAINO**. LOTTA apre le 4 mosse con i PP (quante volte la puoi usare in quello scontro), la potenza, la precisione e una descrizione. Esc torna indietro. Lo sfondo dipende da dove combatti: cucina, festa (la cucina al buio con le luci), corridoio, camera, bagno, discoteca, sogno.
+
 **Le regole:**
-- **Danno di Zio Nick:** potenza della mossa + ATK − DEF del nemico.
-- **Danno del nemico:** usa a caso una delle sue mosse; potenza della mossa + ATK nemico − DEF di Zio Nick.
+- **Danno:** potenza della mossa + ATK di chi attacca − DEF di chi subisce, con un po' di variazione (85–100%). Ogni tanto (1 su 16) un **brutto colpo** fa una volta e mezza il danno. Alcune mosse possono **mancare** il bersaglio.
+- **Il nemico** usa a caso una delle sue mosse.
 - **SEI IN ARRESTO** è il colpo di grazia: funziona solo sotto il **40%** degli HP del nemico, altrimenti fallisce e il turno è perso. Nel menu è grigia finché non è disponibile.
 - **Zaino:** in battaglia puoi usare un consumabile (cura HP, ma usa il turno).
 - **Niente fuga.**
-- **Stati** (valgono per entrambi; li vedi sulla targhetta degli HP):
-  - **Imbarazzo**: salti la prossima azione.
-  - **Sonno**: per le prossime 2 azioni fai metà danno.
+- **Stati** (valgono per entrambi; li vedi sul riquadro degli HP):
+  - **Imbarazzo (IMB)**: salti la prossima azione.
+  - **Sonno (SON)**: per le prossime 2 azioni fai metà danno.
 
 **Le mosse:**
 
-| Chi | Mossa | Potenza | Effetto |
-|---|---|---|---|
-| Zio Nick | Spinta | 6 | — |
-| Zio Nick | Insulto | 9 | 25%: imbarazzo |
-| Zio Nick | Manette | 5 | 60%: imbarazzo |
-| Zio Nick | SEI IN ARRESTO | — | KO se il nemico è sotto il 40% |
-| Gabbo | Chiamata a Marius / Spintone da Plein / Shot di Jäger | 5 / 6 / 3 | Jäger 25%: sonno |
+| Chi | Mossa | Potenza | Precisione | PP | Effetto |
+|---|---|---|---|---|---|
+| Zio Nick | Spinta | 7 | 95% | 25 | — |
+| Zio Nick | Insulto | 4 | 100% | 15 | 30%: imbarazzo |
+| Zio Nick | Lezione di fisica | — | 90% | 10 | sonno (gli spiega l'ingegneria spaziale) |
+| Zio Nick | SEI IN ARRESTO | — | — | 3 | KO se il nemico è sotto il 40% |
+| Gabbo | Chiamata a Marius | 5 | 100% | | — |
+| Gabbo | Spintone da Plein | 7 | 90% | | — |
+| Gabbo | Shot di Jäger | 3 | 100% | | 35%: sonno |
 
-**I due scontri con Gabbo:**
+**Gli scontri con Gabbo** (percentuali da una simulazione con una strategia semplice):
+- **Prologo, alla festa:** 5–7 turni. Si vince circa 9 volte su 10 usando i piselli, 3 su 4 senza.
 - **Capitolo 1:** perso per copione (vedi sopra), qualunque cosa fai.
-- **Capitolo 10:** scontro normale. Con ATK base 5 e senza oggetti, Insulto fa 11 danni: due colpi lo portano sotto il 40% e al terzo turno lo arresti, mentre lui ti toglie circa 21 HP su 30. Con fascia e guanti (14 danni a colpo, ~17 HP persi su 40) è sicuro. Se perdi ti risvegli sul divano del salotto e riprovi.
+- **Capitolo 10:** Gabbo è più forte (52 HP, DEF 3). Senza oggetti è dura; con i consumabili della storia si vince circa 4 volte su 5. Se perdi ti risvegli sul divano del salotto e riprovi.
 
 ## Oltre la storia
 

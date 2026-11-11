@@ -6,7 +6,12 @@
     "defense": 2
   },
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
+    "chapter-sigaretta": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-0": {
       "map": "base-floor",
       "tx": 37,
@@ -70,6 +75,13 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-formaggio": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "after": "mattina"
     }
   },
   "default": "O Szio Nick, ma dov'è la farmacia? Grszie!",
@@ -161,6 +173,21 @@
         {
           "who": "zionick",
           "text": "SCIMMIA."
+        }
+      ]
+    },
+    "chapter-formaggio": {
+      "dialogue": [
+        "O Szio Nick, buongiorno!",
+        "O Szio Nick, ma il formaggio ammuffito si può mangiare lo stesso? Grszie."
+      ],
+      "when": [
+        {
+          "flag": "frigo-pulito",
+          "dialogue": [
+            "O Szio Nick, grszie! Ora il frigo profuma.",
+            "O Szio Nick, ma il detersivo dove si compra?"
+          ]
         }
       ]
     }

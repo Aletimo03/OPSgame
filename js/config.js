@@ -11,11 +11,6 @@ export const TILES = {
 };
 
 
-//Room 12 background
-export const BATTLE_BG_KEY= 'battle-bg';
-export const BATTLE_BG_PATH= 'assets/tilesets/battle_room12.png'; // Change to your actual file path
-
-
 // World camera zoom. <1 shows more of the map (0.85 = 15% zoomed out). The HUD
 // (quest tracker, dialogue, bag, menus) is on a separate unzoomed camera, so it
 // keeps its size and screen position whatever this is.

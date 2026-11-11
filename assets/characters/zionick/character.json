@@ -1,31 +1,41 @@
 {
   "name": "Zio Nick",
   "stats": {
-    "maxHp": 30,
-    "attack": 100,
-    "defense": 2
+    "maxHp": 32,
+    "attack": 5,
+    "defense": 3
   },
   "moves": [
     {
       "name": "Spinta",
-      "dmg": 6
+      "power": 7,
+      "acc": 95,
+      "pp": 25,
+      "desc": "Una spinta decisa."
     },
     {
       "name": "Insulto",
-      "dmg": 9,
+      "power": 4,
+      "acc": 100,
+      "pp": 15,
       "status": "imbarazzato",
-      "chance": 0.25
+      "chance": 0.3,
+      "desc": "Può mandarlo in imbarazzo: salta un turno."
     },
     {
-      "name": "Manette",
-      "dmg": 5,
-      "status": "imbarazzato",
-      "chance": 0.6
+      "name": "Lezione di fisica",
+      "power": 0,
+      "acc": 90,
+      "pp": 10,
+      "status": "assonnato",
+      "desc": "Ingegneria spaziale: gli viene sonno, colpi dimezzati per 2 turni."
     },
     {
       "name": "SEI IN ARRESTO",
       "arrest": true,
-      "arrestBelow": 0.4
+      "arrestBelow": 0.4,
+      "pp": 3,
+      "desc": "Lo finisce, ma solo se è già debole."
     }
   ]
 }

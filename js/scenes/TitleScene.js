@@ -65,14 +65,18 @@ export default class TitleScene extends Phaser.Scene {
     if (this.mode === 'confirm') return ['No, torna indietro', 'Sì, cancella e ricomincia'];
     if (this.mode === 'chapters') return [...this.chapterList().map((id) => CHAPTERS[id].title), 'Indietro'];
     if (this.mode === 'rewind') return ['No, torna indietro', 'Sì, riparti da qui'];
-    if (this.mode === 'dev') return [...this.devList().map((id) => CHAPTERS[id].title), 'Indietro'];
+    if (this.mode === 'dev') return [...this.devList().map((e) => e.label), 'Indietro'];
     // DEV_CHAPTERS: TEMPORARY test entry (remove before release).
     return this.save ? ['Continua', 'Scegli capitolo', 'Nuova partita', DEV_CHAPTERS] : ['Nuova partita', DEV_CHAPTERS];
   }
 
-  // DEV: every chapter with a quest, in play order.
+  // DEV: every chapter with a quest, in play order, each followed by its
+  // `devPoints` (starts in the middle of a chapter, e.g. the prologue's party).
   devList() {
-    return ORDER.filter((id) => CHAPTERS[id]?.quest);
+    return ORDER.filter((id) => CHAPTERS[id]?.quest).flatMap((id) => [
+      { id, label: CHAPTERS[id].title },
+      ...(CHAPTERS[id].devPoints || []).map((point) => ({ id, point, label: `   ↳ ${point.label}` })),
+    ]);
   }
 
   // Chapters you can restart from (1 … the furthest reached in this save).
@@ -248,9 +252,9 @@ export default class TitleScene extends Phaser.Scene {
 
   choose(label) {
     if (this.mode === 'dev') {
-      const id = this.devList()[this.sel];
-      if (!id) return this.setMode('menu', this.save ? 3 : 1); // "Indietro"
-      return this.devJump(id);
+      const e = this.devList()[this.sel];
+      if (!e) return this.setMode('menu', this.save ? 3 : 1); // "Indietro"
+      return this.devJump(e.id, e.point);
     }
     if (this.mode === 'chapters') {
       const id = this.chapterList()[this.sel];
@@ -288,12 +292,15 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   // TEMPORARY (testing): a fresh run starting at chapter `id`, earlier
-  // chapters counted as done, in the chapter's `devStart` spot. Remove with
-  // DEV_CHAPTERS.
-  devJump(id) {
+  // chapters counted as done, in the chapter's `devStart` spot. With a
+  // `point` (the chapter's `devPoints`), the chapter itself is played up to
+  // the point's `upTo` objective and starts at the point's `start`. Remove
+  // with DEV_CHAPTERS.
+  devJump(id, point = null) {
     const data = Object.fromEntries(CHARACTERS.map((f) => [f, this.cache.json.get(`${f}-data`)]));
     clearSave();
-    devPrime(id, data);
+    devPrime(id, data, point);
+    if (point) { this.startWorld(point.start); return; }
     if (id === ORDER[0]) { this.startWorld(arrivalCutscene(), 'CutsceneScene'); return; }
     this.startWorld(CHAPTERS[id].devStart || { mapKey: START_MAP, spawnName: 'default' });
   }

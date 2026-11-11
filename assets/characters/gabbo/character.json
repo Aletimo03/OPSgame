@@ -1,28 +1,36 @@
 {
   "name": "Gabbo",
   "stats": {
-    "maxHp": 34,
-    "attack": 8,
-    "defense": 3
+    "maxHp": 44,
+    "attack": 6,
+    "defense": 2
   },
   "moves": [
     {
       "name": "Chiamata a Marius",
-      "dmg": 5
+      "power": 5,
+      "acc": 100
     },
     {
       "name": "Spintone da Plein",
-      "dmg": 6
+      "power": 7,
+      "acc": 90
     },
     {
       "name": "Shot di Jäger",
-      "dmg": 3,
+      "power": 3,
+      "acc": 100,
       "status": "assonnato",
-      "chance": 0.25
+      "chance": 0.35
     }
   ],
   "locations": {
-    "chapter-sigaretta": {"map": "base-floor-vertical-2", "facing": "down", "wander": true, "wanderRadius": 5},
+    "chapter-sigaretta": {
+      "map": "base-floor-vertical-2",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 5
+    },
     "chapter-0": {
       "map": "base-floor",
       "tx": 28,
@@ -187,10 +195,13 @@
               "Lo affronto",
               "Gli spiego la fisica degli urti"
             ],
-            "blackBg": true,
             "won": [
               "O fra, ti devo fare una statua, diahane.",
-              "Intanto tieni questa, diahane."
+              "Intanto tieni questa, diahane.",
+              {
+                "who": "zionick",
+                "text": "(Basta. Sono a pezzi: torno a dormire.)"
+              }
             ],
             "reward": {
               "name": "Statuetta di Zio Nick",
@@ -307,6 +318,11 @@
         "reward": {
           "name": "Due peperoni",
           "description": "I peperoni di Zio Nick, finalmente a casa. Per il chili."
+        },
+        "stats": {
+          "maxHp": 52,
+          "attack": 6,
+          "defense": 3
         }
       }
     },

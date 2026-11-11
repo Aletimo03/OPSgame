@@ -5,7 +5,8 @@
 import { TILE, PLAYER, SEAT_HEAL_PER_SEC } from '../../config.js';
 import { idleFrame, feetCenterY } from '../../core/playerSprite.js';
 import { questState } from '../../story/questState.js';
-import { FRIDGE, fridgeOpen, holdingCheese, fridgeCleaned, throwCheese } from '../../story/fridge.js';
+import { FRIDGE, fridgeOpen, fridgeTask, holdingCheese, fridgeCleaned, throwCheese } from '../../story/fridge.js';
+import { sleepReady } from '../../story/formaggio.js';
 import { FINDS, findFlag, findOpen } from '../../story/finds.js';
 import { napReady } from '../../story/prologue.js';
 import { findSideThing, sideState, sideFound } from '../../story/sideQuests.js';
@@ -18,6 +19,7 @@ export const withInteractions = (Base) => class extends Base {
   sleepInBed() {
     if (dreamActive()) { this.enterDream(); return; } // chapter 9: the nightmare
     if (napReady()) { this.prologueNap(); return; }
+    if (sleepReady()) { this.morningSleep(); return; }
     this.warpLocked = true; // freeze input during the fade
     const cam = this.cameras.main;
     cam.fadeOut(500, 0, 0, 0);
@@ -41,11 +43,15 @@ export const withInteractions = (Base) => class extends Base {
 
   // Called by FridgeScene after a win: fridge clean, cheese in hand.
   onFridgeDone() {
-    fridgeCleaned();
+    const t = fridgeTask();
+    if (!t) return;
+    fridgeCleaned(t);
     this.inventory.refresh();
-    this.onProgress();
-    this.say(null, FRIDGE.found, () =>
-      this.showBanner('🧀 Formaggio ammuffito in mano:\nbuttalo nei bidoni', 0.28, '#ffd54a', 0xffd54a));
+    this.say(null, t.found, () => {
+      if (t.banner) this.showBanner(t.banner, 0.28, '#ffd54a', 0xffd54a);
+      this.onProgress();
+      this.afterFridge?.(t); // chapter-formaggio: mrjackson writes
+    });
   }
 
   // A collectible hidden in a piece of furniture was found (tryExamine).
@@ -84,11 +90,11 @@ export const withInteractions = (Base) => class extends Base {
   // if it falls within ~0.4 tile of one of the prop's colliders.
   tryExamine(px, py) {
     const m = 0.4 * TILE;
-    // The fridge task (chapter 7): the right end of the cabinets is the fridge.
+    // The fridge task (FRIDGE_TASKS): the right end of the cabinets is the fridge.
     if (fridgeOpen() && this.mapKey === FRIDGE.map) {
       const z = FRIDGE.zone;
       if (px >= z.tx * TILE - m && px <= (z.tx + z.w) * TILE + m && py >= z.ty * TILE - m && py <= (z.ty + z.h) * TILE + m) {
-        this.say(null, FRIDGE.intro, () => this.startFridge());
+        this.say(null, fridgeTask().intro, () => this.startFridge());
         return true;
       }
     }
@@ -103,7 +109,8 @@ export const withInteractions = (Base) => class extends Base {
       if (f.needsItem && !questState.hasItem(f.needsItem)) { this.say(null, f.locked); return true; }
       this.say(null, f.lines, () => {
         questState.setFlag(findFlag(f.id));
-        if (f.gives) questState.addItem(f.gives);
+        if (f.gives?.consumable) questState.addSupply(f.gives, null);
+        else if (f.gives) questState.addItem(f.gives);
         if (f.banner) this.showBanner(f.banner, 0.3, '#ffd54a', 0xffd54a);
         this.inventory.refresh();
         this.onProgress();
