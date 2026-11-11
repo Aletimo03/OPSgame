@@ -6,7 +6,12 @@
     "defense": 2
   },
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
+    "chapter-sigaretta": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-0": {
       "map": "first-floor",
       "tx": 30,
@@ -14,18 +19,7 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 2,
-      "after": "event:peperoni",
-      "alt": [
-        {
-          "flag": "nap-done",
-          "map": "base-kitchen",
-          "tx": 17,
-          "ty": 9,
-          "facing": "down",
-          "wander": true,
-          "wanderRadius": 2
-        }
-      ]
+      "after": "event:peperoni"
     },
     "chapter-1": {
       "map": "first-floor-kitchen",
@@ -63,12 +57,6 @@
       "wander": true,
       "wanderRadius": 3
     },
-    "chapter-7": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
     "chapter-10": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -80,6 +68,14 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-festa": {
+      "map": "base-kitchen",
+      "tx": 17,
+      "ty": 9,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
     }
   },
   "default": "Hi I'm gumba bro ",
@@ -93,14 +89,6 @@
           "text": "SPAZIALE!"
         },
         "Okay bro, chill. Aperitivo soon, guacamole 🥑"
-      ],
-      "when": [
-        {
-          "flag": "nap-done",
-          "dialogue": [
-            "Bro, party! 🥑"
-          ]
-        }
       ]
     },
     "chapter-1": {
@@ -123,6 +111,11 @@
     "chapter-10": {
       "dialogue": [
         "Bro, go get your peppers! 💪"
+      ]
+    },
+    "chapter-festa": {
+      "dialogue": [
+        "Bro, party! 🥑"
       ]
     }
   }

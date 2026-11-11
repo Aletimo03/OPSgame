@@ -19,8 +19,7 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 2,
-      "after": "event:peperoni",
-      "until": "nap-done"
+      "after": "event:peperoni"
     },
     "chapter-1": {
       "map": "first-floor-kitchen",
@@ -58,12 +57,6 @@
       "wander": true,
       "wanderRadius": 3
     },
-    "chapter-7": {
-      "map": "first-floor-vertical-2",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
     "chapter-10": {
       "map": "base-floor-vertical-1",
       "facing": "down",
@@ -82,6 +75,12 @@
       "wander": true,
       "wanderRadius": 3,
       "after": "mattina"
+    },
+    "chapter-bigliettino": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "Che c'è, figlio mio? Sto qua a fumare.",
@@ -162,6 +161,11 @@
             "Bello di zia, hai pulito il frigo. Bravo."
           ]
         }
+      ]
+    },
+    "chapter-bigliettino": {
+      "dialogue": [
+        "Bello di zia, hai pulito il frigo. Bravo."
       ]
     }
   }

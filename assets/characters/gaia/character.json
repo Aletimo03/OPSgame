@@ -6,7 +6,12 @@
     "defense": 2
   },
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
+    "chapter-sigaretta": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-0": {
       "map": "first-floor",
       "tx": 24,
@@ -14,18 +19,7 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 2,
-      "after": "event:peperoni",
-      "alt": [
-        {
-          "flag": "nap-done",
-          "map": "base-kitchen",
-          "tx": 11,
-          "ty": 9,
-          "facing": "down",
-          "wander": true,
-          "wanderRadius": 2
-        }
-      ]
+      "after": "event:peperoni"
     },
     "chapter-1": {
       "map": "first-floor-kitchen",
@@ -57,12 +51,6 @@
       "wander": true,
       "wanderRadius": 3
     },
-    "chapter-7": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
     "chapter-10": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -74,6 +62,14 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-festa": {
+      "map": "base-kitchen",
+      "tx": 11,
+      "ty": 9,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
     }
   },
   "default": "Alessio ti amo troppo puzo boca",
@@ -90,12 +86,6 @@
       ],
       "setFlag": "gaia-hint",
       "when": [
-        {
-          "flag": "nap-done",
-          "dialogue": [
-            "Alessio ti amo troppo puzo boca"
-          ]
-        },
         {
           "flag": "gaia-hint",
           "dialogue": [
@@ -152,6 +142,11 @@
     "chapter-10": {
       "dialogue": [
         "Vai e vinci, Zio Nick."
+      ]
+    },
+    "chapter-festa": {
+      "dialogue": [
+        "Alessio ti amo troppo puzo boca"
       ]
     }
   }

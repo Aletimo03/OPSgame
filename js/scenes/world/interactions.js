@@ -5,7 +5,7 @@
 import { TILE, PLAYER, SEAT_HEAL_PER_SEC } from '../../config.js';
 import { idleFrame, feetCenterY } from '../../core/playerSprite.js';
 import { questState } from '../../story/questState.js';
-import { FRIDGE, fridgeOpen, fridgeTask, holdingCheese, fridgeCleaned, throwCheese } from '../../story/fridge.js';
+import { FRIDGE, fridgeOpen, fridgeCleaned } from '../../story/fridge.js';
 import { sleepReady } from '../../story/formaggio.js';
 import { FINDS, findFlag, findOpen } from '../../story/finds.js';
 import { napReady } from '../../story/prologue.js';
@@ -43,14 +43,10 @@ export const withInteractions = (Base) => class extends Base {
 
   // Called by FridgeScene after a win: fridge clean, cheese in hand.
   onFridgeDone() {
-    const t = fridgeTask();
-    if (!t) return;
-    fridgeCleaned(t);
-    this.inventory.refresh();
-    this.say(null, t.found, () => {
-      if (t.banner) this.showBanner(t.banner, 0.28, '#ffd54a', 0xffd54a);
+    fridgeCleaned();
+    this.say(null, FRIDGE.found, () => {
       this.onProgress();
-      this.afterFridge?.(t); // chapter-formaggio: mrjackson writes
+      this.afterFridge?.(); // the next chapter: mrjackson writes
     });
   }
 
@@ -90,11 +86,11 @@ export const withInteractions = (Base) => class extends Base {
   // if it falls within ~0.4 tile of one of the prop's colliders.
   tryExamine(px, py) {
     const m = 0.4 * TILE;
-    // The fridge task (FRIDGE_TASKS): the right end of the cabinets is the fridge.
+    // The fridge with the flies (chapter 2): the right end of the cabinets is the fridge.
     if (fridgeOpen() && this.mapKey === FRIDGE.map) {
       const z = FRIDGE.zone;
       if (px >= z.tx * TILE - m && px <= (z.tx + z.w) * TILE + m && py >= z.ty * TILE - m && py <= (z.ty + z.h) * TILE + m) {
-        this.say(null, fridgeTask().intro, () => this.startFridge());
+        this.say(null, FRIDGE.intro, () => this.startFridge());
         return true;
       }
     }
@@ -121,15 +117,6 @@ export const withInteractions = (Base) => class extends Base {
     for (const p of this.map.props || []) {
       if (!p.examine?.length && !p.hidden && !p.side) continue;
       const hit = facingProp(p); // (not in the room this chapter: never)
-      if (hit && p.furniture === 'trashbins' && holdingCheese()) {
-        // Throw the mouldy cheese away (fridge task, chapter 7).
-        this.say(null, FRIDGE.throwLines, () => {
-          throwCheese();
-          this.inventory.refresh();
-          this.onProgress();
-        });
-        return true;
-      }
       if (hit) {
         const h = p.hidden && !isFound(p.hidden.id) ? p.hidden : null;
         const sideHere = p.side && sideState(p.side) === 'active' && !sideFound(p.side);

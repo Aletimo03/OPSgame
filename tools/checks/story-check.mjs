@@ -51,7 +51,6 @@ const { SIDE_QUESTS, SHOP } = await imp('js/story/sideQuests.js');
 const { FINDS, findFlag } = await imp('js/story/finds.js');
 const { PROLOGUE } = await imp('js/story/prologue.js');
 const { FORMAGGIO, SAFE, checkCode } = await imp('js/story/formaggio.js');
-const { FRIDGE_TASKS } = await imp('js/story/fridge.js');
 const { STRANGERS } = await imp('js/story/phoneChats.js');
 const { resolveInteraction, baseStats } = await imp('js/core/characters.js');
 const { ALCATRAZ } = await imp('js/story/alcatraz.js');
@@ -126,13 +125,12 @@ produce(DREAM.wokeLinesFlag, DREAM.chapter); // his waking lines in the dream ho
 produce(PROLOGUE.wifiFlag, PROLOGUE.chapter); // the last repeater
 produce(PROLOGUE.napFlag, PROLOGUE.chapter);  // the nap in his bed
 produce(STEALTH.flags.smoked, STEALTH.chapter); // reaching the balcony with the cigarette
-for (const t of FRIDGE_TASKS) produce(t.clean, t.chapter); // the fridge minigame
+produce(FRIDGE.clean, FRIDGE.chapter); // the fridge minigame
 produce(FORMAGGIO.sleepFlag, FORMAGGIO.chapter); // back to bed after the party
-produce(FORMAGGIO.noteFlag, FORMAGGIO.chapter);  // the note on the laundry floor
-produce(SAFE.openFlag, FORMAGGIO.chapter);       // the key safe's code
+produce(FORMAGGIO.noteFlag, FORMAGGIO.noteChapter);  // the note on the laundry floor
+produce(SAFE.openFlag, FORMAGGIO.noteChapter);       // the key safe's code
 // Reading a chat with a `readFlag` message (once its `after` flag is set).
 for (const [ch, c] of Object.entries(CHAPTERS)) for (const m of c.phone || []) if (m.readFlag) produce(m.readFlag, ch);
-produce(FRIDGE.flags.thrown, FRIDGE.chapter);
 const enter = (mapKey) => {
   questState.visit(mapKey);
   advanceChapterIfDone();

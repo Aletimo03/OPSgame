@@ -13,7 +13,7 @@ node --no-warnings tools/checks/story-check.mjs
 
 **Non c'è un narratore esterno:** tutto ciò che non dice un altro personaggio è Zio Nick che parla con se stesso, in prima persona.
 
-**Stiamo riscrivendo il gioco da zero.** Una partita nuova gioca il **Prologo** e il nuovo **Capitolo 1 — Il formaggio ammuffito**, e per ora si ferma lì. I capitoli 1–11 della «sconfitta» qui sotto sono la versione precedente (scaletta v3): restano provabili da **🛠 DEV · Scegli capitolo**, ma una partita nuova non ci arriva e andranno riscritti o tolti man mano.
+**Stiamo riscrivendo il gioco da zero.** Una partita nuova gioca il **Prologo** e i nuovi capitoli **1 La festa di Gabbo**, **2 Il formaggio ammuffito** e **3 Il bigliettino**, e per ora si ferma lì. I capitoli 1–11 della «sconfitta» qui sotto sono la versione precedente (scaletta v3): restano provabili da **🛠 DEV · Scegli capitolo**, ma una partita nuova non ci arriva e andranno riscritti o tolti man mano.
 
 Zio Nick è appena arrivato a OPS. È nuovo, deve ambientarsi e, anche se la spesa l'ha già sistemata in cucina stamattina, decide di andare a conoscere gli altri.
 
@@ -37,7 +37,7 @@ Il gioco **salva da solo**:
 - ogni 4 secondi;
 - quando chiudi la scheda.
 
-All'avvio puoi scegliere **Continua**, **Scegli capitolo** o **Nuova partita**. La nuova partita chiede conferma se esiste già un salvataggio. Per le prove c'è anche **🛠 DEV · Scegli capitolo** (temporaneo, da togliere prima dell'uscita): parte da un capitolo qualsiasi come se i precedenti fossero fatti, con i loro oggetti nello zaino; è una partita nuova e sovrascrive il salvataggio. Sotto il Prologo c'è anche **↳ Il risveglio: la festa e Gabbo**: parti dopo il pisolino, alle 23, davanti al letto, con la festa in corso e i piselli nello zaino.
+All'avvio puoi scegliere **Continua**, **Scegli capitolo** o **Nuova partita**. La nuova partita chiede conferma se esiste già un salvataggio. Per le prove c'è anche **🛠 DEV · Scegli capitolo** (temporaneo, da togliere prima dell'uscita): parte da un capitolo qualsiasi come se i precedenti fossero fatti, con i loro oggetti nello zaino; è una partita nuova e sovrascrive il salvataggio. Sotto i capitoli nuovi ci sono partenze a metà capitolo (↳ La mattina, ↳ Il ripostiglio); i capitoli della vecchia storia sono segnati «(vecchia)».
 
 **Gli HP di Zio Nick restano tra uno scontro e l'altro.** Fuori dagli scontri si vedono solo nello zaino (I).
 - per recuperarli ti siedi su una sedia o uno sgabello in cucina (+3 HP al secondo) e ti alzi con le frecce o Spazio;
@@ -106,21 +106,30 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - **Le indagini:** uscito dalla cucina, gli altri sono negli spazi comuni e si presentano. Sono sparsi tra spazi comuni e corridoi. Al primo piano: Gaia e Ana vicino agli stendini, Ernesto, Antonella e Caue nei corridoi. Al piano terra: Gabbo e Alessio vicino al divano, Emanuele e Gatta nei corridoi. Quasi tutti gli chiedono se fa «aerospaziale». **Gaia:** i peperoni potrebbero essere insieme ai sofficini di Irene o ai merluzzetti di Gianluca.
 - **Il wi-fi:** Gabbo e Alessio spiegano che i ripetitori TP-Link non sono compatibili e bloccano il wi-fi. Zio Nick pensa (tra parentesi) che col wi-fi potrebbe anche scrivere nel gruppo comune e trovare i peperoni.
 - **I ripetitori:** ne restano quattro, attaccati al muro e segnati da una stellina: nel corridoio del piano terra e nelle camere 2, 15 e 19. **Sara** gli dà il **badge master**, che apre solo quelle camere. Il contatore è in alto a destra. Trovati tutti, il telefono funziona.
-- **Il pisolino:** trovati i ripetitori, Zio Nick è stanco e va a dormire nel suo letto. Si sveglia di notte, ha dormito troppo, ed è svegliato da un gran casino.
-- **La festa:** nella cucina di sotto ci sono Gabbo, Fede Gatta, Sara, Ana, Gaia, Alessio e Marilena, con luci da discoteca e musica: poco in camera, un po' di più nei corridoi, altissima in cucina. Gabbo fa lo scemo, prova a dargli una pacca, ma gli fa male al ginocchio, e parte il **combattimento**, sullo sfondo della festa (la cucina al buio con le luci colorate). Se Zio Nick vince, Gabbo: «O fra, ti devo fare una statua, diahane. Intanto tieni questa» e gli dà la **Statuetta di Zio Nick**.
-- Dopo la vittoria Zio Nick è a pezzi e torna a dormire.
+- **Il pisolino:** trovati i ripetitori, Zio Nick è stanco e va a dormire nel suo letto.
 
-### Capitolo 1 — Il formaggio ammuffito · *minigioco + enigma*
+### Capitolo 1 — La festa di Gabbo · *scontro*
 
-- **Quando:** la notte della festa (23:30), poi la mattina dopo.
-- **Di notte:** la festa è finita, non c'è più nessuno in giro. Zio Nick torna nel suo letto (camera 20) e si sveglia alle 8:30: «Che nottata... Gabbo e le sue pacche. Il ginocchio fa ancora male. Il telefono vibra. Vediamo cosa scrivono nel gruppo.»
-- **Il telefono:** nel gruppo Nima scrive che nel frigo della cucina di su c'è un **formaggio ammuffito**; Fede Gatta e Emanuele commentano. Letto il messaggio, Zio Nick va a pulirlo: nel frigo c'è la sua spesa.
-- **La cucina di su:** ci sono **Fede Gatta, Antonella ed Emanuele**. Davanti al frigo parte il **minigioco delle mosche** (spruzzino del detersivo). Pulito il frigo, il formaggio finisce nei bidoni.
-- **mrjackson:** subito dopo arriva un messaggio privato da **mrjackson**, senza foto profilo: «Se vuoi rivedere i tuoi peperoni vai nel locale lavatrice al piano di su.»
-- **Il locale lavatrice** (bagno condiviso del primo piano): per terra, davanti alla lavatrice, c'è una stellina come quelle dei ripetitori. Passandoci sopra è un **bigliettino**: «Stai cercando nel frigo sbagliato. 356.»
-- **Il ripostiglio:** nel corridoio del primo piano, a sinistra della sala degli stendini, sul muro di fronte alle camere 19, 20 ecc., c'è una porta che dà su una stanzina stretta e lunga. Appena entrati, sulla sinistra, c'è una **cassetta per le chiavi** con un lucchetto a tre cifre: interagendo compare la cassetta a tutto schermo con «Inserisci il codice». Con **356** si apre: dentro c'è la **chiave della camera 18**, quella di Alessio. Zio Nick: «Sono sicuro che quel bastardo ha un frigo in camera, ma ancora non l'ho colto con le mani nel sacco. "Il frigo sbagliato"... I miei peperoni sono nel suo frigo segreto!»
+- **Quando:** le 23, la sera stessa.
+- Zio Nick si sveglia: ha dormito troppo, ed è svegliato da un gran casino che viene dalla cucina di sotto.
+- **La festa:** nella cucina di sotto ci sono Gabbo, Fede Gatta, Sara, Ana, Gaia, Alessio e Marilena, con luci da discoteca e musica: poco in camera, un po' di più nei corridoi, altissima in cucina. Gabbo fa lo scemo, prova a dargli una pacca, ma gli fa male al ginocchio, e parte il **combattimento**, sullo sfondo della festa. Se Zio Nick vince, Gabbo: «O fra, ti devo fare una statua, diahane. Intanto tieni questa» e gli dà la **Statuetta di Zio Nick**. Zio Nick è a pezzi e torna a dormire.
+
+### Capitolo 2 — Il formaggio ammuffito · *minigioco*
+
+- **Quando:** la mattina dopo la festa. Battuto Gabbo, Zio Nick va subito a dormire e il capitolo parte quando si sveglia, alle 8:30: «Che nottata... Gabbo e le sue pacche. Il ginocchio fa ancora male. Il telefono vibra...»
+- **Il telefono:** nel gruppo Nima scrive che nel frigo della cucina di su c'è un **formaggio ammuffito**; Fede Gatta e Emanuele commentano. Nel frigo c'è la sua spesa: va a pulirlo.
+- **La cucina di su:** ci sono **Fede Gatta, Antonella e Caue**. Davanti al frigo parte il **minigioco delle mosche**: 5 mosche da colpire con lo spruzzino del detersivo. Pulito il frigo, il formaggio finisce nei bidoni.
+- È l'unico capitolo del frigo: quello della vecchia storia (capitolo 7) è stato unito a questo.
+
+### Capitolo 3 — Il bigliettino · *enigma*
+
+- **Il messaggio:** il telefono vibra, «Hai un nuovo messaggio». È **mrjackson**, senza foto profilo: «Se vuoi rivedere i tuoi peperoni vai nel locale lavatrice al piano di su.»
+- **Il locale lavatrice** (bagno condiviso del primo piano): per terra, davanti alla lavatrice, c'è una stellina come quelle dei ripetitori. Passandoci sopra parte una **scena**: è un **bigliettino**, «Stai cercando nel frigo sbagliato. 356.», e Zio Nick ragiona ad alta voce. I peperoni sono in un frigo, ma non quello della cucina che ha appena pulito; 356 non è un'ora né una data, né una camera (arrivano a 27): tre cifre sono un codice, un lucchetto. E l'unico posto dove non è mai entrato è il ripostiglio.
+- **Il ripostiglio:** nel corridoio del primo piano, a sinistra della sala degli stendini, sul muro di fronte alle camere 19, 20 ecc., una porta dà su una stanzina stretta e lunga. Appena entrati, sulla sinistra, c'è una **cassetta per le chiavi**: interagendo compare a tutto schermo con «Inserisci il codice». Con **356** si apre, e parte un'altra scena: dentro c'è una chiave con scritto «18»... «È LA CAMERA DI ALESSIO!» (lo schermo zooma di colpo su di lui). «Sono sicuro che quel bastardo ha un frigo in camera, ma ancora non l'ho colto con le mani nel sacco.» Il frigo sbagliato è il suo frigo segreto, e i peperoni sono lì.
 - Le camere degli altri restano chiuse (con il badge di Sara solo la 2, la 15 e la 19); la 18 si apre con la chiave.
 - **Per ora la storia si ferma qui.**
+
+> **Da qui in giù: la vecchia storia (v3).** Una partita nuova non ci arriva; resta provabile dal menu DEV, dove questi capitoli sono segnati «(vecchia)».
 
 ### Capitolo 1 — La sconfitta · *scontro perso per copione*
 - **Quando:** 7:30. Nel gruppo si parla delle mani lunghe di Gabbo.
@@ -158,10 +167,6 @@ La partita comincia nella **camera di Zio Nick** (room-20, primo piano), appena 
 - **Come si gioca:** con la sigaretta in mano Zio Nick va in punta di piedi. Nima (corridoio fuori dalla cucina), Sara (corridoio a ovest delle scale) e Alessio (sala stendini, fermo, si gira) hanno coni di vista; muri e stendini fanno da copertura.
 - **Se ti beccano:** predica di chi ti ha visto, sigaretta sequestrata, si torna in cucina e Antonella ne ha un'altra.
 - **Perché si nasconde:** con i 15 km che corre, se lo vedono fumare è finita.
-
-### Capitolo 7 — Il frigo con le mosche · *minigioco*
-- **Quando:** 10:00. Nima protesta per il formaggio ammuffito.
-- **Obiettivi:** pulire il frigo di su dalle mosche (minigioco in prima persona) e buttare il formaggio nei bidoni. Dietro il formaggio c'è un **braccialetto dell'Alcatraz**.
 
 ### Capitolo 8 — Notte all'Alcatraz · *uscita*
 - **Quando:** alle 23:30. La pista del braccialetto porta all'Alcatraz, e Alessio non si fa più trovare (sta sempre con Gaia): Gabbo cerca qualcuno con cui uscire e Zio Nick ci va, per scoprire la verità.

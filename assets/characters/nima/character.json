@@ -6,13 +6,18 @@
     "defense": 2
   },
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor", "tx": 56, "ty": 11, "facing": "down", "wander": false},
+    "chapter-sigaretta": {
+      "map": "first-floor",
+      "tx": 56,
+      "ty": 11,
+      "facing": "down",
+      "wander": false
+    },
     "chapter-0": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 3,
-      "until": "nap-done"
+      "wanderRadius": 3
     },
     "chapter-1": {
       "map": "first-floor-kitchen",
@@ -45,12 +50,6 @@
       "wanderRadius": 3
     },
     "chapter-6": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
-    "chapter-7": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
@@ -109,12 +108,6 @@
     "chapter-6": {
       "dialogue": [
         "Finally qualcuno aggiusta la bilancia? 🙏"
-      ]
-    },
-    "chapter-7": {
-      "dialogue": [
-        "Buongiorns! Frigo di su = disaster 🤢",
-        "Please pulisci, you are the only one 🙏 من فضلك"
       ]
     },
     "chapter-10": {

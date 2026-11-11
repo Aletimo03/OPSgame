@@ -22,23 +22,17 @@
     }
   ],
   "locations": {
-    "chapter-sigaretta": {"map": "first-floor-kitchen", "facing": "down", "wander": true, "wanderRadius": 3},
+    "chapter-sigaretta": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
+    },
     "chapter-0": {
       "map": "first-floor-kitchen",
       "facing": "down",
       "wander": true,
-      "wanderRadius": 3,
-      "alt": [
-        {
-          "flag": "nap-done",
-          "map": "base-kitchen",
-          "tx": 27,
-          "ty": 14,
-          "facing": "down",
-          "wander": true,
-          "wanderRadius": 2
-        }
-      ]
+      "wanderRadius": 3
     },
     "chapter-1": {
       "map": "first-floor-kitchen",
@@ -76,12 +70,6 @@
       "wander": true,
       "wanderRadius": 3
     },
-    "chapter-7": {
-      "map": "first-floor-kitchen",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 3
-    },
     "chapter-10": {
       "map": "first-floor-kitchen",
       "facing": "down",
@@ -93,6 +81,14 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-festa": {
+      "map": "base-kitchen",
+      "tx": 27,
+      "ty": 14,
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 2
     }
   },
   "default": "Sto aspettando Fede Papi 🌸🥺✨",
@@ -102,12 +98,6 @@
         "Benvenuto in casa 🌸✨"
       ],
       "when": [
-        {
-          "flag": "nap-done",
-          "dialogue": [
-            "Vieni a ballare 🌸✨"
-          ]
-        },
         {
           "flag": "event:peperoni",
           "dialogue": [
@@ -126,11 +116,6 @@
         "Tieni i piselli sul ginocchio ancora un po' 🧊🌸"
       ]
     },
-    "chapter-7": {
-      "dialogue": [
-        "Che puzza dal frigo 🤢🌸"
-      ]
-    },
     "chapter-10": {
       "dialogue": [
         "Ti ho preparato una fascia per il ginocchio 🌸🩹",
@@ -145,6 +130,11 @@
           "maxHp": 10
         }
       }
+    },
+    "chapter-festa": {
+      "dialogue": [
+        "Vieni a ballare 🌸✨"
+      ]
     }
   }
 }

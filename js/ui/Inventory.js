@@ -6,7 +6,6 @@
 import { questState } from '../story/questState.js';
 import { collectionStatus } from '../story/collectibles.js';
 import { activeSides, sideFound } from '../story/sideQuests.js';
-import { holdingCheese } from '../story/fridge.js';
 import { carryingCigarette } from '../story/stealth.js';
 
 const DEPTH  = 3000000;
@@ -71,7 +70,6 @@ export class Inventory {
       + (coll.length ? SEC_H + coll.length * 26 : 0)
       + SEC_H + Math.max(1, activeSides().length) * 22
       + (!items.length && !supplies.length ? LINE_H : 0)
-      + (holdingCheese() ? LINE_H : 0)
       + (carryingCigarette() ? LINE_H : 0);
 
     const panelW = Math.min(480, W - PAD * 4);
@@ -139,11 +137,6 @@ export class Inventory {
       });
     }
 
-    if (holdingCheese()) { // quest thing (fridge task): not a real item
-      text(px + PAD, y, '🧀  Formaggio ammuffito', { fontSize: '17px', color: '#ffd54a' });
-      text(px + PAD + 22, y + 19, 'Buttalo nei bidoni della cucina.', { fontSize: '12px', color: '#9aa0a8' });
-      y += LINE_H;
-    }
     if (carryingCigarette()) { // quest thing (the balcony): not a real item
       text(px + PAD, y, '🚬  Sigaretta di Antonella', { fontSize: '17px', color: '#ffd54a' });
       text(px + PAD + 22, y + 19, 'Portala sul balconcino. Occhio a chi ti vede.', { fontSize: '12px', color: '#9aa0a8' });

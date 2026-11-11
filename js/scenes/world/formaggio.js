@@ -9,12 +9,14 @@ import { TILE } from '../../config.js';
 import { questState } from '../../story/questState.js';
 import { setClock } from '../../story/clock.js';
 import { PROLOGUE } from '../../story/prologue.js';
-import { FORMAGGIO, SAFE, inFormaggio, noteOn, safeOpen } from '../../story/formaggio.js';
+import { FORMAGGIO, SAFE, noteOn, safeOpen, sleepReady } from '../../story/formaggio.js';
 
 export const withFormaggio = (Base) => class extends Base {
   // Map entry: the note's star, the safe on the wall.
   setupFormaggio() {
     this.noteStar = null;
+    this.sleeping = false;
+    if (sleepReady()) this.time.delayedCall(400, () => this.morningSleep());
     if (this.map.safe) this.drawSafe(this.map.safe);
     const n = FORMAGGIO.note;
     if (!noteOn() || n.map !== this.mapKey) return;
@@ -48,16 +50,24 @@ export const withFormaggio = (Base) => class extends Base {
     if (Math.hypot(f.x - this.noteStar.x, f.y - this.noteStar.y) > TILE * FORMAGGIO.touchTiles) return;
     this.noteStar.destroy();
     this.noteStar = null;
-    this.holdPlayer();
-    this.say(null, FORMAGGIO.noteLines, () => {
+    this.monologue(FORMAGGIO.noteLines, () => {
       questState.setFlag(FORMAGGIO.noteFlag);
       this.showBanner(FORMAGGIO.noteBanner, 0.3, '#ffd54a', 0xffd54a);
       this.onProgress();
     });
   }
 
-  // Back to bed after the party: he wakes up in the morning (scene `sveglia`).
+  // After the party's fight (afterBattleWin): straight to bed, he wakes up in
+  // the morning and chapter 2 begins. Also on entering a map while it's still
+  // the night of chapter 2 (a save reloaded in between, a DEV start).
+  afterFight() {
+    if (sleepReady()) this.morningSleep();
+  }
+
+  // To bed after the party: he wakes up in the morning (scene `sveglia`).
   morningSleep() {
+    if (this.sleeping) return;
+    this.sleeping = true;
     this.warpLocked = true;
     this.holdPlayer();
     this.cameras.main.fadeOut(700, 0, 0, 0);
@@ -70,11 +80,12 @@ export const withFormaggio = (Base) => class extends Base {
     });
   }
 
-  // After the fridge minigame (onFridgeDone): mrjackson's message arrives
-  // (it shows once `frigo-pulito` is set: chapter `phone`, `after`).
-  afterFridge(t) {
-    if (t.chapter !== FORMAGGIO.chapter) return;
-    this.time.delayedCall(1200, () => {
+  // After the fridge minigame (onFridgeDone): the chapter rolls on to
+  // chapter-bigliettino, whose phone holds mrjackson's message. The phone
+  // buzzes once the chapter banner and card are gone; the banner doesn't
+  // say who wrote (user's choice).
+  afterFridge() {
+    this.time.delayedCall(6500, () => {
       this.cameras.main.shake(250, 0.004); // the phone buzzes
       this.showBanner(FORMAGGIO.newMessage, 0.3, '#7CFC8A', 0x7cfc8a);
     });
@@ -101,7 +112,7 @@ export const withFormaggio = (Base) => class extends Base {
     questState.setFlag(SAFE.openFlag);
     if (!questState.hasItem(SAFE.key.name)) questState.addItem(SAFE.key);
     this.inventory.refresh();
-    this.say(null, SAFE.openLines, () => {
+    this.monologue(SAFE.openLines, () => {
       this.showItemReceived(SAFE.key.name);
       this.onProgress();
     });
@@ -110,7 +121,7 @@ export const withFormaggio = (Base) => class extends Base {
   // Called by the phone when it closes: the flags its chats set on reading
   // (`readFlag`), and Zio Nick's comment on each.
   onPhoneRead(flags) {
-    const lines = inFormaggio() ? flags.flatMap((f) => FORMAGGIO.phoneLines[f] || []) : [];
+    const lines = flags.flatMap((f) => FORMAGGIO.phoneLines[f] || []);
     if (lines.length) this.say(null, lines, () => this.onProgress());
     else this.onProgress();
   }

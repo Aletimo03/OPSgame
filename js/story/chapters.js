@@ -2,7 +2,9 @@
 // Registry of every story chapter + helpers to read the currently-active quest.
 import { questState } from './questState.js';
 import chapter0 from './chapter-0/chapter-0.js';
+import chapterFesta from './chapter-festa/chapter-festa.js';
 import chapterFormaggio from './chapter-formaggio/chapter-formaggio.js';
+import chapterBigliettino from './chapter-bigliettino/chapter-bigliettino.js';
 import chapter1 from './chapter-1/chapter-1.js';
 import chapter2 from './chapter-2/chapter-2.js';
 import chapter3 from './chapter-3/chapter-3.js';
@@ -10,7 +12,6 @@ import chapter4 from './chapter-4/chapter-4.js';
 import chapter5 from './chapter-5/chapter-5.js';
 import chapter6 from './chapter-6/chapter-6.js';
 import chapterSigaretta from './chapter-sigaretta/chapter-sigaretta.js';
-import chapter7 from './chapter-7/chapter-7.js';
 import chapter8 from './chapter-8/chapter-8.js';
 import chapter9 from './chapter-9/chapter-9.js';
 import chapter10 from './chapter-10/chapter-10.js';
@@ -18,7 +19,9 @@ import chapter11 from './chapter-11/chapter-11.js';
 
 export const CHAPTERS = {
   'chapter-0': chapter0,
+  'chapter-festa': chapterFesta,
   'chapter-formaggio': chapterFormaggio,
+  'chapter-bigliettino': chapterBigliettino,
   'chapter-1': chapter1,
   'chapter-2': chapter2,
   'chapter-3': chapter3,
@@ -26,7 +29,6 @@ export const CHAPTERS = {
   'chapter-5': chapter5,
   'chapter-6': chapter6,
   'chapter-sigaretta': chapterSigaretta,
-  'chapter-7': chapter7,
   'chapter-8': chapter8,
   'chapter-9': chapter9,
   'chapter-10': chapter10,
@@ -36,8 +38,8 @@ export const CHAPTERS = {
 // Play order. When the active chapter's quest is complete, the story advances
 // to the next chapter that actually has a quest defined.
 export const ORDER = [
-  'chapter-0', 'chapter-formaggio', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
-  'chapter-6', 'chapter-sigaretta', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
+  'chapter-0', 'chapter-festa', 'chapter-formaggio', 'chapter-bigliettino', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
+  'chapter-6', 'chapter-sigaretta', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
 ];
 
 // The whole story is finished: the last chapter is active and its quest done.

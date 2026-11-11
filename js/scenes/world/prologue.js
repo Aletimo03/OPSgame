@@ -5,6 +5,7 @@ import { TILE } from '../../config.js';
 import { questState } from '../../story/questState.js';
 import { setClock } from '../../story/clock.js';
 import { PROLOGUE, repeatersOn, repeaterFlag, repeatersFound } from '../../story/prologue.js';
+import { advanceChapterIfDone } from '../../story/chapters.js';
 
 export const withPrologue = (Base) => class extends Base {
   // The repeaters' stars in this map, while the hunt is on (js/story/prologue.js).
@@ -57,8 +58,9 @@ export const withPrologue = (Base) => class extends Base {
       questState.heroHp = null;
       questState.setFlag(PROLOGUE.napFlag);
       setClock(PROLOGUE.nightTime);
+      advanceChapterIfDone(); // → chapter-festa, before the room is rebuilt (party placements)
       this.saveGame();
-      this.time.delayedCall(700, () => this.scene.restart({ mapKey: PROLOGUE.room, spawnName: 'bedside' }));
+      this.time.delayedCall(700, () => this.scene.restart({ mapKey: PROLOGUE.room, spawnName: 'bedside', announce: true }));
     });
   }
 };

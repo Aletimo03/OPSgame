@@ -31,8 +31,20 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 2,
-      "after": "event:peperoni",
-      "until": "nap-done"
+      "after": "event:peperoni"
+    },
+    "chapter-formaggio": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3,
+      "after": "mattina"
+    },
+    "chapter-bigliettino": {
+      "map": "first-floor-kitchen",
+      "facing": "down",
+      "wander": true,
+      "wanderRadius": 3
     }
   },
   "default": "Sopportandovi a vicenda e perdonandovi vicendevolmente, se qualcuno abbia di che lamentarsi nei riguardi degli altri. (Colossesi 3:13)",
@@ -40,6 +52,24 @@
     "chapter-0": {
       "dialogue": [
         "Accoglietevi gli uni gli altri. (Romani 15:7) 🙏"
+      ]
+    },
+    "chapter-formaggio": {
+      "dialogue": [
+        "Il vostro corpo è tempio dello Spirito Santo. (1 Corinzi 6:19) 🙏"
+      ],
+      "when": [
+        {
+          "flag": "frigo-pulito",
+          "dialogue": [
+            "Chi è fedele nel poco, è fedele anche nel molto. (Luca 16:10) 🙏"
+          ]
+        }
+      ]
+    },
+    "chapter-bigliettino": {
+      "dialogue": [
+        "Chi è fedele nel poco, è fedele anche nel molto. (Luca 16:10) 🙏"
       ]
     }
   }

@@ -6,6 +6,8 @@ import { questState } from './questState.js';
 
 export const PROLOGUE = {
   chapter: 'chapter-0',
+  partyChapter: 'chapter-festa', // the night after the nap (its own chapter)
+  chapters: ['chapter-0', 'chapter-festa'],
   room: 'room-20',
   kitchen: 'first-floor-kitchen', // his fridge is here
   otherKitchen: 'base-kitchen',
@@ -76,13 +78,14 @@ export const arrivalCutscene = () => ({
   next: { scene: 'WorldScene', data: { mapKey: PROLOGUE.room, spawnName: 'default' } },
 });
 
-export const inPrologue = () => questState.activeChapter === PROLOGUE.chapter;
+// The prologue's rules (doors, the shop closed) also hold at the party.
+export const inPrologue = () => PROLOGUE.chapters.includes(questState.activeChapter);
 
 // The phone can't be opened in the prologue: no icon, and P only reminds you.
 export const phoneLocked = () => inPrologue() && !questState.hasFlag(PROLOGUE.wifiFlag);
 
-export const napReady = () => inPrologue() && questState.hasFlag(PROLOGUE.wifiFlag) && !questState.hasFlag(PROLOGUE.napFlag);
-export const partyOn = () => inPrologue() && questState.hasFlag(PROLOGUE.napFlag);
+export const napReady = () => questState.activeChapter === PROLOGUE.chapter && questState.hasFlag(PROLOGUE.wifiFlag) && !questState.hasFlag(PROLOGUE.napFlag);
+export const partyOn = () => questState.activeChapter === PROLOGUE.partyChapter;
 export const partyVolume = (mapKey) => PROLOGUE.party.volume[mapKey] ?? PROLOGUE.party.otherVolume;
 
 export const repeaterFlag = (id) => `ripetitore:${id}`;
@@ -94,7 +97,10 @@ export const repeaterCounter = () => (repeatersOn() ? `📡 Ripetitori ${repeate
 // The chapters after the prologue that keep its house rules on bedroom doors
 // (no key = no entry; Sara's badge = rooms 2, 15, 19), with extra keys:
 // { 'room-N': item that opens it }.
-const KEPT_RULES = { 'chapter-formaggio': { 'room-18': 'Chiave della camera 18' } };
+const KEPT_RULES = {
+  'chapter-formaggio': {},
+  'chapter-bigliettino': { 'room-18': 'Chiave della camera 18' },
+};
 
 // What Zio Nick says at a door he can't use right now, or null if it's open.
 export function warpGate(mapKey, warp) {

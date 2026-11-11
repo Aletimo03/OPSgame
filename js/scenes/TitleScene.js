@@ -72,9 +72,11 @@ export default class TitleScene extends Phaser.Scene {
 
   // DEV: every chapter with a quest, in play order, each followed by its
   // `devPoints` (starts in the middle of a chapter, e.g. the prologue's party).
+  // Chapters after the first `stop` one are the old story (v3), marked as such.
   devList() {
+    const stopAt = ORDER.findIndex((id) => CHAPTERS[id]?.stop);
     return ORDER.filter((id) => CHAPTERS[id]?.quest).flatMap((id) => [
-      { id, label: CHAPTERS[id].title },
+      { id, label: `${stopAt >= 0 && ORDER.indexOf(id) > stopAt ? '(vecchia) ' : ''}${CHAPTERS[id].title}` },
       ...(CHAPTERS[id].devPoints || []).map((point) => ({ id, point, label: `   ↳ ${point.label}` })),
     ]);
   }

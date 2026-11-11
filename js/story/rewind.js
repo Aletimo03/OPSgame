@@ -126,6 +126,8 @@ export function devPrime(id, dataById = {}, point = null) {
   }
   if (idx > 0) questState.setFlag('premise-seen');
   questState.activeChapter = id;
+  // `devItemText` ({ item name: text }): descriptions as they are by then.
+  for (const it of questState.items) if (CHAPTERS[id]?.devItemText?.[it.name]) it.description = CHAPTERS[id].devItemText[it.name];
   if (point) primeUpTo(id, dataById, point);
   questState.reached = id;
   questState.currentMap = null;

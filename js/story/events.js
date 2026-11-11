@@ -6,9 +6,9 @@
 // is set. Texts follow each persona.md. Node-importable.
 export const EVENTS = [
   {
-    // Prologue: the nap is over, it's night and there's a racket.
+    // Chapter-festa: the nap is over, it's night and there's a racket.
     id: 'risveglio',
-    chapter: 'chapter-0',
+    chapter: 'chapter-festa',
     map: 'room-20',
     requires: 'nap-done',
     lines: [
@@ -30,9 +30,9 @@ export const EVENTS = [
     ],
   },
   {
-    // Prologue: the party in the base kitchen.
+    // Chapter-festa: the party in the base kitchen.
     id: 'festa',
-    chapter: 'chapter-0',
+    chapter: 'chapter-festa',
     map: 'base-kitchen',
     requires: 'nap-done',
     lines: [

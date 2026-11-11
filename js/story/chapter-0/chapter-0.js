@@ -6,25 +6,14 @@
 // his two peppers are gone (scene `peperoni`). Investigating, he meets the rest
 // of the house in the two common areas: Gaia has a hint, Gabbo and Alessio
 // explain that TP-Link repeaters are blocking the wi-fi. With Sara's badge he
-// finds the last four, and the phone works. He takes a nap and is woken at
-// night by a party in the base kitchen; Gabbo plays the fool, tries to touch
-// him, and they fight (a win gives the Statuetta di Zio Nick). The rules are in
-// js/story/prologue.js. It rolls into chapter-formaggio (the next morning).
+// finds the last four, and the phone works. Then he takes a nap: the party
+// is the next chapter (chapter-festa). The rules are in js/story/prologue.js.
 export default {
   id: 'chapter-0',
   title: "Prologo — L'arrivo a OPS",
   card: 'PROLOGO',
   time: '13:00',
   devStart: { mapKey: 'room-20', spawnName: 'default' },
-  // DEV chapter select: start after the nap, in front of his bed, with the
-  // party going on downstairs (scene `risveglio`, then the fight with Gabbo).
-  devPoints: [{
-    label: 'Il risveglio: la festa e Gabbo',
-    upTo: 'nap-done',
-    clock: '23:00',
-    itemText: { Telefono: 'Con il wi-fi funziona.' },
-    start: { mapKey: 'room-20', spawnName: 'bedside' },
-  }],
   // Readable once the wi-fi is back.
   phone: [
     { from: 'sara', text: 'Il wi-fi è tornato. Accendete la cappa.' },
@@ -47,8 +36,6 @@ export default {
       { flag: 'badge-got', at: 'sara', after: 'ripetitori-start', label: 'Vai da Sara in cucina di su: ha il badge master' },
       { flag: 'wifi-back', after: 'ripetitori-start', label: 'Trova i ripetitori sui muri: corridoio del piano terra e camere 2, 15, 19' },
       { flag: 'nap-done', place: 'room-20', after: 'wifi-back', label: 'Vai a fare un pisolino nel tuo letto' },
-      { flag: 'event:festa', place: 'base-kitchen', after: 'nap-done', label: 'Vai a controllare il casino nella cucina di sotto' },
-      { defeat: 'gabbo', after: 'event:festa', label: 'Parla con Gabbo' },
     ],
   },
 };

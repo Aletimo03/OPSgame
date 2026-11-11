@@ -32,11 +32,13 @@ export const withBattles = (Base) => class extends Base {
     if (!info) return;
     const { npc, b } = info;
     const give = () => {
-      if (!b.reward || questState.hasItem(b.reward.name)) return;
-      questState.addItem(b.reward);
-      this.inventory.refresh();
-      this.showItemReceived(b.reward.name);
-      this.saveGame();
+      if (b.reward && !questState.hasItem(b.reward.name)) {
+        questState.addItem(b.reward);
+        this.inventory.refresh();
+        this.showItemReceived(b.reward.name);
+        this.saveGame();
+      }
+      this.afterFight?.(); // e.g. after the party's fight he goes to bed (chapter 2)
     };
     if (b.won) this.say(npc, b.won, give);
     else give();

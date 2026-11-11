@@ -4,7 +4,7 @@
 //     the private chats (chapter `phone` entries with `dm: true`), each with
 //     its last message, time and a green unread badge.
 //     ↑/↓ (W/S) choose, Space / Enter / → open.
-//   • CHAT: the bubbles of one chat, a chapter "date chip" between chapters,
+//   • CHAT: the bubbles of one chat (no chapter names),
 //     newest at the bottom. ↑/↓ (W/S)
 //     scroll, ← / Backspace back to the list.
 // P or Esc close the phone. Opening a chat marks it read (phoneChats.markRead),
@@ -139,15 +139,11 @@ export class Phone {
     this.rebuild();
   }
 
-  // The open chat's messages oldest → newest, with a chip whenever the chapter changes.
+  // The open chat's messages oldest → newest. No chapter names in the chats
+  // (user's choice, 2026-11-11): a chat looks like a real one.
   chatItems() {
     const items = [];
-    let last = null;
     for (const m of this.currentChat().messages) {
-      if (m.chapter !== last) {
-        items.push({ chip: m.chapterTitle });
-        last = m.chapter;
-      }
       items.push({ ...m, time: timeOf(m) });
     }
     return items;

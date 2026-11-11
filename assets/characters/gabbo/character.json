@@ -38,18 +38,7 @@
       "facing": "down",
       "wander": false,
       "wanderRadius": 2,
-      "after": "event:peperoni",
-      "alt": [
-        {
-          "flag": "nap-done",
-          "map": "base-kitchen",
-          "tx": 21,
-          "ty": 4,
-          "facing": "down",
-          "wander": false,
-          "wanderRadius": 2
-        }
-      ]
+      "after": "event:peperoni"
     },
     "chapter-1": {
       "map": "first-floor-main",
@@ -85,12 +74,6 @@
       "wander": true,
       "wanderRadius": 5
     },
-    "chapter-7": {
-      "map": "base-floor-main",
-      "facing": "down",
-      "wander": true,
-      "wanderRadius": 5
-    },
     "chapter-8": {
       "map": "base-floor-living",
       "facing": "down",
@@ -113,6 +96,14 @@
       "facing": "down",
       "wander": true,
       "wanderRadius": 3
+    },
+    "chapter-festa": {
+      "map": "base-kitchen",
+      "tx": 21,
+      "ty": 4,
+      "facing": "down",
+      "wander": false,
+      "wanderRadius": 2
     }
   },
   "default": "O fra, non ho niente da dirti, sbirro, diahane",
@@ -152,63 +143,6 @@
       "setFlag": "ripetitori-start",
       "banner": "🎯 Vai da Sara in cucina di su:\nha il badge master",
       "when": [
-        {
-          "flag": "nap-done",
-          "dialogue": [
-            {
-              "who": "zionick",
-              "text": "Gabbo! Cos'è tutto questo casino?"
-            },
-            "O fra, è una festa, diahane!",
-            {
-              "who": "zionick",
-              "text": "Sono le undici di sera e mi mancano due peperoni."
-            },
-            "O fra, peperoni? Il peperone sono io, diahane!",
-            {
-              "who": "timo",
-              "text": "O fra. Buona."
-            },
-            "Guarda come balla il peperone, diahane!",
-            {
-              "who": "zionick",
-              "text": "Smettila."
-            },
-            "O fra, dai, fatti dare una pacca, diahane.",
-            {
-              "who": "zionick",
-              "text": "Giù le mani!"
-            },
-            {
-              "who": "zionick",
-              "text": "AIA, IL GINOCCHIO!"
-            },
-            {
-              "who": "zionick",
-              "text": "Adesso basta."
-            }
-          ],
-          "dialogueAfter": "O fra, la statua te la devo ancora fare, diahane.",
-          "battle": {
-            "prompt": "O fra, che fai, diahane?",
-            "options": [
-              "Lo affronto",
-              "Gli spiego la fisica degli urti"
-            ],
-            "won": [
-              "O fra, ti devo fare una statua, diahane.",
-              "Intanto tieni questa, diahane.",
-              {
-                "who": "zionick",
-                "text": "(Basta. Sono a pezzi: torno a dormire.)"
-              }
-            ],
-            "reward": {
-              "name": "Statuetta di Zio Nick",
-              "description": "Da Gabbo. In attesa della statua vera."
-            }
-          }
-        },
         {
           "flag": "ripetitori-start",
           "dialogue": [
@@ -330,6 +264,62 @@
       "dialogue": [
         "O fra, sento odore di chili, diahane"
       ]
+    },
+    "chapter-festa": {
+      "dialogue": [
+        {
+          "who": "zionick",
+          "text": "Gabbo! Cos'è tutto questo casino?"
+        },
+        "O fra, è una festa, diahane!",
+        {
+          "who": "zionick",
+          "text": "Sono le undici di sera e mi mancano due peperoni."
+        },
+        "O fra, peperoni? Il peperone sono io, diahane!",
+        {
+          "who": "timo",
+          "text": "O fra. Buona."
+        },
+        "Guarda come balla il peperone, diahane!",
+        {
+          "who": "zionick",
+          "text": "Smettila."
+        },
+        "O fra, dai, fatti dare una pacca, diahane.",
+        {
+          "who": "zionick",
+          "text": "Giù le mani!"
+        },
+        {
+          "who": "zionick",
+          "text": "AIA, IL GINOCCHIO!"
+        },
+        {
+          "who": "zionick",
+          "text": "Adesso basta."
+        }
+      ],
+      "dialogueAfter": "O fra, la statua te la devo ancora fare, diahane.",
+      "battle": {
+        "prompt": "O fra, che fai, diahane?",
+        "options": [
+          "Lo affronto",
+          "Gli spiego la fisica degli urti"
+        ],
+        "won": [
+          "O fra, ti devo fare una statua, diahane.",
+          "Intanto tieni questa, diahane.",
+          {
+            "who": "zionick",
+            "text": "(Basta. Sono a pezzi: torno a dormire.)"
+          }
+        ],
+        "reward": {
+          "name": "Statuetta di Zio Nick",
+          "description": "Da Gabbo. In attesa della statua vera."
+        }
+      }
     }
   }
 }

@@ -52,6 +52,39 @@ export const withCutscenes = (Base) => class extends Base {
     step(0);
   }
 
+  // Zio Nick thinking aloud as a scene: black bars, the camera on him, each
+  // line big. A line may be { text, zoom }: the camera slams in to
+  // CAMERA_ZOOM × zoom with a shake (a realisation), and stays there until
+  // the next plain line.
+  monologue(lines, onDone) {
+    const me = { sprite: this.player, name: PLAYER.NAME, portraitKey: PLAYER.PORTRAIT_KEY };
+    this.holdPlayer();
+    this.cutsceneStart();
+    const step = (i) => {
+      if (i >= lines.length) {
+        this.cutsceneEnd();
+        this.player.facing = 'down';
+        onDone?.();
+        return;
+      }
+      const l = typeof lines[i] === 'string' ? { text: lines[i] } : lines[i];
+      if (l.zoom) {
+        const cam = this.cameras.main;
+        const s = this.player;
+        cam.pan(s.x, s.y - s.displayHeight * 0.3, 260, 'Quad.easeIn', true);
+        cam.zoomTo(CAMERA_ZOOM * l.zoom, 260, 'Quad.easeIn', true);
+        this.time.delayedCall(260, () => cam.shake(320, 0.012));
+        this.time.delayedCall(700, () =>
+          this.dialogue.show(me.name, l.text, me.portraitKey, () => step(i + 1), { big: true }));
+        return;
+      }
+      this.cutsceneFocus(me, l.text);
+      this.time.delayedCall(500, () =>
+        this.dialogue.show(me.name, l.text, me.portraitKey, () => step(i + 1), { big: true }));
+    };
+    step(0);
+  }
+
   // Cinematic mode for scenes: black bars, the camera leaves the player and
   // zooms in on whoever is talking (cutsceneFocus), then comes back.
   // Hide / show the HUD (room name, tracker, phone icon, key hints).

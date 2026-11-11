@@ -76,6 +76,7 @@ export default class WorldScene extends WorldBase {
     this.warpLocked = false;
     this.restarting = false; // true between "Ricomincia da capo" and the scene restart
     this.notice = data.notice || null; // one-off banner on arrival (e.g. after a defeat)
+    this.announceOnArrival = !!data.announce; // a chapter rolled on just before this restart (the nap)
     this.heets = null; // Nima's chase after a heets in the kitchen (startHeetsChase)
     this.heetsEscaped = !!data.heetsEscaped; // just ran out of the kitchen door
     this.heetsDazed = !!data.heetsDazed; // just caught by Nima: waking up dazed
@@ -382,7 +383,7 @@ export default class WorldScene extends WorldBase {
     this.pauseMenu = new PauseMenu(this, { onRestart: () => this.newGame() });
 
     // Entering this map completed an explore chapter → announce it.
-    if (questState.activeChapter !== chapterBefore) this.announceChapter();
+    if (questState.activeChapter !== chapterBefore || this.announceOnArrival) this.announceChapter();
     else this.time.delayedCall(500, () => this.showChapterCard()); // first time in this chapter (e.g. a new game)
     this.time.delayedCall(900, () => this.storyIntros());
     this.time.delayedCall(1300, () => this.playEvents());
